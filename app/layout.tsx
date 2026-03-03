@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ag Classic",
+  title: "Ag Classics",
   description: "A modern e-book store. Explore a wide range of books, from bestsellers to new releases, and enjoy a seamless shopping experience.",
 };
 
