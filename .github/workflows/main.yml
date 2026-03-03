@@ -18,14 +18,14 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          connect_timeout: 60s
+          command_timeout: 60s
           script: |
             set -e
 
             cd /home/rishabhvyas/EbookApp/agclassics
 
             git reset --hard
-            git pull origin main
+            git pull origin master
 
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
