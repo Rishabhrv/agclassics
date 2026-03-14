@@ -160,3 +160,20 @@ textarea:focus {
 }
 
 
+/* Modal iframe container — always on top */
+.razorpay-container {
+  z-index: 2147483647 !important;
+  position: fixed !important;
+}
+ 
+/* Backdrop — below the modal but above page content.
+   pointer-events: none lets Razorpay's OWN iframe receive clicks. */
+.razorpay-backdrop {
+  z-index: 2147483646 !important;
+  pointer-events: none !important;
+}
+ 
+/* Freeze everything behind the modal while it's open */
+body.razorpay-payment-open {
+  overflow: hidden !important;
+}
