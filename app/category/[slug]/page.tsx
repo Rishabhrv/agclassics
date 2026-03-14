@@ -461,16 +461,33 @@ export default function CategoryPage() {
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
-  useEffect(() => {
+useEffect(() => {
     if (!slug) return;
     fetch(`${API_URL}/api/ag-classics/viewcategory/${slug}/top-authors`)
       .then((r) => r.json()).then(setAuthors).catch(() => setAuthors([]));
     fetch(`${API_URL}/api/ag-classics/viewcategory/${slug}/rating-counts`)
       .then((r) => r.json()).then(setRatingCounts).catch(() => setRatingCounts({}));
+
     fetch(`${API_URL}/api/ag-classics/viewcategory/counts`)
-      .then((r) => r.json()).then(setCategories).catch(() => setCategories([]));
-    setCategoryName(slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()));
-  }, [slug]);
+    .then((r) => r.json())
+      .then((data) => {
+        setCategories(data);
+        
+        // Find the matching category and use its actual database name
+        const currentCat = data.find((c: Category) => c.slug === slug);
+        if (currentCat) {
+          setCategoryName(currentCat.name);
+        } else {
+          // Fallback just in case the category isn't found immediately
+          setCategoryName(slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()));
+        }
+      })
+      .catch(() => {
+        setCategories([]);
+        // Fallback on error
+        setCategoryName(slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()));
+      });
+  }, [slug]);
 
   useEffect(() => { setPage(1); }, [sort, debouncedSearch, priceInput, selectedRating, selectedAuthor]);
 
@@ -497,7 +514,7 @@ export default function CategoryPage() {
       <div className="min-h-screen bg-[#0a0a0b] pt-[140px] md:pt-[120px]">
 
         {/* ── Hero Banner ── */}
-        <div className="relative px-12 pt-12 pb-10 border-b border-[rgba(201,168,76,.1)] overflow-hidden max-[600px]:px-5">
+        <div className="relative px-25 pt-12 pb-10 border-b border-[rgba(201,168,76,.1)] overflow-hidden max-[600px]:px-5">
           <div className="absolute -top-[60px] -right-[60px] w-[300px] h-[300px] rounded-full pointer-events-none"
             style={{ background: "radial-gradient(circle, rgba(201,168,76,.04) 0%, transparent 70%)" }} />
           <div className="max-w-[1400px] mx-auto">
@@ -526,7 +543,7 @@ export default function CategoryPage() {
         </div>
 
         {/* ── Main Layout ── */}
-        <div className="max-w-[1400px] mx-auto px-12 py-8 grid grid-cols-[240px_1fr] gap-10 items-start
+        <div className="max-w-[1400px] mx-auto px-25 py-8 grid grid-cols-[240px_1fr] gap-10 items-start
           max-[900px]:grid-cols-1 max-[600px]:px-5">
 
           {/* Desktop sidebar */}
@@ -535,7 +552,7 @@ export default function CategoryPage() {
           </aside>
 
           {/* Content */}
-          <main>
+          <main className="ml-15">
             {/* Toolbar */}
             <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
               {/* Mobile filter button */}
@@ -764,14 +781,14 @@ function SidebarContent({
   const childrenOf = (id: number) => categories.filter((c) => c.parent_id === id);
   const currentCat = categories.find((c) => c.slug === currentSlug);
   const sectionCls = "border-b border-[rgba(201,168,76,.08)] pb-5 mb-5";
-  const labelCls   = "block mb-3.5 text-[9px] tracking-[3px] uppercase text-[#c9a84c]";
+  const labelCls   = "block mb-3.5 text-sm tracking-[3px] uppercase text-[#c9a84c]";
 
   return (
     <div>
       {/* Categories */}
       {categories.length > 0 && (
         <div className={sectionCls}>
-          <span className={labelCls} style={{ fontFamily: "'Jost', sans-serif" }}>Categories</span>
+          <span className={labelCls} style={{ fontFamily: "'Jost', sans-serif" }}>Genre</span>
           <div className="flex flex-col">
             {parents.map((parent) => {
               const children         = childrenOf(parent.id);
@@ -851,7 +868,7 @@ function SidebarContent({
 
       {/* Rating */}
       <div className={sectionCls}>
-        <span className={labelCls} style={{ fontFamily: "'Jost', sans-serif" }}>Minimum Rating</span>
+        <span className={labelCls} style={{ fontFamily: "'Jost', sans-serif" }}>Rating</span>
         {[4, 3, 2, 1].map((r) => (
           <button key={r}
             onClick={() => setSelectedRating(selectedRating === r ? 0 : r)}

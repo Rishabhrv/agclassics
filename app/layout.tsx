@@ -6,7 +6,6 @@ import HomeHeader from "@/components/layout/HomeHeader";
 import HomeFooter from "@/components/layout/HomeFooter";
 import MotionBackground from "@/components/motion/MotionBackground";
 import { MotionProvider } from "@/components/motion/Motionprovider";
-import CustomCursor from "@/components/motion/CustomCursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,8 +39,6 @@ export default function RootLayout({
           {/* ── Fixed motion background (particles, beams, glow, grid) ── */}
           <MotionBackground />
 
-          {/* ── Custom magnetic cursor ── */}
-          <CustomCursor />
 
           {/* ── All page content sits above the motion layers (z-index: 10) ── */}
           <div style={{ position: "relative", zIndex: 10 }}>

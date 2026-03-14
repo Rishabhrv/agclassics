@@ -581,11 +581,7 @@ export default function CategoryBookSlider({
                       <span style={{ fontFamily: "'Jost',sans-serif", fontSize: 8, letterSpacing: "1.5px", textTransform: "uppercase", padding: "3px 7px", background: "#8b3a3a", color: "#f5f0e8" }}>
                         {disc}% Off
                       </span>
-                    ) : isNew ? (
-                      <span style={{ fontFamily: "'Jost',sans-serif", fontSize: 8, letterSpacing: "1.5px", textTransform: "uppercase", padding: "3px 7px", background: "#c9a84c", color: "#0a0a0b" }}>
-                        New
-                      </span>
-                    ) : null}
+                    ) :  null}
                   </div>
 
                   {/* Cover */}
