@@ -177,3 +177,7 @@ textarea:focus {
 body.razorpay-payment-open {
   overflow: hidden !important;
 }
+
+/* Add this inside your paymentStyles string */
+  
+

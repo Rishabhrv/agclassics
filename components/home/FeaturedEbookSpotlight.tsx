@@ -95,7 +95,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
         <h2 className="font-['Cormorant_Garamond',serif] font-light text-[clamp(30px,4.5vw,52px)] text-[#f5f0e8] leading-[1.05]">
           Featured <em className="italic text-[#c9a84c]">eBook</em>
         </h2>
-        <p className="font-['Jost',sans-serif] text-[13px] text-[#6b6b70] leading-[1.8] max-w-[480px] mt-3">
+        <p className="font-['Jost',sans-serif] text-[13px] text-white leading-[1.8] max-w-[480px] mt-3">
           A handpicked title from our curated collection — read by thousands.
         </p>
       </div>
@@ -152,7 +152,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
 
           {/* Authors */}
           {book.author_name && (
-            <p className="font-['Cinzel',serif] text-[9px] tracking-[3px] uppercase text-[#6b6b70] mb-4">
+            <p className="font-['Cinzel',serif] text-[9px] tracking-[3px] uppercase text-white mb-4">
               by <span className="text-[#e8dfd0]">{book.author_name}</span>
             </p>
           )}
@@ -163,7 +163,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
             <span className="font-['Jost',sans-serif] text-[12px] font-medium text-[#c9a84c]">
               {rating > 0 ? rating.toFixed(1) : "—"}
             </span>
-            <span className="font-['Jost',sans-serif] text-[10px] text-[#6b6b70]">
+            <span className="font-['Jost',sans-serif] text-[10px] text-white">
               ({book.review_count} {book.review_count === 1 ? "review" : "reviews"})
             </span>
           </div>
@@ -172,7 +172,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
           <div className="border-t border-[rgba(201,168,76,0.10)] mb-6" />
 
           {/* Description */}
-          <p className="font-['Jost',sans-serif] text-[13px] text-[#6b6b70] leading-[1.8] max-w-[420px] mb-8 line-clamp-4">
+          <p className="font-['Jost',sans-serif] text-[13px] text-white leading-[1.8] max-w-[420px] mb-8 line-clamp-4">
             {book.description || "Experience this timeless classic in a beautifully formatted digital edition. Download instantly and start reading on any device."}
           </p>
 
@@ -198,7 +198,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
             </Link>
             <Link
               href={`/books/${book.slug}#reviews`}
-              className="font-['Jost',sans-serif] text-[11px] text-[#6b6b70] hover:text-[#c9a84c] underline underline-offset-4 decoration-[rgba(201,168,76,0.3)] transition-colors"
+              className="font-['Jost',sans-serif] text-[11px] text-white hover:text-[#c9a84c] underline underline-offset-4 decoration-[rgba(201,168,76,0.3)] transition-colors"
             >
               Read reviews
             </Link>

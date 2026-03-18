@@ -356,7 +356,7 @@ export default function ProductSlider({
   /* ─────────── ERROR ─────────── */
   if (fetchError) return (
     <section className="relative w-full px-12 py-16 text-center max-md:px-6">
-      <p className="text-sm text-[#6b6b70]">
+      <p className="text-sm text-white">
         Could not load <em className="not-italic text-[#c9a84c]">{title}</em> — {fetchError}
       </p>
     </section>
@@ -398,11 +398,11 @@ export default function ProductSlider({
               style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(30px,4vw,50px)" }}>
               {title}
             </h2>
-            <p className="text-[13px] leading-[1.7] text-[#6b6b70]">{description}</p>
+            <p className="text-[13px] leading-[1.7] text-white">{description}</p>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <span className="hidden sm:block text-[11px] tracking-[2px] tabular-nums mr-1 text-[#6b6b70]">
+            <span className="hidden sm:block text-[11px] tracking-[2px] tabular-nums mr-1 text-white">
               {String(activeIndex + 1).padStart(2, "0")}&nbsp;/&nbsp;{String(books.length).padStart(2, "0")}
             </span>
             {(["left", "right"] as const).map((dir) => {
@@ -415,7 +415,7 @@ export default function ProductSlider({
                     disabled:opacity-20 disabled:cursor-not-allowed
                     ${active
                       ? "bg-[rgba(201,168,76,0.08)] border border-[rgba(201,168,76,0.35)] text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0a0a0b]"
-                      : "bg-transparent border border-[rgba(255,255,255,0.07)] text-[#6b6b70]"}`}>
+                      : "bg-transparent border border-[rgba(255,255,255,0.07)] text-white"}`}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     {dir === "left"
                       ? <polyline points="15 18 9 12 15 6" />
@@ -473,7 +473,7 @@ export default function ProductSlider({
                   {/* ── Left badge: OOS / discount / new ── */}
                   {soldOut ? (
                     <span className="absolute top-3 left-3 z-10 text-[8px] tracking-[2px] uppercase
-                      font-medium px-[9px] py-[4px] bg-gray-300 text-[#6b6b70]"
+                      font-medium px-[9px] py-[4px] bg-gray-300 text-white"
                       style={{ fontFamily: "'Jost', sans-serif" }}>
                       Out of Stock
                     </span>
@@ -529,13 +529,13 @@ export default function ProductSlider({
                           ₹{displayPrice.toFixed(0)}
                         </span>
                         {originalPrice && (
-                          <span className="text-[11px] line-through text-[#6b6b70]"
+                          <span className="text-[11px] line-through text-white"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             ₹{originalPrice.toFixed(0)}
                           </span>
                         )}
                         {label && (
-                          <span className="text-[8px] tracking-[1px] uppercase text-[#6b6b70]"
+                          <span className="text-[8px] tracking-[1px] uppercase text-white"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             {label}
                           </span>
@@ -553,7 +553,7 @@ export default function ProductSlider({
                             py-2 px-2 border-none flex items-center justify-center gap-1
                             transition-colors duration-300
                             ${soldOut
-                              ? "bg-[#2a2a2d] text-[#6b6b70] cursor-not-allowed"
+                              ? "bg-[#2a2a2d] text-white cursor-not-allowed"
                               : loadingCart === book.id
                               ? "bg-[#c9a84c] text-[#0a0a0b] opacity-80 cursor-not-allowed"
                               : "bg-[#c9a84c] text-[#0a0a0b] hover:bg-[#f5f0e8] cursor-pointer"}`}
@@ -586,7 +586,7 @@ export default function ProductSlider({
                             transition-all duration-300
                             ${isWishlisted
                               ? "text-[#c9a84c] bg-[rgba(201,168,76,0.12)] border border-[rgba(201,168,76,0.4)]"
-                              : "text-[#6b6b70] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,0.4)]"}
+                              : "text-white bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,0.4)]"}
                             ${loadingWishlist === book.id ? "cursor-wait opacity-60" : "cursor-pointer"}`}
                         >
                           <svg width="12" height="12" viewBox="0 0 24 24"

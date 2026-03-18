@@ -118,7 +118,7 @@ const HeroCarousel = ({ books, loading }: { books: Book[], loading: boolean }) =
               pointerEvents: opacity > 0.5 ? 'auto' : 'none',
             }}
             onClick={() => {
-              if (book) window.location.href = `/books/${book.slug}`;
+              if (book) window.location.href = `/product/${book.slug}`;
             }}
           >
             {book ? (
@@ -300,8 +300,8 @@ export default function EbooksPage() {
             </h1>
 
             {/* Subheadline */}
-            <p className="anim-fadeUp-2 text-[#6b6b70] leading-[1.6] max-w-[600px] mt-3"
-               style={{ ...F_JOST, fontSize: "clamp(12px,1.5vw,13px)" }}>
+            <p className="anim-fadeUp-2 text-white leading-[1.6] max-w-[700px] mt-3"
+               style={{ ...F_JOST, fontSize: "clamp(12px,1.5vw,17px)" }}>
               Experience the world's greatest literature, flawlessly formatted for your favorite device. 
               Download our premium eBooks instantly and carry a masterfully curated library wherever you go.
             </p>
@@ -334,7 +334,7 @@ export default function EbooksPage() {
               ["Classic Fiction","Philosophy","Poetry","History","Drama","Science",
                "Adventure","Mythology","Essays","Biography","Romance","Tragedy"].map((t, j) => (
                 <div key={`${ri}-${j}`}
-                     className="flex items-center gap-10 px-5 text-[9px] tracking-[4px] uppercase text-[#6b6b70] whitespace-nowrap"
+                     className="flex items-center gap-10 px-5 text-[9px] tracking-[4px] uppercase text-white whitespace-nowrap"
                      style={F_CINZEL}>
                   <span>{t}</span>
                   <div className="w-1 h-1 rotate-45 bg-[#8a6f2e] flex-shrink-0" />
@@ -360,7 +360,7 @@ export default function EbooksPage() {
                 </h2>
               </div>
               <button
-                className="text-[8px] tracking-[3px] uppercase text-[#6b6b70] bg-transparent border border-[rgba(201,168,76,.20)] px-5 py-2.5 cursor-pointer transition-colors duration-200 hover:text-[#c9a84c] hover:border-[#c9a84c]"
+                className="text-[8px] tracking-[3px] uppercase text-white bg-transparent border border-[rgba(201,168,76,.20)] px-5 py-2.5 cursor-pointer transition-colors duration-200 hover:text-[#c9a84c] hover:border-[#c9a84c]"
                 style={F_CINZEL}
                 onClick={() => window.location.href = "/ebooks"}>
                 View All
@@ -379,7 +379,7 @@ export default function EbooksPage() {
                       width: "max(140px, calc((100% - 8px) / 5))", 
                       animationDelay: `${idx * 0.05}s` 
                     }}
-                    onClick={() => window.location.href = `/books/${book.slug}`}
+                    onClick={() => window.location.href = `/product/${book.slug}`}
                   >
                     <div className="scard-img relative overflow-hidden bg-[#0f0f11]" >
                       {book.main_image ? (
@@ -401,7 +401,7 @@ export default function EbooksPage() {
                         <button
                           className="w-full text-[8px] tracking-[2px] uppercase font-medium text-[#080809] bg-[#c9a84c] py-[7px] border-none cursor-pointer transition-colors duration-200 hover:bg-[#f5f0e8]"
                           style={F_JOST}
-                          onClick={e => { e.stopPropagation(); window.location.href = `/books/${book.slug}`; }}>
+                          onClick={e => { e.stopPropagation(); window.location.href = `/product/${book.slug}`; }}>
                           View
                         </button>
                       </div>
@@ -418,7 +418,7 @@ export default function EbooksPage() {
                       <div className="flex items-baseline gap-[7px] mt-1">
                         <span className="text-[13px] font-medium text-[#c9a84c]" style={F_JOST}>{fmt(display)}</span>
                         {disc > 0 && (
-                          <span className="text-[10px] text-[#6b6b70] line-through" style={F_JOST}>{fmt(original)}</span>
+                          <span className="text-[10px] text-white line-through" style={F_JOST}>{fmt(original)}</span>
                         )}
                       </div>
                     </div>
@@ -439,7 +439,7 @@ export default function EbooksPage() {
                 style={{ ...F_CORMORANT, fontSize: "clamp(30px,4.5vw,52px)" }}>
               The <em className="italic text-[#c9a84c]">Complete</em> Collection
             </h2>
-            <p className="text-[13px] text-[#6b6b70] leading-[1.8] max-w-[480px] mt-3" style={F_JOST}>
+            <p className="text-[13px] text-white leading-[1.8] max-w-[480px] mt-3" style={F_JOST}>
               Every classic, organised by the genre that defines it.
             </p>
           </div>
@@ -480,7 +480,7 @@ export default function EbooksPage() {
                     className={`text-[9px] tracking-[3px] uppercase px-[26px] py-[15px] border-none bg-transparent cursor-pointer whitespace-nowrap transition-colors duration-200 border-b-2
                       ${activeCategory === cat.category_id
                         ? "text-[#c9a84c] border-[#c9a84c]"
-                        : "text-[#6b6b70] border-transparent hover:text-[#e8dfd0]"}`}
+                        : "text-white border-transparent hover:text-[#e8dfd0]"}`}
                     onClick={() => setActiveCategory(cat.category_id)}>
                     {cat.category_name}
                     <span className="ml-1.5 text-[7px]" style={F_JOST}>({cat.books.length})</span>
@@ -502,7 +502,7 @@ export default function EbooksPage() {
                         <div key={book.id}
                               className="ep-card flex flex-col bg-[#1a1a1d] cursor-pointer transition-colors duration-200 hover:bg-[#1f1f23]"
                               style={{ animationDelay: `${idx * 0.04}s` }}
-                              onClick={() => window.location.href = `/books/${book.slug}`}>
+                              onClick={() => window.location.href = `/product/${book.slug}`}>
                           <div className="ep-card-img relative overflow-hidden bg-[#131316]" >
                             {book.main_image ? (
                               <img src={`${API_URL}${book.main_image}`} alt={book.title}
@@ -524,7 +524,7 @@ export default function EbooksPage() {
                               <button
                                 className="w-full text-[9px] tracking-[2px] uppercase font-medium text-[#080809] bg-[#c9a84c] py-2.5 border-none cursor-pointer transition-colors duration-200 hover:bg-[#f5f0e8]"
                                 style={F_JOST}
-                                onClick={e => { e.stopPropagation(); window.location.href = `/books/${book.slug}`; }}>
+                                onClick={e => { e.stopPropagation(); window.location.href = `/product/${book.slug}`; }}>
                                 View Details
                               </button>
                             </div>
@@ -539,7 +539,7 @@ export default function EbooksPage() {
                               {book.title}
                             </h3>
                             {stars && (
-                              <div className="flex items-center gap-1.5 text-[10px] text-[#6b6b70]" style={F_JOST}>
+                              <div className="flex items-center gap-1.5 text-[10px] text-white" style={F_JOST}>
                                 <span className="text-[#c9a84c]">{stars}</span>
                                 <span>{book.avg_rating?.toFixed(1)}</span>
                                 {book.review_count > 0 && <span>({book.review_count})</span>}
@@ -548,7 +548,7 @@ export default function EbooksPage() {
                             <div className="flex items-baseline gap-2 mt-auto pt-2">
                               <span className="text-[14px] font-medium text-[#c9a84c]" style={F_JOST}>{fmt(display)}</span>
                               {hasD && (
-                                <span className="text-[11px] text-[#6b6b70] line-through" style={F_JOST}>{fmt(original)}</span>
+                                <span className="text-[11px] text-white line-through" style={F_JOST}>{fmt(original)}</span>
                               )}
                             </div>
                           </div>
@@ -561,7 +561,7 @@ export default function EbooksPage() {
                   <div className="flex items-center gap-4 pt-10">
                     <div className="flex-1 h-px bg-[rgba(201,168,76,0.10)]" />
                     <button
-                      className="group flex items-center gap-2.5 text-[8px] tracking-[3px] uppercase text-[#6b6b70] bg-transparent border border-[rgba(201,168,76,.20)] px-6 py-3 cursor-pointer whitespace-nowrap transition-colors duration-200 hover:text-[#c9a84c] hover:border-[#c9a84c]"
+                      className="group flex items-center gap-2.5 text-[8px] tracking-[3px] uppercase text-white bg-transparent border border-[rgba(201,168,76,.20)] px-6 py-3 cursor-pointer whitespace-nowrap transition-colors duration-200 hover:text-[#c9a84c] hover:border-[#c9a84c]"
                       style={F_CINZEL}
                       onClick={() => window.location.href = `/ebooks?category=${activeCat.category_slug}`}>
                       All {activeCat.category_name} eBooks
@@ -584,7 +584,7 @@ export default function EbooksPage() {
               style={{ ...F_CORMORANT, fontSize: "clamp(30px,4.5vw,52px)" }}>
             Start Reading in <em className="italic text-[#c9a84c]">Seconds</em>
           </h2>
-          <p className="text-[13px] text-[#6b6b70] leading-[1.8] max-w-[480px] mt-3" style={F_JOST}>
+          <p className="text-[13px] text-white leading-[1.8] max-w-[480px] mt-3" style={F_JOST}>
             Four simple steps between you and your next great read.
           </p>
 
@@ -610,7 +610,7 @@ export default function EbooksPage() {
                 <h4 className="text-[10px] tracking-[2px] uppercase text-[#f5f0e8] mb-2.5" style={F_CINZEL}>
                   {s.title}
                 </h4>
-                <p className="text-[12px] text-[#6b6b70] leading-[1.75]" style={F_JOST}>{s.desc}</p>
+                <p className="text-[12px] text-white leading-[1.75]" style={F_JOST}>{s.desc}</p>
                 <span className="how-arrow hidden absolute right-[-12px] top-1/2 -translate-y-1/2 text-[#8a6f2e] text-[18px] z-10">
                   ›
                 </span>
@@ -658,7 +658,7 @@ export default function EbooksPage() {
                   <h4 className="text-[9px] tracking-[2px] uppercase text-[#f5f0e8] mb-1.5" style={F_CINZEL}>
                     {w.title}
                   </h4>
-                  <p className="text-[12px] text-[#6b6b70] leading-[1.7]" style={F_JOST}>{w.desc}</p>
+                  <p className="text-[12px] text-white leading-[1.7]" style={F_JOST}>{w.desc}</p>
                 </div>
               </div>
             ))}
@@ -701,7 +701,7 @@ export default function EbooksPage() {
               <h4 className="text-[10px] tracking-[2px] uppercase text-[#f5f0e8] mb-2" style={F_CINZEL}>
                 {f.title}
               </h4>
-              <p className="text-[12px] text-[#6b6b70] leading-[1.75]" style={F_JOST}>{f.desc}</p>
+              <p className="text-[12px] text-white leading-[1.75]" style={F_JOST}>{f.desc}</p>
             </div>
           ))}
         </div>

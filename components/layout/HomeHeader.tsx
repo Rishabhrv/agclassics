@@ -63,11 +63,11 @@ const NAV_LINKS = [
   { href: "/category/business-professional-skills",  label: "Genre" },
   { href: "/ebooks",            label: "E-Books" },
   { href: "/bestseller",        label: "Bestseller" },
-  { href: "/subscription",      label: "Subscription" },
+  { href: "/subscriptions",      label: "Subscription" },
 ];
 
 export default function HomeHeader() {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
 
   const [scrolled,       setScrolled]       = useState(false);
   const [menuOpen,       setMenuOpen]        = useState(false);
@@ -206,7 +206,7 @@ export default function HomeHeader() {
         <div className="overflow-hidden text-center px-4 py-2 text-[11px] font-medium tracking-[2px] uppercase bg-[#c9a84c] text-[#0a0a0b]"
           style={{ fontFamily: "'Jost', sans-serif" }}>
           <span className="ticker-track inline-block whitespace-nowrap">
-            ✦ Instant Ebook Access &nbsp;&nbsp;&nbsp; ✦ Download Immediately After Purchase &nbsp;&nbsp;&nbsp; ✦ Read on Mobile, Tablet &amp; Desktop &nbsp;&nbsp;&nbsp; ✦ New Titles Added Every Month &nbsp;&nbsp;&nbsp; ✦ Read Anywhere, Anytime &nbsp;&nbsp;&nbsp; ✦ Exclusive AG Digital Collection &nbsp;&nbsp;&nbsp;
+            ✦ Instant Ebook Access &nbsp;&nbsp;&nbsp; ✦ Read Immediately After Purchase &nbsp;&nbsp;&nbsp; ✦ Read on Mobile, Tablet &amp; Desktop &nbsp;&nbsp;&nbsp; ✦ New Titles Added Every Month &nbsp;&nbsp;&nbsp; ✦ Read Anywhere, Anytime &nbsp;&nbsp;&nbsp; ✦ Exclusive AG Digital Collection &nbsp;&nbsp;&nbsp;
           </span>
         </div>
 
@@ -232,7 +232,7 @@ export default function HomeHeader() {
                   className="relative group text-[12px] tracking-[2px] uppercase font-normal no-underline transition-colors duration-300"
                   style={{
                     fontFamily: "'Jost', sans-serif",
-                    color: active ? "#c9a84c" : "#6b6b70",
+                    color: active ? "#c9a84c" : "#ffffff",
                   }}
                 >
                   {label}
@@ -300,7 +300,7 @@ export default function HomeHeader() {
                       value={query}
                       onChange={e => setQuery(e.target.value)}
                       placeholder="Search books, authors…"
-                      className="flex-1 bg-transparent border-none outline-none text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-[#6b6b70]"
+                      className="flex-1 bg-transparent border-none outline-none text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
                       style={{ fontFamily: "'Jost', sans-serif" }}
                     />
                     {searchLoading && (
@@ -309,7 +309,7 @@ export default function HomeHeader() {
                     {query && !searchLoading && (
                       <button
                         onClick={() => { setQuery(""); setSearchResults({ products: [], authors: [] }); }}
-                        className="bg-transparent border-none cursor-pointer text-[#6b6b70] p-0 leading-none"
+                        className="bg-transparent border-none cursor-pointer text-white p-0 leading-none"
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -321,13 +321,13 @@ export default function HomeHeader() {
                   {/* Results */}
                   <div className="search-results-scroll max-h-[380px] overflow-y-auto relative">
                     {query.trim().length < 2 && (
-                      <p className="px-4 py-4 text-[11px] text-[#6b6b70] tracking-[1px] m-0"
+                      <p className="px-4 py-4 text-[11px] text-white tracking-[1px] m-0"
                         style={{ fontFamily: "'Jost', sans-serif" }}>
                         Type at least 2 characters…
                       </p>
                     )}
                     {query.trim().length >= 2 && !hasResults && !searchLoading && (
-                      <p className="px-4 py-5 text-[12px] text-[#6b6b70] text-center tracking-[1px] m-0"
+                      <p className="px-4 py-5 text-[12px] text-white text-center tracking-[1px] m-0"
                         style={{ fontFamily: "'Jost', sans-serif" }}>
                         No results found
                       </p>
@@ -408,7 +408,7 @@ export default function HomeHeader() {
               onClick={() => { window.location.href = "/wishlist"; }}
               className={[
                 "flex items-center p-1 transition-colors duration-300 bg-transparent border-none cursor-pointer",
-                pathname === "/wishlist" ? "text-[#c9a84c]" : "text-[#6b6b70] hover:text-[#c9a84c]",
+                pathname === "/wishlist" ? "text-[#c9a84c]" : "text-white hover:text-[#c9a84c]",
               ].join(" ")}
               aria-label="Wishlist"
             >
@@ -424,7 +424,7 @@ export default function HomeHeader() {
               onClick={() => { window.location.href = "/cart"; }}
               className={[
                 "relative flex items-center p-1 transition-colors duration-300 bg-transparent border-none cursor-pointer",
-                pathname === "/cart" ? "text-[#c9a84c]" : "text-[#6b6b70] hover:text-[#c9a84c]",
+                pathname === "/cart" ? "text-[#c9a84c]" : "text-white hover:text-[#c9a84c]",
               ].join(" ")}
               aria-label="Cart"
             >
@@ -485,7 +485,7 @@ export default function HomeHeader() {
                       <div className="px-4 py-[14px] pb-3 border-b border-[rgba(201,168,76,0.1)]">
                         <p className="text-[16px] italic text-[#f5f0e8] m-0"
                           style={{ fontFamily: "'Cormorant Garamond', serif" }}>{user.name}</p>
-                        <p className="text-[11px] text-[#6b6b70] mt-[3px] mb-0 overflow-hidden text-ellipsis whitespace-nowrap"
+                        <p className="text-[11px] text-white mt-[3px] mb-0 overflow-hidden text-ellipsis whitespace-nowrap"
                           style={{ fontFamily: "'Jost', sans-serif" }}>{user.email}</p>
                       </div>
 
@@ -494,7 +494,8 @@ export default function HomeHeader() {
                           { href: "/account",        label: "My Account", icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
                           { href: "/orders",         label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
                           { href: "/wishlist",       label: "Wishlist",   icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/> },
-                          { href: "/ebooks/library", label: "My Library", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
+                          { href: "/library/MyLibrary", label: "My Library", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
+                          { href: "/my-books", label: "My Books", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
                         ].map(({ href, label, icon }) => (
                           <a key={href} href={href}
                             className={[
@@ -502,7 +503,7 @@ export default function HomeHeader() {
                               "no-underline transition-[color,background] duration-200 cursor-pointer whitespace-nowrap",
                               pathname === href
                                 ? "text-[#c9a84c] bg-[rgba(201,168,76,0.07)]"
-                                : "text-[#6b6b70] hover:text-[#e8e0d0] hover:bg-[rgba(201,168,76,0.07)]",
+                                : "text-white hover:text-[#e8e0d0] hover:bg-[rgba(201,168,76,0.07)]",
                             ].join(" ")}
                             style={{ fontFamily: "'Jost', sans-serif" }}
                           >
@@ -517,7 +518,7 @@ export default function HomeHeader() {
 
                         <button
                           className="flex items-center gap-[10px] w-full px-4 py-[10px] text-[12px] tracking-[1px] bg-transparent border-none cursor-pointer text-left whitespace-nowrap
-                            text-[#6b6b70] hover:text-[#e07070] hover:bg-[rgba(139,58,58,0.1)] transition-[color,background] duration-200"
+                            text-white hover:text-[#e07070] hover:bg-[rgba(139,58,58,0.1)] transition-[color,background] duration-200"
                           style={{ fontFamily: "'Jost', sans-serif" }}
                           onClick={handleLogout}
                         >
@@ -597,7 +598,7 @@ export default function HomeHeader() {
                 value={query}
                 onChange={e => { setQuery(e.target.value); setSearchOpen(true); }}
                 placeholder="Search books, authors…"
-                className="flex-1 bg-transparent border-none outline-none text-[12px] text-[#e8e0d0] tracking-[.5px] placeholder:text-[#6b6b70]"
+                className="flex-1 bg-transparent border-none outline-none text-[12px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
                 style={{ fontFamily: "'Jost', sans-serif" }}
               />
               {searchLoading && (
@@ -608,7 +609,7 @@ export default function HomeHeader() {
             {searchOpen && query.trim().length >= 2 && (
               <div className="bg-[rgba(201,168,76,0.03)] border border-[rgba(201,168,76,0.1)] border-t-0 max-h-[240px] overflow-y-auto">
                 {!hasResults && !searchLoading && (
-                  <p className="px-4 py-[14px] text-[11px] text-[#6b6b70] m-0"
+                  <p className="px-4 py-[14px] text-[11px] text-white m-0"
                     style={{ fontFamily: "'Jost', sans-serif" }}>No results found</p>
                 )}
                 {searchResults.authors.map(author => (
@@ -643,7 +644,7 @@ export default function HomeHeader() {
                   <div>
                     <p className="text-[15px] italic text-[#f5f0e8] m-0"
                       style={{ fontFamily: "'Cormorant Garamond', serif" }}>{user.name}</p>
-                    <p className="text-[10px] text-[#6b6b70] mt-0.5 mb-0"
+                    <p className="text-[10px] text-white mt-0.5 mb-0"
                       style={{ fontFamily: "'Jost', sans-serif" }}>{user.email}</p>
                   </div>
                 </div>
@@ -651,7 +652,7 @@ export default function HomeHeader() {
                 {[
                   { href: "/account",        label: "My Account" },
                   { href: "/orders",         label: "My Orders" },
-                  { href: "/ebooks/library", label: "My Library" },
+                  { href: "/library/MyLibrary", label: "My Library" },
                 ].map(({ href, label }) => (
                   <a key={href} href={href}
                     className="text-[12px] tracking-[1px] uppercase no-underline transition-colors duration-200"
