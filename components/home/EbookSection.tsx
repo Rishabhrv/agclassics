@@ -355,7 +355,7 @@ export default function EbookSection() {
             </h2>
 
             <p
-              className={`mt-3 max-w-[460px] text-sm leading-[1.8] text-[#6b6b70] ${visible ? "ebook-reveal-2" : "opacity-0"}`}
+              className={`mt-3 max-w-[460px] text-sm leading-[1.8] text-white ${visible ? "ebook-reveal-2" : "opacity-0"}`}
               style={{ fontFamily: "'Jost', sans-serif" }}
             >
               Timeless literature delivered to your screen the moment you purchase.
@@ -395,7 +395,7 @@ export default function EbookSection() {
                   >
                     {s.num}
                   </div>
-                  <div className="text-[9px] tracking-[2px] uppercase text-[#6b6b70] mt-1"
+                  <div className="text-[9px] tracking-[2px] uppercase text-white mt-1"
                     style={{ fontFamily: "'Jost', sans-serif" }}>
                     {s.label}
                   </div>
@@ -495,7 +495,7 @@ export default function EbookSection() {
                         </h3>
 
                         {book.authors && book.authors.length > 0 && (
-                          <p className="text-[10px] text-[#6b6b70] mb-[8px] truncate"
+                          <p className="text-[10px] text-white mb-[8px] truncate"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             {book.authors.map((a) => a.name).join(", ")}
                           </p>
@@ -504,7 +504,7 @@ export default function EbookSection() {
                         {book.avg_rating && (
                           <div className="flex items-center gap-[6px] mb-[8px]">
                             <StarRating rating={book.avg_rating} />
-                            <span className="text-[9px] text-[#6b6b70]" style={{ fontFamily: "'Jost', sans-serif" }}>
+                            <span className="text-[9px] text-white" style={{ fontFamily: "'Jost', sans-serif" }}>
                               ({book.review_count})
                             </span>
                           </div>
@@ -523,7 +523,7 @@ export default function EbookSection() {
                             </span>
                           )}
                           {/* Label so users know this is the ebook price */}
-                          <span className="text-[8px] tracking-[1px] uppercase text-[#6b6b70]"
+                          <span className="text-[8px] tracking-[1px] uppercase text-white"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             e-book
                           </span>
@@ -538,7 +538,7 @@ export default function EbookSection() {
                             "text-[9px] tracking-[2px] uppercase border-none bg-[rgba(201,168,76,0.06)] cursor-pointer",
                             " duration-200",
                             cartLoading[book.id]
-                              ? "text-[#6b6b70] bg-white"
+                              ? "text-white bg-white"
                               : "text-[#8a6f2e] hover:text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]",
                           ].join(" ")}
                           style={{ fontFamily: "'Jost', sans-serif" }}
@@ -565,7 +565,7 @@ export default function EbookSection() {
                             "flex items-center justify-center px-4 py-[10px]",
                             "border-none bg-transparent cursor-pointer transition-colors duration-200",
                             wishLoading[book.id]
-                              ? "text-[#6b6b70]"
+                              ? "text-white"
                               : inWish
                               ? "text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]"
                               : "text-[#8a6f2e] hover:text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]",
@@ -612,7 +612,7 @@ export default function EbookSection() {
                     style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                     Discover our complete digital library
                   </p>
-                  <p className="text-[11px] text-[#6b6b70] mt-[3px]" style={{ fontFamily: "'Jost', sans-serif" }}>
+                  <p className="text-[11px] text-white mt-[3px]" style={{ fontFamily: "'Jost', sans-serif" }}>
                     {total}+ titles · Instant download · All formats included
                   </p>
                 </div>

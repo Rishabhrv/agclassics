@@ -219,7 +219,7 @@ function ProductCard({
           {/* Badges */}
           <div className="absolute top-2.5 left-2.5 z-[2] flex flex-col gap-[5px]">
             {isOos ? (
-              <span className="text-[8px] tracking-[1.5px] uppercase px-2 py-0.5 bg-[rgba(60,60,60,0.85)] text-[#6b6b70]"
+              <span className="text-[8px] tracking-[1.5px] uppercase px-2 py-0.5 bg-[rgba(60,60,60,0.85)] text-white"
                 style={{ fontFamily: "'Jost', sans-serif" }}>Out of Stock</span>
             ) : disc > 5 ? (
               <span className="text-[8px] tracking-[1.5px] uppercase px-2 py-0.5 bg-[#8b3a3a] text-[#f5f0e8]"
@@ -327,7 +327,7 @@ function ProductCard({
                   "transition-all duration-[250ms]",
                   wishlisted
                     ? "text-[#c9a84c] bg-[rgba(201,168,76,.12)] border-[rgba(201,168,76,.4)]"
-                    : "text-[#6b6b70] bg-[rgba(255,255,255,.07)] border-[rgba(255,255,255,.1)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,.4)]",
+                    : "text-white bg-[rgba(255,255,255,.07)] border-[rgba(255,255,255,.1)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,.4)]",
                   loadingWishlist ? "opacity-60 cursor-wait" : "cursor-pointer",
                 ].join(" ")}
               >
@@ -362,7 +362,7 @@ function ProductCard({
               ₹{parseFloat(String(product.sell_price)).toFixed(0)}
             </span>
             {disc > 0 && (
-              <span className="text-[11px] text-[#6b6b70] line-through"
+              <span className="text-[11px] text-white line-through"
                 style={{ fontFamily: "'Jost', sans-serif" }}>
                 ₹{parseFloat(String(product.price)).toFixed(0)}
               </span>
@@ -520,7 +520,7 @@ useEffect(() => {
           <div className="max-w-[1400px] mx-auto">
             <div className="flex items-center gap-2 mb-4">
               <a href="/ag-classics"
-                className="text-[10px] tracking-[2px] uppercase text-[#6b6b70] no-underline transition-colors duration-200 hover:text-[#c9a84c]"
+                className="text-[10px] tracking-[2px] uppercase text-white no-underline transition-colors duration-200 hover:text-[#c9a84c]"
                 style={{ fontFamily: "'Jost', sans-serif" }}>
                 AG Classics
               </a>
@@ -534,7 +534,7 @@ useEffect(() => {
               style={{ fontFamily: "'Cormorant Garamond', serif" }}>{categoryName}</h1>
             <div className="flex items-center gap-3">
               <div className="w-10 h-px bg-[rgba(201,168,76,.4)]" />
-              <span className="text-[11px] text-[#6b6b70] tracking-wide"
+              <span className="text-[11px] text-white tracking-wide"
                 style={{ fontFamily: "'Jost', sans-serif" }}>
                 {total} {total === 1 ? "volume" : "volumes"}
               </span>
@@ -581,12 +581,12 @@ useEffect(() => {
                   type="text" value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search in collection…"
-                  className="bg-transparent border-none outline-none text-[12px] text-[#e8e0d0] w-full tracking-[.5px] placeholder:text-[#6b6b70]"
+                  className="bg-transparent border-none outline-none text-[12px] text-[#e8e0d0] w-full tracking-[.5px] placeholder:text-white"
                   style={{ fontFamily: "'Jost', sans-serif" }}
                 />
                 {search && (
                   <button onClick={() => setSearch("")}
-                    className="bg-transparent border-none cursor-pointer text-[#6b6b70] p-0 leading-none flex">
+                    className="bg-transparent border-none cursor-pointer text-white p-0 leading-none flex">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
@@ -606,7 +606,7 @@ useEffect(() => {
                       "text-[10px] tracking-[1.5px] uppercase px-4 py-[7px] cursor-pointer border whitespace-nowrap transition-all duration-200",
                       sort === s.key
                         ? "bg-[#c9a84c] text-[#0a0a0b] border-[#c9a84c]"
-                        : "bg-transparent text-[#6b6b70] border-[rgba(255,255,255,.07)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,.25)]",
+                        : "bg-transparent text-white border-[rgba(255,255,255,.07)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,.25)]",
                     ].join(" ")}
                     style={{ fontFamily: "'Jost', sans-serif" }}>
                     {s.label}
@@ -659,7 +659,7 @@ useEffect(() => {
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                   </svg>
                 </div>
-                <p className="text-[20px] italic text-[#6b6b70] mb-2"
+                <p className="text-[20px] italic text-white mb-2"
                   style={{ fontFamily: "'Cormorant Garamond', serif" }}>No volumes found</p>
                 <p className="text-[11px] text-[#3a3a3d] tracking-wide"
                   style={{ fontFamily: "'Jost', sans-serif" }}>Try adjusting your filters</p>
@@ -695,7 +695,7 @@ useEffect(() => {
                     );
                   }
                   if (Math.abs(p - page) === 2) {
-                    return <span key={p} className="text-[#6b6b70] text-[11px]"
+                    return <span key={p} className="text-white text-[11px]"
                       style={{ fontFamily: "'Jost', sans-serif" }}>…</span>;
                   }
                   return null;
@@ -721,7 +721,7 @@ useEffect(() => {
                 <span className="text-[13px] text-[#f5f0e8] tracking-[2px]"
                   style={{ fontFamily: "'Cinzel', serif" }}>FILTERS</span>
                 <button onClick={() => setSidebarOpen(false)}
-                  className="bg-transparent border-none cursor-pointer text-[#6b6b70]">
+                  className="bg-transparent border-none cursor-pointer text-white">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
@@ -750,7 +750,7 @@ function PaginationBtn({
         "w-[34px] h-[34px] flex items-center justify-center border text-[11px] bg-transparent transition-all duration-200",
         active
           ? "bg-[#c9a84c] text-[#0a0a0b] border-[#c9a84c]"
-          : "text-[#6b6b70] border-[rgba(255,255,255,.07)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,.25)]",
+          : "text-white border-[rgba(255,255,255,.07)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,.25)]",
         disabled ? "opacity-25 cursor-not-allowed" : "cursor-pointer",
       ].join(" ")}
       style={{ fontFamily: "'Jost', sans-serif" }}
@@ -816,7 +816,7 @@ function SidebarContent({
                           isChildActive ? "bg-[rgba(201,168,76,.08)] border-[#c9a84c]" : "border-transparent hover:bg-[rgba(201,168,76,.04)]",
                         ].join(" ")}>
                         <span className={["text-[11px] tracking-[.3px]",
-                          isChildActive ? "font-medium text-[#c9a84c]" : "font-light text-[#6b6b70]"].join(" ")}
+                          isChildActive ? "font-medium text-[#c9a84c]" : "font-light text-white"].join(" ")}
                           style={{ fontFamily: "'Jost', sans-serif" }}>{child.name}</span>
                         <span className={["text-[10px] shrink-0 ml-2", isChildActive ? "text-[#c9a84c]" : "text-[#4a4a4d]"].join(" ")}
                           style={{ fontFamily: "'Jost', sans-serif" }}>({child.product_count})</span>
@@ -884,7 +884,7 @@ function SidebarContent({
                 </svg>
               ))}
             </div>
-            <span className="text-[10px] text-[#6b6b70] tracking-wide" style={{ fontFamily: "'Jost', sans-serif" }}>
+            <span className="text-[10px] text-white tracking-wide" style={{ fontFamily: "'Jost', sans-serif" }}>
               & above {ratingCounts[r] ? `(${ratingCounts[r]})` : ""}
             </span>
           </button>
@@ -917,7 +917,7 @@ function SidebarContent({
                 <div className="flex-1 min-w-0">
                   <p className={["text-[11px] tracking-[.5px] truncate m-0", isActive ? "text-[#c9a84c]" : "text-[#e8e0d0]"].join(" ")}
                     style={{ fontFamily: "'Jost', sans-serif" }}>{author.name}</p>
-                  <p className="text-[9px] text-[#6b6b70] mt-0.5 mb-0" style={{ fontFamily: "'Jost', sans-serif" }}>
+                  <p className="text-[9px] text-white mt-0.5 mb-0" style={{ fontFamily: "'Jost', sans-serif" }}>
                     {author.product_count} {author.product_count === 1 ? "book" : "books"}
                   </p>
                 </div>

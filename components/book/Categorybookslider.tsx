@@ -569,7 +569,7 @@ export default function CategoryBookSlider({
                 onClick={() => handleCardClick(book.slug)}
               >
                 {/* Image area */}
-                <div style={{ position: "relative", aspectRatio: "3/4", overflow: "hidden" }}>
+                <div style={{ position: "relative", overflow: "hidden" }}>
 
                   {/* Badge */}
                   <div style={{ position: "absolute", top: 10, left: 10, zIndex: 2, display: "flex", flexDirection: "column", gap: 5 }}>

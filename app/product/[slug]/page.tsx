@@ -436,7 +436,7 @@ export default function ProductPage() {
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                   <line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" />
                 </svg>
-                <span className="text-[7px] tracking-[2px] text-[#6b6b70]" style={{ fontFamily: "'Cinzel', serif" }}>ZOOM</span>
+                <span className="text-[7px] tracking-[2px] text-white" style={{ fontFamily: "'Cinzel', serif" }}>ZOOM</span>
               </div>
             </div>
 
@@ -506,7 +506,7 @@ export default function ProductPage() {
                   {product.avg_rating.toFixed(1)}
                 </span>
                 <span className="text-[#252528]">·</span>
-                <span className="text-[11px] text-[#6b6b70] underline decoration-[rgba(107,107,112,0.35)]" style={{ fontFamily: "'Jost', sans-serif" }}>
+                <span className="text-[11px] text-white underline decoration-[rgba(107,107,112,0.35)]" style={{ fontFamily: "'Jost', sans-serif" }}>
                   {product.review_count} review{product.review_count !== 1 ? "s" : ""}
                 </span>
               </div>
@@ -539,7 +539,7 @@ export default function ProductPage() {
             {/* Format selector */}
             {product.product_type === "both" && (
               <div className="fu3 mb-6">
-                <span className="block text-[8px] tracking-[3px] uppercase text-[#6b6b70] mb-[10px]" style={{ fontFamily: "'Cinzel', serif" }}>Format</span>
+                <span className="block text-[8px] tracking-[3px] uppercase text-white mb-[10px]" style={{ fontFamily: "'Cinzel', serif" }}>Format</span>
                 <div className="flex gap-2">
                   {([{ k: "physical", l: "Paperback" }, { k: "ebook", l: "E-Book" }] as const).map(({ k, l }) => (
                     <button
@@ -548,7 +548,7 @@ export default function ProductPage() {
                       className={`text-[10px] tracking-[2px] uppercase px-[22px] py-[10px] border transition-all duration-300 cursor-pointer ${
                         selectedFmt === k
                           ? "border-[#c9a84c] bg-[rgba(201,168,76,0.08)] text-[#c9a84c]"
-                          : "border-[rgba(255,255,255,0.08)] bg-transparent text-[#6b6b70] hover:border-[rgba(201,168,76,0.35)] hover:text-[#8a6f2e]"
+                          : "border-[rgba(255,255,255,0.08)] bg-transparent text-white hover:border-[rgba(201,168,76,0.35)] hover:text-[#8a6f2e]"
                       }`}
                       style={{ fontFamily: "'Jost', sans-serif" }}
                     >
@@ -562,7 +562,7 @@ export default function ProductPage() {
             {/* Qty */}
             {selectedFmt === "physical" && product.product_type !== "ebook" && (
               <div className="fu3 flex items-center gap-[14px] mb-[26px]">
-                <span className="text-[8px] tracking-[3px] uppercase text-[#6b6b70]" style={{ fontFamily: "'Cinzel', serif" }}>Qty</span>
+                <span className="text-[8px] tracking-[3px] uppercase text-white" style={{ fontFamily: "'Cinzel', serif" }}>Qty</span>
                 <div className="flex items-center border border-[rgba(201,168,76,0.2)]">
                   <button
                     className="w-[38px] h-[38px] flex items-center justify-center bg-transparent border-none text-[#c9a84c] text-[22px] cursor-pointer leading-none transition-colors duration-200 hover:bg-[rgba(201,168,76,0.08)]"
@@ -598,7 +598,7 @@ export default function ProductPage() {
                 className={`w-[52px] h-[52px] p-0 flex items-center justify-center border transition-all duration-300 cursor-pointer ${
                   wishlisted
                     ? "bg-[rgba(201,168,76,0.1)] border-[rgba(201,168,76,0.5)] text-[#c9a84c]"
-                    : "bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.1)] text-[#6b6b70] hover:border-[rgba(201,168,76,0.45)] hover:text-[#c9a84c]"
+                    : "bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.1)] text-white hover:border-[rgba(201,168,76,0.45)] hover:text-[#c9a84c]"
                 }`}
                 onClick={() => setWishlisted(!wishlisted)}
                 aria-label="Wishlist"
@@ -632,7 +632,7 @@ export default function ProductPage() {
               ].map(({ ico, t }) => (
                 <div key={t} className="flex items-center gap-[9px] py-[9px]">
                   <span className="text-[13px]">{ico}</span>
-                  <span className="text-[11px] text-[#6b6b70]" style={{ fontFamily: "'Jost', sans-serif" }}>{t}</span>
+                  <span className="text-[11px] text-white" style={{ fontFamily: "'Jost', sans-serif" }}>{t}</span>
                 </div>
               ))}
             </div>
@@ -712,7 +712,7 @@ export default function ProductPage() {
                         <div className="w-7 h-px bg-[rgba(201,168,76,0.3)]" />
                         <span className="text-[7px] tracking-[3px] uppercase text-[#8a6f2e]" style={{ fontFamily: "'Cinzel', serif" }}>Author</span>
                       </div>
-                      <p className="text-[17px] italic text-[#6b6b70] leading-[1.85]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{author.bio}</p>
+                      <p className="text-[17px] italic text-white leading-[1.85]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{author.bio}</p>
                     </div>
                   </div>
                 ))}
@@ -736,7 +736,7 @@ export default function ProductPage() {
                 <div className="flex justify-center my-[14px]">
                   <Stars rating={product.avg_rating} size={15} />
                 </div>
-                <div className="text-[7px] tracking-[3px] uppercase text-[#6b6b70]" style={{ fontFamily: "'Cinzel', serif" }}>
+                <div className="text-[7px] tracking-[3px] uppercase text-white" style={{ fontFamily: "'Cinzel', serif" }}>
                   {product.review_count} Reviews
                 </div>
               </div>
@@ -745,7 +745,7 @@ export default function ProductPage() {
                 <div className="text-[8px] tracking-[3px] uppercase text-[#8a6f2e] mb-[18px]" style={{ fontFamily: "'Cinzel', serif" }}>Rating Breakdown</div>
                 {ratingDist.map(({ star, pct }) => (
                   <div key={star} className="flex items-center gap-[10px] mb-2">
-                    <span className="w-[10px] text-[11px] text-[#6b6b70] shrink-0" style={{ fontFamily: "'Jost', sans-serif" }}>{star}</span>
+                    <span className="w-[10px] text-[11px] text-white shrink-0" style={{ fontFamily: "'Jost', sans-serif" }}>{star}</span>
                     <div className="flex-1 h-1 bg-[rgba(255,255,255,0.06)] relative overflow-hidden">
                       <div
                         className="absolute left-0 top-0 h-full transition-[width] duration-[1200ms] ease-in-out"
@@ -813,7 +813,7 @@ export default function ProductPage() {
                   <button
                     disabled={rvPage === 0}
                     onClick={() => setRvPage(Math.max(0, rvPage - 1))}
-                    className="w-10 h-10 flex items-center justify-center bg-transparent border border-[rgba(255,255,255,0.08)] text-[#6b6b70] cursor-pointer transition-all duration-300 disabled:opacity-30"
+                    className="w-10 h-10 flex items-center justify-center bg-transparent border border-[rgba(255,255,255,0.08)] text-white cursor-pointer transition-all duration-300 disabled:opacity-30"
                   >‹</button>
                   {Array.from({ length: totalRvPages }).map((_, i) => (
                     <button
@@ -822,7 +822,7 @@ export default function ProductPage() {
                       className={`w-10 h-10 text-[12px] cursor-pointer transition-all duration-300 border ${
                         i === rvPage
                           ? "bg-[rgba(201,168,76,0.1)] border-[#c9a84c] text-[#c9a84c]"
-                          : "bg-transparent border-[rgba(255,255,255,0.08)] text-[#6b6b70] hover:border-[rgba(201,168,76,0.3)] hover:text-[#c9a84c]"
+                          : "bg-transparent border-[rgba(255,255,255,0.08)] text-white hover:border-[rgba(201,168,76,0.3)] hover:text-[#c9a84c]"
                       }`}
                       style={{ fontFamily: "'Jost', sans-serif" }}
                     >
@@ -832,7 +832,7 @@ export default function ProductPage() {
                   <button
                     disabled={rvPage >= totalRvPages - 1}
                     onClick={() => setRvPage(Math.min(totalRvPages - 1, rvPage + 1))}
-                    className="w-10 h-10 flex items-center justify-center bg-transparent border border-[rgba(255,255,255,0.08)] text-[#6b6b70] cursor-pointer transition-all duration-300 disabled:opacity-30"
+                    className="w-10 h-10 flex items-center justify-center bg-transparent border border-[rgba(255,255,255,0.08)] text-white cursor-pointer transition-all duration-300 disabled:opacity-30"
                   >›</button>
                 </div>
               )}
@@ -860,7 +860,7 @@ export default function ProductPage() {
                 <p className="text-2xl italic text-[#f5f0e8] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                   Thank you for your review
                 </p>
-                <p className="text-[11px] text-[#6b6b70]" style={{ fontFamily: "'Jost', sans-serif" }}>
+                <p className="text-[11px] text-white" style={{ fontFamily: "'Jost', sans-serif" }}>
                   Your review will appear after moderation.
                 </p>
               </div>
@@ -869,7 +869,7 @@ export default function ProductPage() {
                 {/* Left */}
                 <div className="flex flex-col gap-[22px]">
                   <div>
-                    <label className="block text-[8px] tracking-[3px] uppercase text-[#6b6b70] mb-3" style={{ fontFamily: "'Cinzel', serif" }}>Your Rating *</label>
+                    <label className="block text-[8px] tracking-[3px] uppercase text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>Your Rating *</label>
                     <div className="flex items-center gap-[14px]">
                       <Stars rating={rvRating} size={28} interactive onRate={setRvRating} />
                       {rvRating > 0 && (
@@ -880,7 +880,7 @@ export default function ProductPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[8px] tracking-[3px] uppercase text-[#6b6b70] mb-[10px]" style={{ fontFamily: "'Cinzel', serif" }}>Your Name *</label>
+                    <label className="block text-[8px] tracking-[3px] uppercase text-white mb-[10px]" style={{ fontFamily: "'Cinzel', serif" }}>Your Name *</label>
                     <input
                       type="text"
                       className="agc-rv-input w-full px-4 py-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.09)] text-[#e8e0d0] text-[13px] outline-none transition-colors duration-300 rounded-none"
@@ -895,7 +895,7 @@ export default function ProductPage() {
                 {/* Right */}
                 <div className="flex flex-col gap-[22px]">
                   <div className="flex-1">
-                    <label className="block text-[8px] tracking-[3px] uppercase text-[#6b6b70] mb-[10px]" style={{ fontFamily: "'Cinzel', serif" }}>Your Review *</label>
+                    <label className="block text-[8px] tracking-[3px] uppercase text-white mb-[10px]" style={{ fontFamily: "'Cinzel', serif" }}>Your Review *</label>
                     <textarea
                       className="agc-rv-input w-full px-4 py-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.09)] text-[#e8e0d0] text-[13px] outline-none transition-colors duration-300 rounded-none resize-y"
                       style={{ fontFamily: "'Jost', sans-serif" }}
@@ -965,7 +965,7 @@ export default function ProductPage() {
                           {rec.avg_rating && (
                             <div className="flex items-center gap-[7px] mb-3">
                               <Stars rating={rec.avg_rating} size={10} />
-                              <span className="text-[10px] text-[#6b6b70]" style={{ fontFamily: "'Jost', sans-serif" }}>{rec.avg_rating.toFixed(1)}</span>
+                              <span className="text-[10px] text-white" style={{ fontFamily: "'Jost', sans-serif" }}>{rec.avg_rating.toFixed(1)}</span>
                             </div>
                           )}
                           <div className="flex items-baseline gap-[10px]">

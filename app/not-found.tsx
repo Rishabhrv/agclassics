@@ -32,7 +32,7 @@ export default function NotFound() {
           </h1>
           
           <p 
-            className="text-[14px] leading-[1.7] text-[#6b6b70] max-w-[420px] mb-10"
+            className="text-[14px] leading-[1.7] text-white max-w-[420px] mb-10"
             style={{ fontFamily: "'Jost', sans-serif" }}
           >
             The page or collection you are looking for has been misplaced in the archives, or perhaps it never existed at all.

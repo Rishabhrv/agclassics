@@ -19,7 +19,7 @@ export default function HomeFooter() {
           font-size: 10px;
         }
 
-        .nl-input::placeholder { color: #6b6b70; }
+        .nl-input::placeholder { color: white; }
         .nl-input:focus {
           outline: none;
           border-color: rgba(201,168,76,0.5);
@@ -53,8 +53,8 @@ export default function HomeFooter() {
               Est. MMXXIV · Curated Books
             </span>
             <p
-              className="italic leading-[1.8] max-w-[300px] mb-7 text-[16px]"
-              style={{ fontFamily: "'Cormorant Garamond', serif", color: "#6b6b70" }}
+              className="italic leading-[1.8] max-w-[300px] mb-7 text-lg"
+              style={{ fontFamily: "'Cormorant Garamond', serif", color: "white" }}
             >
               Every book is a doorway. We curate the finest literary works — from timeless classics to contemporary masterpieces.
             </p>
@@ -102,7 +102,7 @@ export default function HomeFooter() {
                   href="#"
                   aria-label={label}
                   className="w-9 h-9 flex items-center justify-center transition-all duration-300 no-underline"
-                  style={{ border: "1px solid rgba(201,168,76,0.2)", color: "#6b6b70" }}
+                  style={{ border: "1px solid rgba(201,168,76,0.2)", color: "white" }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "#c9a84c";
                     e.currentTarget.style.color = "#c9a84c";
@@ -110,7 +110,7 @@ export default function HomeFooter() {
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "rgba(201,168,76,0.2)";
-                    e.currentTarget.style.color = "#6b6b70";
+                    e.currentTarget.style.color = "white";
                     e.currentTarget.style.background = "transparent";
                   }}
                 >
@@ -171,7 +171,7 @@ export default function HomeFooter() {
             </h3>
             <p
               className="text-[12px] tracking-[1px]"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}
+              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
             >
               New titles, rare finds &amp; reading notes. No spam — only stories.
             </p>
@@ -211,7 +211,7 @@ export default function HomeFooter() {
         <div className="flex items-center justify-between gap-5 py-7 pb-9 flex-wrap max-sm:flex-col max-sm:items-start">
           <p
             className="text-[11px] tracking-[1px]"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}
+            style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
           >
             © 2024 AG Classics. All rights reserved.{" "}
             <span style={{ color: "#8a6f2e" }}>·</span>{" "}
@@ -228,7 +228,7 @@ export default function HomeFooter() {
                 key={href}
                 href={href}
                 className="text-[11px] tracking-[1px] no-underline transition-colors duration-300 hover:text-[#c9a84c]"
-                style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}
+                style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
               >
                 {label}
               </a>
@@ -262,7 +262,7 @@ function FooterCol({
   return (
     <div>
       <h4
-        className="text-[11px] tracking-[3px] uppercase font-normal mb-6"
+        className="text-lg tracking-[3px] uppercase font-normal mb-6"
         style={{ fontFamily: "'Cinzel', serif", color: "#c9a84c" }}
       >
         {title}
@@ -272,8 +272,8 @@ function FooterCol({
           <li key={href}>
             <a
               href={href}
-              className="footer-link flex items-center gap-2 text-[13px] tracking-[0.5px] no-underline transition-colors duration-300 hover:text-[#e8e0d0]"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}
+              className="footer-link flex items-center gap-2 text-sm tracking-[0.5px] no-underline transition-colors duration-300 hover:text-[#e8e0d0]"
+              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
             >
               {label}
             </a>
