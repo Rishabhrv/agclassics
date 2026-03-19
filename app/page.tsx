@@ -209,10 +209,6 @@ export default function MainBody() {
           <span style={{ position: "absolute", top: 10, left: 10, zIndex: 10, fontFamily: "'Jost', sans-serif", fontSize: 8, letterSpacing: "2px", textTransform: "uppercase", fontWeight: 500, padding: "4px 8px", background: "#8b3a3a", color: "#f5f0e8" }}>
             {disc}% Off
           </span>
-        ) : isNew ? (
-          <span style={{ position: "absolute", top: 10, left: 10, zIndex: 10, fontFamily: "'Jost', sans-serif", fontSize: 8, letterSpacing: "2px", textTransform: "uppercase", fontWeight: 500, padding: "4px 8px", background: "#c9a84c", color: "#0a0a0b" }}>
-            New
-          </span>
         ) : null}
 
         {/* Cover */}
@@ -329,8 +325,8 @@ export default function MainBody() {
           </h1>
 
           <p
-            className="anim-fade-2 italic mt-[18px] mb-11 max-w-[540px] leading-relaxed"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(16px, 2.5vw, 22px)", color: "#9a9aa8" }}
+            className="anim-fade-2 italic mt-[18px] mb-11 max-w-[540px] leading-relaxed text-2xl"
+            style={{ fontFamily: "'Cormorant Garamond', serif", color: "#ffffff" }}
           >
             Literature that endures. Stories that shaped worlds.
             <br />Collected for those who read with intention.
@@ -345,7 +341,7 @@ export default function MainBody() {
               Explore Collection
             </button>
             <button
-              className="mag-cta text-[11px] tracking-[3px] uppercase font-[300] px-9 py-[14px] bg-transparent border border-[rgba(201,168,76,0.25)] text-[#9a9aa8] cursor-pointer transition-[border-color,color] duration-300 hover:border-[#c9a84c] hover:text-[#c9a84c]"
+              className="mag-cta text-[11px] tracking-[3px] uppercase font-[300] px-9 py-[14px] bg-transparent border border-[rgba(201,168,76,0.25)] text-white cursor-pointer transition-[border-color,color] duration-300 hover:border-[#c9a84c] hover:text-[#c9a84c]"
               style={{ fontFamily: "'Jost', sans-serif" }}
               onClick={() => { window.location.href = "/ebooks"; }}
             >
@@ -354,7 +350,7 @@ export default function MainBody() {
           </div>
 
           <div className="anim-fade-5 absolute bottom-0.5 z-10 flex flex-col items-center gap-2">
-            <span className="text-[9px] tracking-[3px] uppercase text-[#6b6b70]" style={{ fontFamily: "'Jost', sans-serif" }}>Scroll</span>
+            <span className="text-[9px] tracking-[3px] uppercase text-white" style={{ fontFamily: "'Jost', sans-serif" }}>Scroll</span>
             <div className="anim-scroll w-px h-10" style={{ background: "linear-gradient(to bottom, #8a6f2e, transparent)" }} />
           </div>
         </section>
@@ -366,10 +362,10 @@ export default function MainBody() {
           <div className="anim-marquee flex gap-12 w-max">
             {[...Array(2)].map((_, i) =>
               ["AG Classics", "Curated Literature", "Timeless Works", "First Editions",
-                "Rare Finds", "Signed Copies", "Gift Ready", "Free Shipping"].map((text, j) => (
+                "Rare Finds", "Signed Copies", "Gift Ready"].map((text, j) => (
                 <div
                   key={`${i}-${j}`}
-                  className="flex items-center gap-12 whitespace-nowrap text-[10px] tracking-[4px] uppercase text-[#8a8790]"
+                  className="flex items-center gap-12 whitespace-nowrap text-xs tracking-[4px] uppercase text-white"
                   style={{ fontFamily: "'Cinzel', serif" }}
                 >
                   <span>{text}</span>
@@ -398,7 +394,7 @@ export default function MainBody() {
             >
               AG Classics
             </h2>
-            <p className="text-sm max-w-[480px] mx-auto leading-[1.8] tracking-[0.3px] text-[#8a8790]"
+            <p className="text-ms max-w-[480px] mx-auto leading-[1.8] tracking-[0.3px] text-white"
               style={{ fontFamily: "'Jost', sans-serif" }}>
               Every volume in our AG Classics line is chosen for its enduring significance and the worlds it opens.
             </p>
@@ -518,11 +514,11 @@ export default function MainBody() {
         {/* ════════════════════════════
             PRODUCT SLIDERS
         ════════════════════════════ */}
-        <ProductSlider categorySlug="business-professional-skills" eyebrow="Genre" title="Business & Professional Skills" description="Master communication, leadership, and professional etiquette with timeless business classics." visibleCount={5} />
-        <ProductSlider categorySlug="finance-wealth" eyebrow="Genre" title="Finance & Wealth" description="Discover proven principles of money, investing, and financial success from legendary authors." visibleCount={5} />
-        <ProductSlider categorySlug="self-development" eyebrow="Genre" title="Self Development" description="Build powerful habits, improve mindset, and unlock your full potential with inspiring books." visibleCount={5} />
-        <ProductSlider categorySlug="strategy-philosophy" eyebrow="Genre" title="Strategy & Philosophy" description="Explore timeless wisdom on strategy, leadership, and philosophical thinking." visibleCount={5} />
-        <ProductSlider categorySlug="classic-literature" eyebrow="Genre" title="Classic Literature" description="Enjoy timeless stories and literary masterpieces that have shaped generations." visibleCount={5} />
+        <ProductSlider categorySlug="business-professional-skills" eyebrow="Genre" title="Business & Professional Skills"  visibleCount={5} />
+        <ProductSlider categorySlug="finance-wealth" eyebrow="Genre" title="Finance & Wealth"  visibleCount={5} />
+        <ProductSlider categorySlug="self-development" eyebrow="Genre" title="Self Development"  visibleCount={5} />
+        <ProductSlider categorySlug="strategy-philosophy" eyebrow="Genre" title="Strategy & Philosophy" visibleCount={5} />
+        <ProductSlider categorySlug="classic-literature" eyebrow="Genre" title="Classic Literature"  visibleCount={5} />
 
         <EbookSection />
 

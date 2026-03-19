@@ -492,10 +492,15 @@ export default function HomeHeader() {
                       <div className="py-[6px]">
                         {[
                           { href: "/account",        label: "My Account", icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
-                          { href: "/orders",         label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
+                          { href: "/account/orders",         label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
                           { href: "/wishlist",       label: "Wishlist",   icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/> },
                           { href: "/library/MyLibrary", label: "My Library", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
-                          { href: "/my-books", label: "My Books", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
+                          { href: "/my-books", label: "My Books", icon: (
+                            <>
+                              <path d="M2 6v14a2 2 0 0 1 2-2h6V4H4a2 2 0 0 0-2 2z"/>
+                              <path d="M22 6v14a2 2 0 0 0-2-2h-6V4h6a2 2 0 0 1 2 2z"/>
+                            </>
+                          )},
                         ].map(({ href, label, icon }) => (
                           <a key={href} href={href}
                             className={[
@@ -651,7 +656,7 @@ export default function HomeHeader() {
 
                 {[
                   { href: "/account",        label: "My Account" },
-                  { href: "/orders",         label: "My Orders" },
+                  { href: "/account/orders",         label: "My Orders" },
                   { href: "/library/MyLibrary", label: "My Library" },
                 ].map(({ href, label }) => (
                   <a key={href} href={href}
