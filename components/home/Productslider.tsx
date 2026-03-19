@@ -136,7 +136,6 @@ export default function ProductSlider({
   categorySlug,
   title        = "Collection",
   eyebrow      = "Featured",
-  description  = "Hand-picked titles from this collection.",
   visibleCount = 5,
   onAddToCart,
   onWishlist,
@@ -398,7 +397,6 @@ export default function ProductSlider({
               style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(30px,4vw,50px)" }}>
               {title}
             </h2>
-            <p className="text-[13px] leading-[1.7] text-white">{description}</p>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -473,7 +471,7 @@ export default function ProductSlider({
                   {/* ── Left badge: OOS / discount / new ── */}
                   {soldOut ? (
                     <span className="absolute top-3 left-3 z-10 text-[8px] tracking-[2px] uppercase
-                      font-medium px-[9px] py-[4px] bg-gray-300 text-white"
+                      font-medium px-[9px] py-[4px] bg-gray-300 text-gray-700"
                       style={{ fontFamily: "'Jost', sans-serif" }}>
                       Out of Stock
                     </span>
@@ -483,13 +481,7 @@ export default function ProductSlider({
                       style={{ fontFamily: "'Jost', sans-serif" }}>
                       {discount}% Off
                     </span>
-                  ) : isNew ? (
-                    <span className="absolute top-3 left-3 z-10 text-[8px] tracking-[2px] uppercase
-                      font-medium px-[9px] py-[4px] bg-[#c9a84c] text-[#0a0a0b]"
-                      style={{ fontFamily: "'Jost', sans-serif" }}>
-                      New
-                    </span>
-                  ) : null}
+                  ) :  null}
 
                   {/* ── Right badge: type ── */}
                   <TypeBadge book={book} />
