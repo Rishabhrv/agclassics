@@ -42,21 +42,16 @@ export default function HomeFooter() {
           <div>
             <span
               className="block mb-1 text-[26px] font-semibold tracking-[4px]"
-              style={{ fontFamily: "'Cinzel', serif", color: "#f5f0e8" }}
+              style={{ fontFamily: "'Cinzel', serif", color: "#c9a84c" }}
             >
               AG Classics
             </span>
-            <span
-              className="block mb-5 text-[9px] tracking-[4px] uppercase"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}
-            >
-              Est. MMXXIV · Curated Books
-            </span>
+
             <p
               className="italic leading-[1.8] max-w-[300px] mb-7 text-lg"
               style={{ fontFamily: "'Cormorant Garamond', serif", color: "white" }}
             >
-              Every book is a doorway. We curate the finest literary works — from timeless classics to contemporary masterpieces.
+              Every book is a doorway. We curate the finest literary works  from timeless classics to contemporary masterpieces.
             </p>
 
             {/* Social Links */}
@@ -124,11 +119,9 @@ export default function HomeFooter() {
           <FooterCol
             title="Explore"
             links={[
-              { href: "/ag-classics",  label: "AG Classics" },
+              { href: "/",  label: "AG Classics" },
               { href: "/ebooks",       label: "E-Books" },
-              { href: "/new-arrivals", label: "New Arrivals" },
-              { href: "/bestsellers",  label: "Bestsellers" },
-              { href: "/authors",      label: "Authors" },
+              { href: "/bestseller",  label: "Bestsellers" },
             ]}
           />
 
@@ -138,7 +131,7 @@ export default function HomeFooter() {
             links={[
               { href: "/login",         label: "Sign In" },
               { href: "/register",      label: "Create Account" },
-              { href: "/orders",        label: "My Orders" },
+              { href: "/account/orders",        label: "My Orders" },
               { href: "/wishlist",      label: "Wishlist" },
               { href: "/subscriptions", label: "Subscriptions" },
             ]}
@@ -148,81 +141,30 @@ export default function HomeFooter() {
           <FooterCol
             title="Help"
             links={[
-              { href: "/shipping", label: "Shipping Info" },
-              { href: "/returns",  label: "Returns" },
-              { href: "/faq",      label: "FAQ" },
-              { href: "/contact",  label: "Contact Us" },
-              { href: "/track",    label: "Track Order" },
+              { href: "https://agphbooks.com/contact-us/",  label: "Contact Us" },
+              { href: "/account/orders",    label: "Track Order" },
+
             ]}
           />
         </div>
 
-        {/* ─── Newsletter ─── */}
-        <div
-          className="flex items-center justify-between gap-10 py-[50px] flex-wrap max-sm:flex-col max-sm:items-start"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-        >
-          <div>
-            <h3
-              className="font-light italic mb-[6px] text-[28px]"
-              style={{ fontFamily: "'Cormorant Garamond', serif", color: "#f5f0e8" }}
-            >
-              Letters from the Library
-            </h3>
-            <p
-              className="text-[12px] tracking-[1px]"
-              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
-            >
-              New titles, rare finds &amp; reading notes. No spam — only stories.
-            </p>
-          </div>
-
-          <div className="flex flex-1 max-w-[420px] max-sm:max-w-full max-sm:w-full">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="nl-input flex-1 px-[18px] py-[13px] text-[13px] transition-[border-color] duration-300"
-              style={{
-                background: "#2a2a2d",
-                border: "1px solid rgba(201,168,76,0.2)",
-                borderRight: "none",
-                color: "#e8e0d0",
-                fontFamily: "'Jost', sans-serif",
-              }}
-            />
-            <button
-              className="px-6 py-[13px] text-[11px] tracking-[2px] uppercase font-medium whitespace-nowrap transition-[background] duration-300"
-              style={{
-                background: "#c9a84c",
-                color: "#0a0a0b",
-                border: "none",
-                cursor: "pointer",
-                fontFamily: "'Jost', sans-serif",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f0e8")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#c9a84c")}
-            >
-              Subscribe
-            </button>
-          </div>
-        </div>
+        
 
         {/* ─── Bottom Bar ─── */}
-        <div className="flex items-center justify-between gap-5 py-7 pb-9 flex-wrap max-sm:flex-col max-sm:items-start">
+        <div className="flex items-center justify-between gap-5 py-7 pb-4 flex-wrap max-sm:flex-col max-sm:items-start">
           <p
             className="text-[11px] tracking-[1px]"
             style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
           >
-            © 2024 AG Classics. All rights reserved.{" "}
+            © 2026 AG Classics. All rights reserved.{" "}
             <span style={{ color: "#8a6f2e" }}>·</span>{" "}
             Crafted with care in India
           </p>
 
           <div className="flex gap-6">
             {[
-              { href: "/privacy", label: "Privacy Policy" },
-              { href: "/terms",   label: "Terms of Service" },
-              { href: "/cookies", label: "Cookies" },
+              { href: "/privacy-policy", label: "Privacy Policy" },
+              { href: "/terms-and-conditions",   label: "Terms and Conditions" },
             ].map(({ href, label }) => (
               <a
                 key={href}

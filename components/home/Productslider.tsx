@@ -410,7 +410,7 @@ export default function ProductSlider({
                   onClick={() => scrollByCards(dir === "left" ? -CARDS_PER_PAGE : CARDS_PER_PAGE)}
                   disabled={!active} aria-label={dir === "left" ? "Previous" : "Next"}
                   className={`w-10 h-10 flex items-center justify-center transition-all duration-300
-                    disabled:opacity-20 disabled:cursor-not-allowed
+                    disabled:opacity-100 disabled:cursor-not-allowed
                     ${active
                       ? "bg-[rgba(201,168,76,0.08)] border border-[rgba(201,168,76,0.35)] text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0a0a0b]"
                       : "bg-transparent border border-[rgba(255,255,255,0.07)] text-white"}`}>
@@ -613,12 +613,11 @@ export default function ProductSlider({
         )}
 
         {/* ── Ornament ── */}
-        <div className="flex items-center gap-3 px-12 pt-3 pb-2 max-md:px-6">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.12)] to-transparent" />
-          <div className="w-[5px] h-[5px] rotate-45 flex-shrink-0 bg-[rgba(201,168,76,0.25)]" />
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.12)] to-transparent" />
-        </div>
-
+<div className="flex items-center gap-3 px-12 pt-3 pb-2 max-md:px-6">
+  <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.5)] to-transparent" />
+  <div className="w-[6px] h-[6px] rotate-45 flex-shrink-0 bg-[rgba(201,168,76,0.8)]" />
+  <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.5)] to-transparent" />
+</div>
       </section>
     </>
   );

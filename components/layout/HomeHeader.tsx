@@ -294,15 +294,15 @@ export default function HomeHeader() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b70" strokeWidth="1.5" className="shrink-0">
                       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                     </svg>
-                    <input
-                      ref={searchInput}
-                      type="text"
-                      value={query}
-                      onChange={e => setQuery(e.target.value)}
-                      placeholder="Search books, authors…"
-                      className="flex-1 bg-transparent border-none outline-none text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
-                      style={{ fontFamily: "'Jost', sans-serif" }}
-                    />
+   <input
+  ref={searchInput}
+  type="text"
+  value={query}
+  onChange={e => setQuery(e.target.value)}
+  placeholder="Search books, authors…"
+  className="flex-1 bg-transparent !border-none !outline-none focus:!ring-0 text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
+  style={{ fontFamily: "'Jost', sans-serif" }}
+/>
                     {searchLoading && (
                       <span className="shrink-0 w-3 h-3 rounded-full animate-spin border-[1.5px] border-[rgba(201,168,76,0.3)] border-t-[#c9a84c]" />
                     )}
@@ -563,11 +563,11 @@ export default function HomeHeader() {
 
         {/* ── Ornament divider ── */}
         <div className="flex items-center gap-3 px-12 pb-3 max-md:px-6 max-md:pb-[10px]">
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent)" }} />
+          <div className="flex-1 h-[2px]"
+            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6), transparent)" }} />
           <div className="w-[5px] h-[5px] rotate-45 shrink-0 bg-[#8a6f2e]" />
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent)" }} />
+          <div className="flex-1 h-[2px]"
+            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6), transparent)" }} />
         </div>
 
         {/* ── Mobile menu ── */}

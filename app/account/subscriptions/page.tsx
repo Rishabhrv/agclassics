@@ -90,7 +90,7 @@ export default function SubscriptionsPage() {
     const token = localStorage.getItem("token");
     if (!token) return;
     setLoading(true);
-    fetch(`${API_URL}/api/subscriptions/my`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${API_URL}/api/subscriptions/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((data) => setSubs(data.subscriptions ?? data ?? []))
       .catch(() => {})

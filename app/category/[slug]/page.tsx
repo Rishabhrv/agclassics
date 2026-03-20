@@ -195,7 +195,7 @@ function ProductCard({
     : "#c9a84c";
 
   const cartBtnColor = isOos
-    ? "#6b6b70"
+    ? "#ffffff"
     : inCart
     ? "#c9a84c"
     : "#0a0a0b";
@@ -528,22 +528,21 @@ useEffect(() => {
               <span className="text-[10px] tracking-[2px] uppercase text-[#c9a84c]"
                 style={{ fontFamily: "'Jost', sans-serif" }}>{categoryName}</span>
             </div>
-            <span className="block mb-2.5 text-[9px] tracking-[5px] uppercase text-[#8a6f2e]"
-              style={{ fontFamily: "'Jost', sans-serif" }}>The Collection</span>
+
             <h1 className="text-[clamp(28px,4vw,52px)] font-light italic text-[#f5f0e8] leading-[1.1] mb-3"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}>{categoryName}</h1>
             <div className="flex items-center gap-3">
               <div className="w-10 h-px bg-[rgba(201,168,76,.4)]" />
               <span className="text-[11px] text-white tracking-wide"
                 style={{ fontFamily: "'Jost', sans-serif" }}>
-                {total} {total === 1 ? "volume" : "volumes"}
+                {total} {total === 1 ? "Title" : "Titles"}
               </span>
             </div>
           </div>
         </div>
 
         {/* ── Main Layout ── */}
-        <div className="max-w-[1400px] mx-auto px-25 py-8 grid grid-cols-[240px_1fr] gap-10 items-start
+        <div className="max-w-[1500px] mx-auto px-25 py-8 grid grid-cols-[290px_1fr] gap-10 items-start
           max-[900px]:grid-cols-1 max-[600px]:px-5">
 
           {/* Desktop sidebar */}
@@ -577,13 +576,26 @@ useEffect(() => {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b6b70" strokeWidth="1.5">
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                 </svg>
-                <input
-                  type="text" value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search in collection…"
-                  className="bg-transparent border-none outline-none text-[12px] text-[#e8e0d0] w-full tracking-[.5px] placeholder:text-white"
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                />
+                   <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search in collection…"
+                    className="
+                      w-full
+                      bg-transparent
+                      !border-none
+                      !outline-none
+                      focus:!outline-none
+                      focus:!ring-0
+                      focus:border-none
+                      text-[12px]
+                      text-[#e8e0d0]
+                      tracking-[0.5px]
+                      placeholder:text-white/60
+                    "
+                    style={{ fontFamily: "'Jost', sans-serif" }}
+                  />
                 {search && (
                   <button onClick={() => setSearch("")}
                     className="bg-transparent border-none cursor-pointer text-white p-0 leading-none flex">
@@ -800,12 +812,12 @@ function SidebarContent({
                     className={["flex items-center justify-between py-[7px] px-2 no-underline border-l-2 transition-all duration-200",
                       isParentActive ? "bg-[rgba(201,168,76,.08)] border-[#c9a84c]" : "border-transparent hover:bg-[rgba(201,168,76,.04)]",
                     ].join(" ")}>
-                    <span className={["text-[12px] tracking-[.5px]",
+                    <span className={["text-sm tracking-[.5px]",
                         isParentActive ? "font-medium text-[#c9a84c]" : isParentAncestor ? "font-medium text-[#e8e0d0]" : "font-normal text-[#b0a898]",
                       ].join(" ")} style={{ fontFamily: "'Jost', sans-serif" }}>
                       {parent.name}
                     </span>
-                    <span className={["text-[10px] shrink-0 ml-2", isParentActive ? "text-[#c9a84c]" : "text-[#4a4a4d]"].join(" ")}
+                    <span className={["text-sm shrink-0 ml-2", isParentActive ? "text-[#c9a84c]" : "text-[#4a4a4d]"].join(" ")}
                       style={{ fontFamily: "'Jost', sans-serif" }}>({parent.product_count})</span>
                   </a>
                   {children.map((child) => {
@@ -815,10 +827,10 @@ function SidebarContent({
                         className={["flex items-center justify-between py-[5px] pl-[22px] pr-2 no-underline border-l-2 transition-all duration-200",
                           isChildActive ? "bg-[rgba(201,168,76,.08)] border-[#c9a84c]" : "border-transparent hover:bg-[rgba(201,168,76,.04)]",
                         ].join(" ")}>
-                        <span className={["text-[11px] tracking-[.3px]",
+                        <span className={["text-sm tracking-[.3px]",
                           isChildActive ? "font-medium text-[#c9a84c]" : "font-light text-white"].join(" ")}
                           style={{ fontFamily: "'Jost', sans-serif" }}>{child.name}</span>
-                        <span className={["text-[10px] shrink-0 ml-2", isChildActive ? "text-[#c9a84c]" : "text-[#4a4a4d]"].join(" ")}
+                        <span className={["text-sm shrink-0 ml-2", isChildActive ? "text-[#c9a84c]" : "text-[#4a4a4d]"].join(" ")}
                           style={{ fontFamily: "'Jost', sans-serif" }}>({child.product_count})</span>
                       </a>
                     );
@@ -878,13 +890,13 @@ function SidebarContent({
           >
             <div className="flex gap-0.5">
               {[1, 2, 3, 4, 5].map((i) => (
-                <svg key={i} width="9" height="9" viewBox="0 0 24 24"
+                <svg key={i} width="12" height="12" viewBox="0 0 24 24"
                   fill={i <= r ? "#c9a84c" : "none"} stroke={i <= r ? "#c9a84c" : "#3a3a3d"} strokeWidth="1.5">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
               ))}
             </div>
-            <span className="text-[10px] text-white tracking-wide" style={{ fontFamily: "'Jost', sans-serif" }}>
+            <span className="text-sm text-white tracking-wide" style={{ fontFamily: "'Jost', sans-serif" }}>
               & above {ratingCounts[r] ? `(${ratingCounts[r]})` : ""}
             </span>
           </button>
@@ -906,18 +918,18 @@ function SidebarContent({
               >
                 {author.profile_image ? (
                   <img src={`${process.env.NEXT_PUBLIC_API_URL}${author.profile_image}`} alt={author.name}
-                    className="w-[26px] h-[26px] rounded-full object-cover shrink-0 border border-[rgba(201,168,76,.15)]" />
+                    className="w-[36px] h-[36px] rounded-full object-cover shrink-0 border border-[rgba(201,168,76,.15)]" />
                 ) : (
-                  <div className="w-[26px] h-[26px] rounded-full bg-[rgba(201,168,76,.08)] border border-[rgba(201,168,76,.15)] flex items-center justify-center shrink-0">
+                  <div className="w-[36px] h-[36px] rounded-full bg-[rgba(201,168,76,.08)] border border-[rgba(201,168,76,.15)] flex items-center justify-center shrink-0">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1.5">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
                     </svg>
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className={["text-[11px] tracking-[.5px] truncate m-0", isActive ? "text-[#c9a84c]" : "text-[#e8e0d0]"].join(" ")}
+                  <p className={["text-sm tracking-[.5px] truncate m-0", isActive ? "text-[#c9a84c]" : "text-[#e8e0d0]"].join(" ")}
                     style={{ fontFamily: "'Jost', sans-serif" }}>{author.name}</p>
-                  <p className="text-[9px] text-white mt-0.5 mb-0" style={{ fontFamily: "'Jost', sans-serif" }}>
+                  <p className="text-xs text-white mt-0.5 mb-0" style={{ fontFamily: "'Jost', sans-serif" }}>
                     {author.product_count} {author.product_count === 1 ? "book" : "books"}
                   </p>
                 </div>

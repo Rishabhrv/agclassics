@@ -177,7 +177,7 @@ export default function AuthorPage({ params }: Props) {
         <p className="text-[11px] uppercase tracking-[0.25em] text-[#c9a84c]" style={{ fontFamily:"'Cinzel',serif" }}>
           Author Not Found
         </p>
-        <p className="text-[#4a4a4d] text-sm max-w-xs italic" style={{ fontFamily:"'Cormorant Garamond',serif" }}>
+        <p className="text-white text-sm max-w-xs italic" style={{ fontFamily:"'Cormorant Garamond',serif" }}>
           We couldn't locate this author. The link may be incorrect or the author may have been removed.
         </p>
         <Link
@@ -204,10 +204,10 @@ export default function AuthorPage({ params }: Props) {
        * mirrors: border-b-2 border-gray-800 masthead
        * ─────────────────────────────────────────
        */}
-      <div className="border-b-2 border-[rgba(201,168,76,0.2)]">
+      <div className="border-b-2 border-[rgba(201,168,76,0.6)]">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <span
-            className="text-[10px] uppercase tracking-[0.35em] text-[#4a4a4d]"
+            className="text-[10px] uppercase tracking-[0.35em] text-white"
             style={{ fontFamily:"'Cinzel',serif" }}
           >
             Author Profile
@@ -215,10 +215,10 @@ export default function AuthorPage({ params }: Props) {
           <div className="flex items-center gap-2">
             <div className="h-px w-8 bg-[rgba(201,168,76,0.25)]" />
             <span
-              className="text-[10px] uppercase tracking-[0.3em] text-[#8a6f2e]"
+              className="text-[10px] uppercase tracking-[0.3em] text-[#f0af16]"
               style={{ fontFamily:"'Cinzel',serif" }}
             >
-              {books.length} {books.length === 1 ? "Work" : "Works"} · Est. {joinYear}
+              {books.length} {books.length === 1 ? "Work" : "Works"} 
             </span>
           </div>
         </div>
@@ -277,7 +277,7 @@ export default function AuthorPage({ params }: Props) {
               {/* Vertical meta — mirrors "Since / year" */}
               <div className="mt-7 space-y-1">
                 <p
-                  className="text-[10px] uppercase tracking-[0.3em] text-[#4a4a4d]"
+                  className="text-[10px] uppercase tracking-[0.3em] text-white"
                   style={{ fontFamily:"'Cinzel',serif" }}
                 >
                   Since
@@ -324,7 +324,7 @@ export default function AuthorPage({ params }: Props) {
                 <div>
                   <p
                     ref={bioRef}
-                    className={`text-[#8a8a8e] text-[15px] leading-[1.85] transition-all ${bioExpanded ? "" : "line-clamp-5"}`}
+                    className={`text-[#ffffff] text-[15px] leading-[1.85] transition-all ${bioExpanded ? "" : "line-clamp-5"}`}
                     style={{ fontFamily:"'Cormorant Garamond',serif" }}
                   >
                     {author.bio}
@@ -341,7 +341,7 @@ export default function AuthorPage({ params }: Props) {
                   )}
                 </div>
               ) : (
-                <p className="text-[#3a3a3d] italic text-[15px]" style={{ fontFamily:"'Cormorant Garamond',serif" }}>
+                <p className="text-white italic text-lg" style={{ fontFamily:"'Cormorant Garamond',serif" }}>
                   No biography available.
                 </p>
               )}
@@ -378,10 +378,10 @@ export default function AuthorPage({ params }: Props) {
             </div>
 
             {/* Dashed divider — mirrors border-dashed border-gray-200 */}
-            <div className="flex-1 border-b border-dashed border-[rgba(201,168,76,0.15)]" />
+            <div className="flex-1 border-b border-dashed border-[rgba(201,168,76,0.6)]" />
 
             <span
-              className="shrink-0 text-xs uppercase tracking-[0.2em] text-[#8a6f2e] border border-[rgba(201,168,76,0.2)] px-3 py-1"
+              className="shrink-0 text-xs uppercase tracking-[0.2em] text-[#cc9c2b] border border-[rgba(201,168,76,0.6)] px-3 py-1"
               style={{ fontFamily:"'Cinzel',serif" }}
             >
               {books.length} {books.length === 1 ? "Title" : "Titles"}
@@ -396,7 +396,7 @@ export default function AuthorPage({ params }: Props) {
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
               </svg>
               <p
-                className="text-[#3a3a3d] italic text-sm"
+                className="text-white italic text-sm"
                 style={{ fontFamily:"'Cormorant Garamond',serif" }}
               >
                 No published works yet.
@@ -435,9 +435,9 @@ export default function AuthorPage({ params }: Props) {
         {/*
          * Bottom rule — mirrors border-t-2 border-gray-800
          */}
-        <div className="border-t-2 border-[rgba(201,168,76,0.2)] py-6 flex items-center justify-between">
+        <div className="border-t-2 border-[rgba(201,168,76,0.6)] py-6 flex items-center justify-between">
           <span
-            className="text-[10px] uppercase tracking-[0.3em] text-[#4a4a4d]"
+            className="text-[10px] uppercase tracking-[0.3em] text-white"
             style={{ fontFamily:"'Cinzel',serif" }}
           >
             {author.name}

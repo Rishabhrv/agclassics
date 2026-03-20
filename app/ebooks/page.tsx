@@ -303,7 +303,7 @@ export default function EbooksPage() {
             <p className="anim-fadeUp-2 text-white leading-[1.6] max-w-[700px] mt-3"
                style={{ ...F_JOST, fontSize: "clamp(12px,1.5vw,17px)" }}>
               Experience the world's greatest literature, flawlessly formatted for your favorite device. 
-              Download our premium eBooks instantly and carry a masterfully curated library wherever you go.
+              Access our premium eBooks instantly and carry a masterfully curated library wherever you go.
             </p>
 
 
@@ -327,22 +327,6 @@ export default function EbooksPage() {
           </div>
         </section>
 
-        {/* ════════ MARQUEE ════════ */}
-        <div className="overflow-hidden py-4 border-y border-[rgba(201,168,76,0.10)] bg-[#131316]">
-          <div className="anim-marquee flex w-max">
-            {[...Array(2)].map((_, ri) =>
-              ["Classic Fiction","Philosophy","Poetry","History","Drama","Science",
-               "Adventure","Mythology","Essays","Biography","Romance","Tragedy"].map((t, j) => (
-                <div key={`${ri}-${j}`}
-                     className="flex items-center gap-10 px-5 text-[9px] tracking-[4px] uppercase text-white whitespace-nowrap"
-                     style={F_CINZEL}>
-                  <span>{t}</span>
-                  <div className="w-1 h-1 rotate-45 bg-[#8a6f2e] flex-shrink-0" />
-                </div>
-              ))
-            )}
-          </div>
-        </div>
 
         <FeaturedEbookSpotlight book={featuredBook} loading={loading} />
 
@@ -351,9 +335,6 @@ export default function EbooksPage() {
           <section className="pt-20">
             <div className="flex items-end justify-between mb-9 px-[clamp(20px,5vw,80px)]">
               <div>
-                <span className="block mb-2.5 text-[8px] tracking-[5px] uppercase text-[#8a6f2e]" style={F_CINZEL}>
-                  New Arrivals
-                </span>
                 <h2 className="font-light leading-[1.05] text-[#f5f0e8]"
                     style={{ ...F_CORMORANT, fontSize: "clamp(26px,3.5vw,40px)" }}>
                   Fresh to the <em className="italic text-[#c9a84c]">Collection</em>
@@ -432,9 +413,6 @@ export default function EbooksPage() {
         {/* ════════ GENRE TABS + GRID ════════ */}
         <section id="ep-genres" className="pt-20">
           <div className="px-[clamp(20px,5vw,80px)]">
-            <span className="block mb-2.5 text-[8px] tracking-[5px] uppercase text-[#8a6f2e]" style={F_CINZEL}>
-              Browse by Genre
-            </span>
             <h2 className="font-light leading-[1.05] text-[#f5f0e8]"
                 style={{ ...F_CORMORANT, fontSize: "clamp(30px,4.5vw,52px)" }}>
               The <em className="italic text-[#c9a84c]">Complete</em> Collection
@@ -477,13 +455,13 @@ export default function EbooksPage() {
                 {categories.map(cat => (
                   <button key={cat.category_id}
                     style={{ ...F_CINZEL, marginBottom: -1 }}
-                    className={`text-[9px] tracking-[3px] uppercase px-[26px] py-[15px] border-none bg-transparent cursor-pointer whitespace-nowrap transition-colors duration-200 border-b-2
+                    className={`text-xs tracking-[3px] uppercase px-[26px] py-[15px] border-none bg-transparent cursor-pointer whitespace-nowrap transition-colors duration-200 border-b-2
                       ${activeCategory === cat.category_id
                         ? "text-[#c9a84c] border-[#c9a84c]"
                         : "text-white border-transparent hover:text-[#e8dfd0]"}`}
                     onClick={() => setActiveCategory(cat.category_id)}>
                     {cat.category_name}
-                    <span className="ml-1.5 text-[7px]" style={F_JOST}>({cat.books.length})</span>
+                    <span className="ml-1.5 text-xs" style={F_JOST}>({cat.books.length})</span>
                   </button>
                 ))}
               </div>
@@ -559,15 +537,15 @@ export default function EbooksPage() {
 
                   {/* View all row */}
                   <div className="flex items-center gap-4 pt-10">
-                    <div className="flex-1 h-px bg-[rgba(201,168,76,0.10)]" />
+                    <div className="flex-1 h-[2px] bg-[rgba(201,168,76,0.6)]" />
                     <button
-                      className="group flex items-center gap-2.5 text-[8px] tracking-[3px] uppercase text-white bg-transparent border border-[rgba(201,168,76,.20)] px-6 py-3 cursor-pointer whitespace-nowrap transition-colors duration-200 hover:text-[#c9a84c] hover:border-[#c9a84c]"
+                      className="group flex items-center gap-2.5 text-[8px] tracking-[3px] uppercase text-white bg-transparent border-2 border-[rgba(201,168,76,0.6)] px-6 py-3 cursor-pointer whitespace-nowrap transition-colors duration-200 hover:text-[#c9a84c] hover:border-[#c9a84c]"
                       style={F_CINZEL}
                       onClick={() => window.location.href = `/ebooks?category=${activeCat.category_slug}`}>
                       All {activeCat.category_name} eBooks
                       <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
                     </button>
-                    <div className="flex-1 h-px bg-[rgba(201,168,76,0.10)]" />
+                    <div className="flex-1 h-[2px] bg-[rgba(201,168,76,0.6)]" />
                   </div>
                 </div>
               )}
@@ -577,9 +555,7 @@ export default function EbooksPage() {
 
         {/* ════════ HOW IT WORKS ════════ */}
         <section className="pt-20 px-[clamp(20px,5vw,80px)]">
-          <span className="block mb-2.5 text-[8px] tracking-[5px] uppercase text-[#8a6f2e]" style={F_CINZEL}>
-            The Process
-          </span>
+
           <h2 className="font-light leading-[1.05] text-[#f5f0e8]"
               style={{ ...F_CORMORANT, fontSize: "clamp(30px,4.5vw,52px)" }}>
             Start Reading in <em className="italic text-[#c9a84c]">Seconds</em>
@@ -624,16 +600,14 @@ export default function EbooksPage() {
           {/* Left — gold bg */}
           <div className="bg-[#c9a84c] flex flex-col justify-center gap-4"
                style={{ padding: "clamp(40px,6vw,72px) clamp(28px,4vw,56px)" }}>
-            <span className="text-[8px] tracking-[4px] uppercase text-[rgba(10,10,11,0.5)]" style={F_CINZEL}>
-              Why eBooks?
-            </span>
+
             <h3 className="font-light italic leading-[1.1] text-[#080809]"
                 style={{ ...F_CORMORANT, fontSize: "clamp(32px,4vw,52px)" }}>
               A Library in Your Pocket
             </h3>
             <p className="text-[13px] text-[rgba(10,10,11,0.65)] leading-[1.8] max-w-[340px]" style={F_JOST}>
               No waiting for delivery. No shelf space needed. No damaged pages.
-              Just pure, immersive reading — anywhere, any time, on any screen.
+              Just pure, immersive reading anywhere, any time, on any screen.
             </p>
           </div>
 
@@ -642,7 +616,7 @@ export default function EbooksPage() {
                style={{ padding: "clamp(32px,5vw,64px) clamp(24px,4vw,52px)" }}>
             {[
               { icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>,
-                title:"Any Device", desc:"Kindle, phone, tablet, laptop — your library syncs everywhere." },
+                title:"Any Device", desc:"Phone, tablet, laptop your library syncs everywhere." },
               { icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
                 title:"Instant Access", desc:"Delivered the moment payment clears. No delays, no waiting." },
               { icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>,
@@ -674,7 +648,7 @@ export default function EbooksPage() {
           </span>
           <p className="font-light italic leading-[1.45] text-[#f5f0e8] max-w-[720px] mx-auto mb-7"
              style={{ ...F_CORMORANT, fontSize: "clamp(22px,3.5vw,38px)" }}>
-            Reading is to the mind what exercise is to the body — and a library
+            Reading is to the mind what exercise is to the body and a library
             that fits in your pocket removes every excuse not to begin.
           </p>
           <span className="test-source flex items-center justify-center gap-3 text-[8px] tracking-[4px] uppercase text-[#c9a84c]"
@@ -687,7 +661,7 @@ export default function EbooksPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0.5 mx-[clamp(20px,5vw,80px)] mt-20">
           {[
             { icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>,
-              title:"Instant Download", desc:"Available the second payment clears. Start reading immediately." },
+              title:"Instant Access", desc:"Available the second payment clears. Start reading immediately." },
             { icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>,
               title:"All Devices", desc:"Phone, tablet, Kindle, or laptop. Your books follow you." },
             { icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
@@ -698,21 +672,21 @@ export default function EbooksPage() {
             <div key={i}
                  className="bg-[#131316] p-[32px_28px] border border-[rgba(201,168,76,0.10)] transition-colors duration-200 hover:bg-[#1a1a1d]">
               <div className="text-[#c9a84c] mb-4">{f.icon}</div>
-              <h4 className="text-[10px] tracking-[2px] uppercase text-[#f5f0e8] mb-2" style={F_CINZEL}>
+              <h4 className="text-lg tracking-[2px] uppercase text-[#f5f0e8] mb-2" style={F_CINZEL}>
                 {f.title}
               </h4>
-              <p className="text-[12px] text-white leading-[1.75]" style={F_JOST}>{f.desc}</p>
+              <p className="text-sm text-white leading-[1.75]" style={F_JOST}>{f.desc}</p>
             </div>
           ))}
         </div>
 
         {/* ════════ ORNAMENT ════════ */}
         <div className="flex items-center gap-3 px-[clamp(20px,5vw,80px)] py-16">
-          <div className="flex-1 h-px"
-               style={{ background: "linear-gradient(to right,transparent,rgba(201,168,76,.12),transparent)" }} />
-          <div className="w-1.5 h-1.5 rotate-45 bg-[rgba(201,168,76,.22)] flex-shrink-0" />
-          <div className="flex-1 h-px"
-               style={{ background: "linear-gradient(to right,transparent,rgba(201,168,76,.12),transparent)" }} />
+          <div className="flex-1 h-[2px]"
+               style={{ background: "linear-gradient(to right,transparent,rgba(201,168,76,0.6),transparent)" }} />
+          <div className="w-1.5 h-1.5 rotate-45 bg-[rgba(201,168,76,0.6)] flex-shrink-0" />
+          <div className="flex-1 h-[2px]"
+               style={{ background: "linear-gradient(to right,transparent,rgba(201,168,76,0.6),transparent)" }} />
         </div>
 
       </div>

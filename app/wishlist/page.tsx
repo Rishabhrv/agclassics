@@ -189,10 +189,7 @@ export default function WishlistPage() {
           style={{ fontFamily: "'Cormorant Garamond', serif", color: "#f5f0e8" }}>
           Your wishlist is empty
         </h2>
-        <p className="text-[13px] max-w-xs leading-relaxed"
-          style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
-          Save the volumes that speak to you — they'll be waiting right here.
-        </p>
+
         <GoldBtn onClick={() => (window.location.href = "/")}>Explore Collection</GoldBtn>
       </div>
     </PageWrap>

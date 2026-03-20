@@ -85,13 +85,10 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
   const rating = book.avg_rating || 0;
 
   return (
-    <section className="mt-20 px-[clamp(20px,5vw,80px)]">
+    <section className="mt-0 px-[clamp(20px,5vw,80px)]">
       
       {/* ── Section Header ── */}
       <div className="mb-8">
-        <span className="block font-['Cinzel',serif] text-[8px] tracking-[5px] uppercase text-[#8a6f2e] mb-2.5">
-          Editor's Pick
-        </span>
         <h2 className="font-['Cormorant_Garamond',serif] font-light text-[clamp(30px,4.5vw,52px)] text-[#f5f0e8] leading-[1.05]">
           Featured <em className="italic text-[#c9a84c]">eBook</em>
         </h2>
@@ -173,7 +170,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
 
           {/* Description */}
           <p className="font-['Jost',sans-serif] text-[13px] text-white leading-[1.8] max-w-[420px] mb-8 line-clamp-4">
-            {book.description || "Experience this timeless classic in a beautifully formatted digital edition. Download instantly and start reading on any device."}
+            {book.description || "Experience this timeless classic in a beautifully formatted digital edition. Access instantly and start reading on any device."}
           </p>
 
           {/* Price */}
