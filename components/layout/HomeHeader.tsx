@@ -17,7 +17,6 @@ interface SearchResults {
   authors:  { id: number; name: string; slug: string; profile_image: string }[];
 }
 
-/* ── Only keyframes that Tailwind can't express stay here ── */
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
 
@@ -39,7 +38,13 @@ const globalStyles = `
   }
   .search-overlay { animation: searchExpand 0.22s ease both; }
 
-  /* Custom scrollbar — no Tailwind equivalent */
+  /* Mobile menu slide-down */
+  @keyframes menuSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .mobile-menu-anim { animation: menuSlide 0.25s ease both; }
+
   .search-results-scroll {
     scrollbar-width: thin;
     scrollbar-color: rgba(201,168,76,0.35) rgba(201,168,76,0.04);
@@ -56,39 +61,52 @@ const globalStyles = `
   .search-results-scroll::-webkit-scrollbar-thumb:hover {
     background: rgba(201,168,76,0.65);
   }
+
+  /* Prevent body scroll when mobile menu is open */
+  body.menu-open { overflow: hidden; }
 `;
 
 const NAV_LINKS = [
-  { href: "/",                  label: "Home" },
-  { href: "/category/business-professional-skills",  label: "Genre" },
-  { href: "/ebooks",            label: "E-Books" },
-  { href: "/bestseller",        label: "Bestseller" },
-  { href: "/subscriptions",      label: "Subscription" },
+  { href: "/",                                      label: "Home" },
+  { href: "/category/business-professional-skills", label: "Genre" },
+  { href: "/ebooks",                                label: "E-Books" },
+  { href: "/bestseller",                            label: "Bestseller" },
+  { href: "/subscriptions",                         label: "Subscription" },
 ];
 
 export default function HomeHeader() {
   const pathname = usePathname() || "";
 
-  const [scrolled,       setScrolled]       = useState(false);
-  const [menuOpen,       setMenuOpen]        = useState(false);
-  const [user,           setUser]            = useState<User | null>(null);
-  const [authLoading,    setAuthLoading]     = useState(true);
-  const [dropOpen,       setDropOpen]        = useState(false);
-  const [cartCount,      setCartCount]       = useState(0);
-  const [searchOpen,     setSearchOpen]      = useState(false);
-  const [query,          setQuery]           = useState("");
-  const [searchResults,  setSearchResults]   = useState<SearchResults>({ products: [], authors: [] });
-  const [searchLoading,  setSearchLoading]   = useState(false);
+  const [scrolled,      setScrolled]      = useState(false);
+  const [menuOpen,      setMenuOpen]      = useState(false);
+  const [user,          setUser]          = useState<User | null>(null);
+  const [authLoading,   setAuthLoading]   = useState(true);
+  const [dropOpen,      setDropOpen]      = useState(false);
+  const [cartCount,     setCartCount]     = useState(0);
+  const [searchOpen,    setSearchOpen]    = useState(false);
+  const [mobileSearch,  setMobileSearch]  = useState(false);
+  const [query,         setQuery]         = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResults>({ products: [], authors: [] });
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  const dropRef    = useRef<HTMLDivElement>(null);
-  const searchRef  = useRef<HTMLDivElement>(null);
-  const searchInput = useRef<HTMLInputElement>(null);
+  const dropRef         = useRef<HTMLDivElement>(null);
+  const searchRef       = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
+  const searchInput     = useRef<HTMLInputElement>(null);
+  const mobileSearchInput = useRef<HTMLInputElement>(null);
 
-  /* ── Determine if a nav link is "active" ──
-     Exact match for "/" to avoid marking every page as Home.
-     Prefix match for all other routes.                        */
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  /* ── Lock body scroll when mobile menu open ── */
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.classList.add("menu-open");
+    } else {
+      document.body.classList.remove("menu-open");
+    }
+    return () => document.body.classList.remove("menu-open");
+  }, [menuOpen]);
 
   /* ── Scroll ── */
   useEffect(() => {
@@ -135,7 +153,7 @@ export default function HomeHeader() {
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  /* ── Outside-click: search ── */
+  /* ── Outside-click: desktop search ── */
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -148,10 +166,15 @@ export default function HomeHeader() {
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  /* ── Auto-focus search input ── */
+  /* ── Auto-focus desktop search ── */
   useEffect(() => {
     if (searchOpen) setTimeout(() => searchInput.current?.focus(), 80);
   }, [searchOpen]);
+
+  /* ── Auto-focus mobile search ── */
+  useEffect(() => {
+    if (mobileSearch) setTimeout(() => mobileSearchInput.current?.focus(), 80);
+  }, [mobileSearch]);
 
   /* ── Debounced search fetch ── */
   useEffect(() => {
@@ -174,6 +197,13 @@ export default function HomeHeader() {
     window.location.href = "/";
   };
 
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setMobileSearch(false);
+    setQuery("");
+    setSearchResults({ products: [], authors: [] });
+  };
+
   const highlightMatch = (text: string) => {
     if (!query) return <>{text}</>;
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
@@ -193,17 +223,127 @@ export default function HomeHeader() {
     ? user.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()
     : "?";
 
+  /* ── Shared search results panel (used in both desktop & mobile) ── */
+  const SearchResultsPanel = () => (
+    <div className="search-results-scroll overflow-y-auto relative" style={{ maxHeight: "min(380px, 55vh)" }}>
+      {query.trim().length < 2 && (
+        <p className="px-4 py-4 text-[11px] text-white tracking-[1px] m-0"
+          style={{ fontFamily: "'Jost', sans-serif" }}>
+          Type at least 2 characters…
+        </p>
+      )}
+      {query.trim().length >= 2 && !hasResults && !searchLoading && (
+        <p className="px-4 py-5 text-[12px] text-white text-center tracking-[1px] m-0"
+          style={{ fontFamily: "'Jost', sans-serif" }}>
+          No results found
+        </p>
+      )}
+
+      {searchResults.authors.length > 0 && (
+        <div>
+          <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
+            style={{ fontFamily: "'Jost', sans-serif" }}>Authors</p>
+          {searchResults.authors.map(author => (
+            <a key={author.id} href={`/author/${author.slug}`}
+              className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
+              onClick={closeSearch}>
+              {author.profile_image ? (
+                <img src={`${API_URL}${author.profile_image}`} alt={author.name}
+                  className="w-8 h-8 rounded-full object-cover shrink-0 border border-[rgba(201,168,76,0.2)]" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.2)] flex items-center justify-center shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+              )}
+              <span className="text-[12px] text-[#e8e0d0] tracking-[.5px]"
+                style={{ fontFamily: "'Jost', sans-serif" }}>
+                {highlightMatch(author.name)}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {searchResults.authors.length > 0 && searchResults.products.length > 0 && (
+        <div className="mx-4 my-1 h-px bg-[rgba(201,168,76,0.08)]" />
+      )}
+
+      {searchResults.products.length > 0 && (
+        <div>
+          <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
+            style={{ fontFamily: "'Jost', sans-serif" }}>Books</p>
+          {searchResults.products.map(product => (
+            <a key={product.id} href={`/product/${product.slug}`}
+              className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
+              onClick={closeSearch}>
+              {product.main_image ? (
+                <img src={`${API_URL}${product.main_image}`} alt={product.title}
+                  className="w-[48px] h-[64px] object-cover shrink-0 border border-[rgba(201,168,76,0.15)]" />
+              ) : (
+                <div className="w-8 h-11 bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.15)] flex items-center justify-center shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                </div>
+              )}
+              <span className="text-[13px] text-[#e8e0d0] leading-[1.3] line-clamp-2"
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                {highlightMatch(product.title)}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#8a6f2e]" />
+    </div>
+  );
+
+  /* ── Shared search input row ── */
+    const SearchInputRow = ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null> }) => (
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[rgba(201,168,76,0.1)]">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b70" strokeWidth="1.5" className="shrink-0">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="Search books, authors…"
+        className="flex-1 bg-transparent !border-none !outline-none focus:!ring-0 text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
+        style={{ fontFamily: "'Jost', sans-serif" }}
+      />
+      {searchLoading && (
+        <span className="shrink-0 w-3 h-3 rounded-full animate-spin border-[1.5px] border-[rgba(201,168,76,0.3)] border-t-[#c9a84c]" />
+      )}
+      {query && !searchLoading && (
+        <button
+          onClick={() => { setQuery(""); setSearchResults({ products: [], authors: [] }); }}
+          className="bg-transparent border-none cursor-pointer text-white p-0 leading-none"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <>
       <style>{globalStyles}</style>
 
       <header className={[
         "fixed top-0 left-0 right-0 z-[100] transition-all duration-500",
-        scrolled ? "bg-[rgba(10,10,11,0.92)] backdrop-blur-[16px] border-b border-[rgba(201,168,76,0.15)]" : "",
+        scrolled ? "bg-[rgba(10,10,11,0.95)] backdrop-blur-[16px] border-b border-[rgba(201,168,76,0.15)]" : "bg-[rgba(10,10,11,0.6)] backdrop-blur-[8px]",
       ].join(" ")}>
 
         {/* ── Ticker ── */}
-        <div className="overflow-hidden text-center px-4 py-2 text-[11px] font-medium tracking-[2px] uppercase bg-[#c9a84c] text-[#0a0a0b]"
+        <div className="overflow-hidden text-center px-4 py-[7px] sm:py-2 text-[10px] sm:text-[11px] font-medium tracking-[2px] uppercase bg-[#c9a84c] text-[#0a0a0b]"
           style={{ fontFamily: "'Jost', sans-serif" }}>
           <span className="ticker-track inline-block whitespace-nowrap">
             ✦ Instant Ebook Access &nbsp;&nbsp;&nbsp; ✦ Read Immediately After Purchase &nbsp;&nbsp;&nbsp; ✦ Read on Mobile, Tablet &amp; Desktop &nbsp;&nbsp;&nbsp; ✦ New Titles Added Every Month &nbsp;&nbsp;&nbsp; ✦ Read Anywhere, Anytime &nbsp;&nbsp;&nbsp; ✦ Exclusive AG Digital Collection &nbsp;&nbsp;&nbsp;
@@ -212,49 +352,46 @@ export default function HomeHeader() {
 
         {/* ── Main bar ── */}
         <div className={[
-          "flex items-center justify-between px-12 max-md:px-6 transition-[padding] duration-[400ms]",
-          scrolled ? "py-[14px]" : "py-5",
+          "flex items-center justify-between px-4 sm:px-6 md:px-12 transition-[padding] duration-[400ms]",
+          scrolled ? "py-[10px] sm:py-[14px]" : "py-[14px] sm:py-5",
         ].join(" ")}>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <Image src="/images/logo/AGClassicLogo.png" alt="AGPH Store Logo" width={140} height={68} priority />
+          <Link href="/" className="flex items-center shrink-0">
+            <Image
+              src="/images/logo/AGClassicLogo.png"
+              alt="AGPH Store Logo"
+              width={110}
+              height={54}
+              priority
+              className="sm:w-[140px] sm:h-[68px]"
+            />
           </Link>
 
           {/* ── Desktop Nav ── */}
-          <nav className="hidden md:flex items-center gap-14 ml-10">
+          <nav className="hidden md:flex items-center gap-8 lg:gap-14 ml-6 lg:ml-10">
             {NAV_LINKS.map(({ href, label }) => {
               const active = isActive(href);
               return (
                 <a
                   key={href}
                   href={href}
-                  className="relative group text-[12px] tracking-[2px] uppercase font-normal no-underline transition-colors duration-300"
+                  className="relative group text-[11px] lg:text-[12px] tracking-[2px] uppercase font-normal no-underline transition-colors duration-300"
                   style={{
                     fontFamily: "'Jost', sans-serif",
                     color: active ? "#c9a84c" : "#ffffff",
                   }}
                 >
                   {label}
-
-                  {/* Underline bar:
-                      - active page  → always visible, gold
-                      - inactive     → hidden, slides in on hover  */}
                   <span
                     className={[
                       "absolute -bottom-[4px] left-0 right-0 h-px bg-[#c9a84c]",
                       "transition-transform duration-300 origin-left",
-                      active
-                        ? "scale-x-100"                          // always shown
-                        : "scale-x-0 group-hover:scale-x-100",  // only on hover
+                      active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
                     ].join(" ")}
                   />
-
-                  {/* Text colour on hover for inactive links */}
                   {!active && (
-                    <style>{`
-                      a[href="${href}"]:hover { color: #e8e0d0 !important; }
-                    `}</style>
+                    <style>{`a[href="${href}"]:hover { color: #e8e0d0 !important; }`}</style>
                   )}
                 </a>
               );
@@ -262,7 +399,7 @@ export default function HomeHeader() {
           </nav>
 
           {/* ── Actions ── */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
 
             {/* Search — desktop */}
             <div ref={searchRef} className="hidden md:block relative">
@@ -283,125 +420,39 @@ export default function HomeHeader() {
                 )}
               </button>
 
-              {/* Search dropdown */}
               {searchOpen && (
                 <div
-                  className="search-overlay fixed top-[20%] z-[300] overflow-hidden bg-[#1c1c1e] border border-[rgba(201,168,76,0.15)]"
-                  style={{ left: "28%", transform: "translateX(-50%)", width: 650 }}
+                  className="search-overlay fixed z-[300] overflow-hidden bg-[#1c1c1e] border border-[rgba(201,168,76,0.15)]"
+                  style={{
+                    top: "20%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "min(650px, 90vw)",
+                  }}
                 >
-                  {/* Input row */}
-                  <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[rgba(201,168,76,0.1)]">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b70" strokeWidth="1.5" className="shrink-0">
-                      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    <input
-                      ref={searchInput}
-                      type="text"
-                      value={query}
-                      onChange={e => setQuery(e.target.value)}
-                      placeholder="Search books, authors…"
-                      className="flex-1 bg-transparent border-none outline-none text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
-                      style={{ fontFamily: "'Jost', sans-serif" }}
-                    />
-                    {searchLoading && (
-                      <span className="shrink-0 w-3 h-3 rounded-full animate-spin border-[1.5px] border-[rgba(201,168,76,0.3)] border-t-[#c9a84c]" />
-                    )}
-                    {query && !searchLoading && (
-                      <button
-                        onClick={() => { setQuery(""); setSearchResults({ products: [], authors: [] }); }}
-                        className="bg-transparent border-none cursor-pointer text-white p-0 leading-none"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Results */}
-                  <div className="search-results-scroll max-h-[380px] overflow-y-auto relative">
-                    {query.trim().length < 2 && (
-                      <p className="px-4 py-4 text-[11px] text-white tracking-[1px] m-0"
-                        style={{ fontFamily: "'Jost', sans-serif" }}>
-                        Type at least 2 characters…
-                      </p>
-                    )}
-                    {query.trim().length >= 2 && !hasResults && !searchLoading && (
-                      <p className="px-4 py-5 text-[12px] text-white text-center tracking-[1px] m-0"
-                        style={{ fontFamily: "'Jost', sans-serif" }}>
-                        No results found
-                      </p>
-                    )}
-
-                    {/* Authors section */}
-                    {searchResults.authors.length > 0 && (
-                      <div>
-                        <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
-                          style={{ fontFamily: "'Jost', sans-serif" }}>Authors</p>
-                        {searchResults.authors.map(author => (
-                          <a key={author.id} href={`/author/${author.slug}`}
-                            className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
-                            onClick={() => { setSearchOpen(false); setQuery(""); }}>
-                            {author.profile_image ? (
-                              <img src={`${API_URL}${author.profile_image}`} alt={author.name}
-                                className="w-8 h-8 rounded-full object-cover shrink-0 border border-[rgba(201,168,76,0.2)]" />
-                            ) : (
-                              <div className="w-8 h-8 rounded-full bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.2)] flex items-center justify-center shrink-0">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1.5">
-                                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                                </svg>
-                              </div>
-                            )}
-                            <span className="text-[12px] text-[#e8e0d0] tracking-[.5px]"
-                              style={{ fontFamily: "'Jost', sans-serif" }}>
-                              {highlightMatch(author.name)}
-                            </span>
-                          </a>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Divider between authors and products */}
-                    {searchResults.authors.length > 0 && searchResults.products.length > 0 && (
-                      <div className="mx-4 my-1 h-px bg-[rgba(201,168,76,0.08)]" />
-                    )}
-
-                    {/* Products section */}
-                    {searchResults.products.length > 0 && (
-                      <div>
-                        <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
-                          style={{ fontFamily: "'Jost', sans-serif" }}>Books</p>
-                        {searchResults.products.map(product => (
-                          <a key={product.id} href={`/product/${product.slug}`}
-                            className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
-                            onClick={() => { setSearchOpen(false); setQuery(""); }}>
-                            {product.main_image ? (
-                              <img src={`${API_URL}${product.main_image}`} alt={product.title}
-                                className="w-[62px] h-20 object-cover shrink-0 border border-[rgba(201,168,76,0.15)]" />
-                            ) : (
-                              <div className="w-8 h-11 bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.15)] flex items-center justify-center shrink-0">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1">
-                                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                                </svg>
-                              </div>
-                            )}
-                            <span
-                              className="text-[13px] text-[#e8e0d0] leading-[1.3] line-clamp-2"
-                              style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                              {highlightMatch(product.title)}
-                            </span>
-                          </a>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Corner accent */}
-                    <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#8a6f2e]" />
-                  </div>
+                  <SearchInputRow inputRef={searchInput} />
+                  <SearchResultsPanel />
                 </div>
               )}
             </div>
+
+            {/* Search — mobile icon */}
+            <button
+              onClick={() => setMobileSearch(o => !o)}
+              className="flex md:hidden items-center p-1 transition-colors duration-300 border-none bg-transparent cursor-pointer"
+              style={{ color: mobileSearch ? "#c9a84c" : "#6b6b70" }}
+              aria-label="Search"
+            >
+              {mobileSearch ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+              )}
+            </button>
 
             {/* Wishlist */}
             <button
@@ -443,7 +494,7 @@ export default function HomeHeader() {
               )}
             </button>
 
-            {/* ── Auth area — desktop ── */}
+            {/* ── Auth — desktop ── */}
             <div className="hidden md:block relative" ref={dropRef}>
               {authLoading && (
                 <div className="w-8 h-8 rounded-full bg-[rgba(201,168,76,0.15)] border border-[rgba(201,168,76,0.2)]" />
@@ -451,7 +502,7 @@ export default function HomeHeader() {
 
               {!authLoading && !user && (
                 <button
-                  className="text-[11px] tracking-[2px] uppercase font-medium px-[22px] py-[10px] border-none cursor-pointer
+                  className="text-[11px] tracking-[2px] uppercase font-medium px-[18px] lg:px-[22px] py-[9px] lg:py-[10px] border-none cursor-pointer
                     transition-all duration-300 hover:-translate-y-px bg-[#c9a84c] text-[#0a0a0b] hover:bg-[#f5f0e8]"
                   style={{ fontFamily: "'Jost', sans-serif" }}
                   onClick={() => { window.location.href = "/login"; }}
@@ -480,8 +531,6 @@ export default function HomeHeader() {
 
                   {dropOpen && (
                     <div className="user-drop absolute top-[calc(100%+14px)] right-0 min-w-[220px] bg-[#1c1c1e] border border-[rgba(201,168,76,0.15)] z-[200] overflow-hidden">
-
-                      {/* User info */}
                       <div className="px-4 py-[14px] pb-3 border-b border-[rgba(201,168,76,0.1)]">
                         <p className="text-[16px] italic text-[#f5f0e8] m-0"
                           style={{ fontFamily: "'Cormorant Garamond', serif" }}>{user.name}</p>
@@ -491,16 +540,11 @@ export default function HomeHeader() {
 
                       <div className="py-[6px]">
                         {[
-                          { href: "/account",        label: "My Account", icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
-                          { href: "/account/orders",         label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
-                          { href: "/wishlist",       label: "Wishlist",   icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/> },
+                          { href: "/account",           label: "My Account", icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
+                          { href: "/account/orders",    label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
+                          { href: "/wishlist",          label: "Wishlist",   icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/> },
                           { href: "/library/MyLibrary", label: "My Library", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
-                          { href: "/my-books", label: "My Books", icon: (
-                            <>
-                              <path d="M2 6v14a2 2 0 0 1 2-2h6V4H4a2 2 0 0 0-2 2z"/>
-                              <path d="M22 6v14a2 2 0 0 0-2-2h-6V4h6a2 2 0 0 1 2 2z"/>
-                            </>
-                          )},
+                          { href: "/my-books",          label: "My Books",   icon: <><path d="M2 6v14a2 2 0 0 1 2-2h6V4H4a2 2 0 0 0-2 2z"/><path d="M22 6v14a2 2 0 0 0-2-2h-6V4h6a2 2 0 0 1 2 2z"/></> },
                         ].map(({ href, label, icon }) => (
                           <a key={href} href={href}
                             className={[
@@ -536,7 +580,6 @@ export default function HomeHeader() {
                         </button>
                       </div>
 
-                      {/* Corner accents */}
                       <div className="absolute bottom-0 left-0 w-[14px] h-[14px] border-b border-l border-[#8a6f2e]" />
                       <div className="absolute top-0 right-0 w-[14px] h-[14px] border-t border-r border-[#8a6f2e]" />
                     </div>
@@ -547,149 +590,181 @@ export default function HomeHeader() {
 
             {/* Hamburger — mobile */}
             <button
-              className="flex md:hidden flex-col gap-[5px] p-1 bg-transparent border-none cursor-pointer"
+              className="flex md:hidden flex-col gap-[5px] p-1 bg-transparent border-none cursor-pointer ml-1"
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Menu"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
             >
-              <span className="block w-[22px] h-px bg-[#6b6b70] transition-transform duration-300"
-                style={{ transform: menuOpen ? "rotate(45deg) translate(4px, 4px)" : "none" }} />
-              <span className="block w-[22px] h-px bg-[#6b6b70] transition-opacity duration-300"
-                style={{ opacity: menuOpen ? 0 : 1 }} />
-              <span className="block w-[22px] h-px bg-[#6b6b70] transition-transform duration-300"
-                style={{ transform: menuOpen ? "rotate(-45deg) translate(4px, -4px)" : "none" }} />
+              <span className="block w-[22px] h-[1.5px] bg-[#a0a0a8] transition-all duration-300"
+                style={{ transform: menuOpen ? "rotate(45deg) translate(4.5px, 4.5px)" : "none" }} />
+              <span className="block w-[22px] h-[1.5px] bg-[#a0a0a8] transition-all duration-300"
+                style={{ opacity: menuOpen ? 0 : 1, transform: menuOpen ? "scaleX(0)" : "none" }} />
+              <span className="block w-[22px] h-[1.5px] bg-[#a0a0a8] transition-all duration-300"
+                style={{ transform: menuOpen ? "rotate(-45deg) translate(4.5px, -4.5px)" : "none" }} />
             </button>
           </div>
         </div>
 
-        {/* ── Ornament divider ── */}
-        <div className="flex items-center gap-3 px-12 pb-3 max-md:px-6 max-md:pb-[10px]">
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent)" }} />
-          <div className="w-[5px] h-[5px] rotate-45 shrink-0 bg-[#8a6f2e]" />
-          <div className="flex-1 h-px"
-            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent)" }} />
-        </div>
-
-        {/* ── Mobile menu ── */}
-        <div
-          className="flex-col gap-5 px-8 py-6 bg-[#1c1c1e] border-t border-[rgba(201,168,76,0.15)]"
-          style={{ display: menuOpen ? "flex" : "none" }}
-        >
-          {NAV_LINKS.map(({ href, label }) => {
-            const active = isActive(href);
-            return (
-              <a key={href} href={href}
-                className="text-[13px] tracking-[2px] uppercase no-underline transition-colors duration-300"
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  color: active ? "#c9a84c" : "#6b6b70",
-                  borderLeft: active ? "2px solid #c9a84c" : "2px solid transparent",
-                  paddingLeft: active ? 8 : 0,
-                }}
-              >
-                {label}
-              </a>
-            );
-          })}
-
-          {/* Mobile search */}
-          <div className="border-t border-[rgba(201,168,76,0.12)] pt-4">
-            <div className="flex items-center gap-2.5 px-3.5 py-[10px] bg-[rgba(201,168,76,0.04)] border border-[rgba(201,168,76,0.12)]">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b6b70" strokeWidth="1.5" className="shrink-0">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-              <input
-                type="text"
-                value={query}
-                onChange={e => { setQuery(e.target.value); setSearchOpen(true); }}
-                placeholder="Search books, authors…"
-                className="flex-1 bg-transparent border-none outline-none text-[12px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
-                style={{ fontFamily: "'Jost', sans-serif" }}
-              />
-              {searchLoading && (
-                <span className="shrink-0 w-3 h-3 rounded-full animate-spin border-[1.5px] border-[rgba(201,168,76,0.3)] border-t-[#c9a84c]" />
-              )}
-            </div>
-
-            {searchOpen && query.trim().length >= 2 && (
-              <div className="bg-[rgba(201,168,76,0.03)] border border-[rgba(201,168,76,0.1)] border-t-0 max-h-[240px] overflow-y-auto">
-                {!hasResults && !searchLoading && (
-                  <p className="px-4 py-[14px] text-[11px] text-white m-0"
-                    style={{ fontFamily: "'Jost', sans-serif" }}>No results found</p>
-                )}
-                {searchResults.authors.map(author => (
-                  <a key={author.id} href={`/author/${author.slug}`}
-                    className="flex items-center gap-3 px-4 py-[10px] no-underline hover:bg-[rgba(201,168,76,0.06)]"
-                    onClick={() => { setMenuOpen(false); setSearchOpen(false); setQuery(""); }}>
-                    <span className="text-[12px] text-[#e8e0d0]"
-                      style={{ fontFamily: "'Jost', sans-serif" }}>{highlightMatch(author.name)}</span>
-                  </a>
-                ))}
-                {searchResults.products.map(product => (
-                  <a key={product.id} href={`/product/${product.slug}`}
-                    className="flex items-center gap-3 px-4 py-[10px] no-underline hover:bg-[rgba(201,168,76,0.06)]"
-                    onClick={() => { setMenuOpen(false); setSearchOpen(false); setQuery(""); }}>
-                    <span className="text-[13px] text-[#e8e0d0]"
-                      style={{ fontFamily: "'Cormorant Garamond', serif" }}>{highlightMatch(product.title)}</span>
-                  </a>
-                ))}
-              </div>
-            )}
+        {/* ── Mobile search bar (below main bar, above ornament) ── */}
+        {mobileSearch && (
+          <div
+            ref={mobileSearchRef}
+            className="md:hidden search-overlay mx-4 mb-1 bg-[#1c1c1e] border border-[rgba(201,168,76,0.15)] overflow-hidden"
+          >
+            <SearchInputRow inputRef={mobileSearchInput} />
+            <SearchResultsPanel />
           </div>
+        )}
 
-          {/* Mobile auth */}
-          {!authLoading && (
-            user ? (
-              <div className="border-t border-[rgba(201,168,76,0.12)] pt-4 flex flex-col gap-3">
-                <div className="flex items-center gap-2.5 mb-1">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8a6f2e] to-[#c9a84c] flex items-center justify-center shrink-0 text-[10px] font-semibold text-[#0a0a0b]"
-                    style={{ fontFamily: "'Cinzel', serif" }}>
-                    {initials}
-                  </div>
-                  <div>
-                    <p className="text-[15px] italic text-[#f5f0e8] m-0"
-                      style={{ fontFamily: "'Cormorant Garamond', serif" }}>{user.name}</p>
-                    <p className="text-[10px] text-white mt-0.5 mb-0"
-                      style={{ fontFamily: "'Jost', sans-serif" }}>{user.email}</p>
-                  </div>
-                </div>
-
-                {[
-                  { href: "/account",        label: "My Account" },
-                  { href: "/account/orders",         label: "My Orders" },
-                  { href: "/library/MyLibrary", label: "My Library" },
-                ].map(({ href, label }) => (
-                  <a key={href} href={href}
-                    className="text-[12px] tracking-[1px] uppercase no-underline transition-colors duration-200"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      color: pathname === href ? "#c9a84c" : "#6b6b70",
-                    }}>
-                    {label}
-                  </a>
-                ))}
-
-                <button
-                  className="self-start mt-1 text-[11px] tracking-[2px] uppercase cursor-pointer
-                    bg-[rgba(139,58,58,0.15)] border border-[rgba(139,58,58,0.3)] px-5 py-[9px] text-[#e07070]"
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                  onClick={handleLogout}
-                >
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              <button
-                className="self-start mt-2 text-[11px] tracking-[2px] uppercase font-medium px-[22px] py-[10px]
-                  bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer transition-colors duration-300 hover:bg-[#f5f0e8]"
-                style={{ fontFamily: "'Jost', sans-serif" }}
-                onClick={() => { window.location.href = "/login"; }}
-              >
-                Sign In
-              </button>
-            )
-          )}
+        {/* ── Ornament divider ── */}
+        <div className="flex items-center gap-3 px-4 sm:px-6 md:px-12 pb-[8px] sm:pb-3">
+          <div className="flex-1 h-[1.5px] sm:h-[2px]"
+            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6), transparent)" }} />
+          <div className="w-[5px] h-[5px] rotate-45 shrink-0 bg-[#8a6f2e]" />
+          <div className="flex-1 h-[1.5px] sm:h-[2px]"
+            style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6), transparent)" }} />
         </div>
+
+        {/* ══════════════════════════════
+            MOBILE MENU — full-screen drawer
+        ══════════════════════════════ */}
+        {menuOpen && (
+          <div className="mobile-menu-anim md:hidden fixed inset-0 top-0 z-[90] flex flex-col bg-[#0a0a0b] overflow-y-auto"
+            style={{ paddingTop: "var(--header-height, 110px)" }}>
+
+            {/* Overlay backdrop for close-on-tap outside nav area */}
+            <div className="flex-1 flex flex-col">
+
+              {/* Top gold accent */}
+              <div className="h-px bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.4)] to-transparent mx-6" />
+
+              {/* Nav links */}
+              <nav className="flex flex-col px-6 pt-6 pb-4">
+                {NAV_LINKS.map(({ href, label }, i) => {
+                  const active = isActive(href);
+                  return (
+                    <a key={href} href={href}
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-between py-4 no-underline border-b border-[rgba(255,255,255,0.05)] transition-colors duration-200 active:bg-[rgba(201,168,76,0.04)]"
+                      style={{
+                        fontFamily: "'Jost', sans-serif",
+                        color: active ? "#c9a84c" : "#d0ccc4",
+                        animationDelay: `${i * 0.04}s`,
+                      }}
+                    >
+                      <span className="text-[13px] tracking-[3px] uppercase font-normal">{label}</span>
+                      <span className="flex items-center gap-2">
+                        {active && <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c]" />}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                          stroke={active ? "#c9a84c" : "#4a4a52"} strokeWidth="1.5">
+                          <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                      </span>
+                    </a>
+                  );
+                })}
+              </nav>
+
+              {/* Divider */}
+              <div className="mx-6 my-1 flex items-center gap-3">
+                <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
+                <div className="w-[4px] h-[4px] rotate-45 bg-[rgba(201,168,76,0.3)]" />
+                <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
+              </div>
+
+              {/* ── Auth section ── */}
+              <div className="px-6 py-5">
+                {authLoading ? (
+                  <div className="h-12 rounded-sm bg-[rgba(201,168,76,0.06)] animate-pulse" />
+                ) : user ? (
+                  <div className="flex flex-col gap-0">
+                    {/* User card */}
+                    <div className="flex items-center gap-3 mb-5 p-4 bg-[rgba(201,168,76,0.04)] border border-[rgba(201,168,76,0.1)]">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8a6f2e] to-[#c9a84c] flex items-center justify-center shrink-0 text-[11px] font-semibold text-[#0a0a0b]"
+                        style={{ fontFamily: "'Cinzel', serif" }}>
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[16px] italic text-[#f5f0e8] m-0 leading-tight"
+                          style={{ fontFamily: "'Cormorant Garamond', serif" }}>{user.name}</p>
+                        <p className="text-[10px] text-[#6b6b70] mt-[2px] mb-0 truncate"
+                          style={{ fontFamily: "'Jost', sans-serif" }}>{user.email}</p>
+                      </div>
+                    </div>
+
+                    {/* Account links — 2-col grid */}
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      {[
+                        { href: "/account",           label: "My Account", icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
+                        { href: "/account/orders",    label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
+                        { href: "/library/MyLibrary", label: "My Library", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
+                        { href: "/my-books",          label: "My Books",   icon: <><path d="M2 6v14a2 2 0 0 1 2-2h6V4H4a2 2 0 0 0-2 2z"/><path d="M22 6v14a2 2 0 0 0-2-2h-6V4h6a2 2 0 0 1 2 2z"/></> },
+                        { href: "/wishlist",          label: "Wishlist",   icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/> },
+                        { href: "/cart",              label: "My Cart",    icon: <><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></> },
+                      ].map(({ href, label, icon }) => (
+                        <a key={href} href={href}
+                          onClick={() => setMenuOpen(false)}
+                          className={[
+                            "flex flex-col items-center gap-2 py-4 px-3 text-center border transition-colors duration-200",
+                            pathname === href
+                              ? "border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.07)] text-[#c9a84c]"
+                              : "border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-[#8a8790] active:bg-[rgba(201,168,76,0.05)]",
+                          ].join(" ")}
+                          style={{ fontFamily: "'Jost', sans-serif" }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            {icon}
+                          </svg>
+                          <span className="text-[9px] tracking-[1.5px] uppercase font-medium">{label}</span>
+                        </a>
+                      ))}
+                    </div>
+
+                    <button
+                      className="w-full flex items-center justify-center gap-2 py-[11px] text-[11px] tracking-[2px] uppercase
+                        bg-[rgba(139,58,58,0.12)] border border-[rgba(139,58,58,0.25)] text-[#e07070] cursor-pointer
+                        transition-colors duration-200 active:bg-[rgba(139,58,58,0.22)]"
+                      style={{ fontFamily: "'Jost', sans-serif" }}
+                      onClick={handleLogout}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                      </svg>
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <p className="text-[11px] tracking-[1px] text-[#6b6b70] mb-1 text-center"
+                      style={{ fontFamily: "'Jost', sans-serif" }}>
+                      Sign in to access your library & orders
+                    </p>
+                    <button
+                      className="w-full py-[13px] text-[11px] tracking-[3px] uppercase font-medium
+                        bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer
+                        transition-colors duration-300 active:bg-[#f5f0e8]"
+                      style={{ fontFamily: "'Jost', sans-serif" }}
+                      onClick={() => { window.location.href = "/login"; }}
+                    >
+                      Sign In
+                    </button>
+                    <a href="/register"
+                      className="w-full py-[12px] text-[11px] tracking-[3px] uppercase font-normal text-center
+                        border border-[rgba(201,168,76,0.25)] text-[#c9a84c] no-underline
+                        transition-colors duration-300 active:bg-[rgba(201,168,76,0.08)]"
+                      style={{ fontFamily: "'Jost', sans-serif" }}>
+                      Create Account
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom padding for safe area */}
+              <div className="pb-8" />
+            </div>
+          </div>
+        )}
       </header>
     </>
   );

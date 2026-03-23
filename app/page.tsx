@@ -85,6 +85,12 @@ const globalStyles = `
     flex-shrink: 0;
   }
 
+  /* Hide eyebrow lines on very small screens */
+  @media (max-width: 400px) {
+    .hero-eyebrow::before,
+    .hero-eyebrow::after { width: 20px; }
+  }
+
   .quote-banner::before {
     content: '\u201C';
     position: absolute;
@@ -98,30 +104,43 @@ const globalStyles = `
     pointer-events: none;
   }
 
+  @media (max-width: 640px) {
+    .quote-banner::before { font-size: 140px; top: -10px; }
+  }
+
   /* Book card hover */
   .book-card {
     transition: transform 350ms ease, box-shadow 350ms ease;
     flex-shrink: 0;
   }
-  .book-card:hover {
-    transform: scale(1.03);
-    z-index: 2;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  /* Only apply hover effects on non-touch devices */
+  @media (hover: hover) {
+    .book-card:hover {
+      transform: scale(1.03);
+      z-index: 2;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+    }
+    .book-card:hover .book-img {
+      filter: brightness(0.65) saturate(0.55);
+      transform: scale(1.06);
+    }
+    .book-card:hover .book-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(10,10,11,0.99) 0%,
+        rgba(10,10,11,0.80) 60%,
+        rgba(10,10,11,0.30) 100%
+      );
+    }
+    .book-card:hover .book-info    { transform: translateY(0) !important; }
+    .book-card:hover .book-actions { opacity: 1 !important; transform: translateY(0) !important; }
   }
-  .book-card:hover .book-img {
-    filter: brightness(0.65) saturate(0.55);
-    transform: scale(1.06);
+
+  /* On touch devices always show book actions */
+  @media (hover: none) {
+    .book-info    { transform: translateY(0) !important; }
+    .book-actions { opacity: 1 !important; transform: translateY(0) !important; }
   }
-  .book-card:hover .book-overlay {
-    background: linear-gradient(
-      to top,
-      rgba(10,10,11,0.99) 0%,
-      rgba(10,10,11,0.80) 60%,
-      rgba(10,10,11,0.30) 100%
-    );
-  }
-  .book-card:hover .book-info    { transform: translateY(0) !important; }
-  .book-card:hover .book-actions { opacity: 1 !important; transform: translateY(0) !important; }
 
   .mag-cta { position: relative; overflow: hidden; }
   .mag-cta::after {
@@ -149,17 +168,57 @@ const globalStyles = `
       transparent 100%
     );
   }
+
+  /* Responsive book card sizes */
+  @media (max-width: 640px) {
+    .book-card-responsive {
+      width: 160px !important;
+      height: 230px !important;
+    }
+  }
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .book-card-responsive {
+      width: 200px !important;
+      height: 290px !important;
+    }
+  }
 `;
+
+/* ── Toast notification ── */
+function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2400);
+    return () => clearTimeout(t);
+  }, [onDone]);
+  return (
+    <div
+      className="fixed bottom-6 left-1/2 z-[200] flex items-center gap-3 px-4 sm:px-5 py-3 text-[10px] sm:text-[11px] tracking-[2px] uppercase"
+      style={{
+        transform: "translateX(-50%)",
+        background: "#1c1c1e",
+        border: "1px solid rgba(201,168,76,0.25)",
+        color: "#c9a84c",
+        fontFamily: "'Jost', sans-serif",
+        animation: "fadeUp 0.3s ease both",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      <div className="w-[6px] h-[6px] rotate-45 bg-[#c9a84c] shrink-0" />
+      {msg}
+    </div>
+  );
+}
 
 export default function MainBody() {
   const [books, setBooks]     = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState<string | null>(null);
+  const [toast, setToast]     = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
-        // Only fetch 16 books — enough to fill 2 rows with duplicates for infinite scroll
         const res = await fetch(`${API_URL}/api/ag-classics?limit=16`);
         if (!res.ok) throw new Error("Failed to fetch books");
         const data = await res.json();
@@ -176,22 +235,18 @@ export default function MainBody() {
   const calcDiscount = (price: number, sell: number) =>
     price > 0 ? Math.round(((price - sell) / price) * 100) : 0;
 
-  // Split books into 2 rows; if fewer than 2 just duplicate
-  const half   = Math.max(1, Math.ceil(books.length / 2));
-  const row1   = books.slice(0, half);
-  const row2   = books.slice(half);
-  // Pad row2 if it ended up shorter
+  const half       = Math.max(1, Math.ceil(books.length / 2));
+  const row1       = books.slice(0, half);
+  const row2       = books.slice(half);
   const row2Padded = row2.length > 0 ? row2 : row1;
 
-  // Render a single book card (reused in both rows)
   const BookCard = ({ book }: { book: Book }) => {
     const disc  = calcDiscount(book.price, book.sell_price);
-    const isNew = new Date(book.created_at) > new Date(Date.now() - 30 * 86400000);
     const isOos = book.stock === 0;
 
     return (
       <div
-        className="book-card relative overflow-hidden cursor-pointer"
+        className="book-card book-card-responsive relative overflow-hidden cursor-pointer"
         style={{
           width: 250,
           height: 350,
@@ -202,7 +257,7 @@ export default function MainBody() {
       >
         {/* Badge */}
         {isOos ? (
-          <span style={{ position: "absolute", top: 10, left: 10, zIndex: 10, fontFamily: "'Jost', sans-serif", fontSize: 8, letterSpacing: "2px", textTransform: "uppercase", fontWeight: 500, padding: "4px 8px", background: "rgba(255,255,255,0.12)", color: "#9a9aa0", backdropFilter: "blur(8px)" }}>
+          <span style={{ position: "absolute", top: 10, left: 10, zIndex: 10, fontFamily: "'Jost', sans-serif", fontSize: 8, letterSpacing: "2px", textTransform: "uppercase", fontWeight: 500, padding: "4px 8px", background: "rgba(255, 255, 255, 0.66)", color: "#111111", backdropFilter: "blur(8px)" }}>
             Out of Stock
           </span>
         ) : disc > 5 ? (
@@ -263,12 +318,19 @@ export default function MainBody() {
                   fontFamily: "'Jost', sans-serif", fontSize: 9, letterSpacing: "2px",
                   textTransform: "uppercase", fontWeight: 500, padding: "8px 10px",
                   border: "none", cursor: isOos ? "not-allowed" : "pointer",
-                  background: isOos ? "rgba(255,255,255,0.07)" : "#c9a84c",
-                  color: isOos ? "#555259" : "#0a0a0b",
+                  background: isOos ? "rgba(221, 221, 221, 0.85)" : "#c9a84c",
+                  color: isOos ? "#2f2f2f" : "#0a0a0b",
                   transition: "background 300ms",
                 }}
                 disabled={isOos}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isOos) {
+                    const token = localStorage.getItem("token");
+                    if (!token) { setToast("Please log in to add to cart"); return; }
+                    window.location.href = `/product/${book.slug}`;
+                  }
+                }}
               >
                 {isOos ? "Out of Stock" : "Add to Cart"}
               </button>
@@ -280,7 +342,12 @@ export default function MainBody() {
                   border: "1px solid rgba(255,255,255,0.08)", transition: "color 300ms, border-color 300ms",
                 }}
                 aria-label="Wishlist"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const token = localStorage.getItem("token");
+                  if (!token) { setToast("Please log in to save to wishlist"); return; }
+                  window.location.href = `/product/${book.slug}`;
+                }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -296,24 +363,26 @@ export default function MainBody() {
   return (
     <>
       <style>{globalStyles}</style>
+      {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
 
-      <div className="min-h-screen pt-[130px] pb-10 text-[#e8e0d0]"
+      {/* pt reduced on mobile since nav may be smaller */}
+      <div className="min-h-screen pt-[90px] sm:pt-[130px] pb-10 text-[#e8e0d0]"
         style={{ fontFamily: "'Jost', sans-serif" }}>
 
         {/* ════════════════════════════
             HERO
         ════════════════════════════ */}
-        <section className="relative flex flex-col items-center justify-center overflow-hidden text-center px-6 pb-28 pt-[30px]">
+        <section className="relative flex flex-col items-center justify-center overflow-hidden text-center px-4 sm:px-6 pb-20 sm:pb-28 pt-6 sm:pt-[30px]">
           <div className="pointer-events-none absolute inset-0 -z-10" style={{ background: "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,168,76,0.07) 0%, transparent 70%)" }} />
 
-          <p className="hero-eyebrow anim-fade-0 flex items-center gap-4 mb-5 text-[10px] tracking-[6px] uppercase text-[#c9a84c]"
+          <p className="hero-eyebrow anim-fade-0 flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5 text-[9px] sm:text-[10px] tracking-[4px] sm:tracking-[6px] uppercase text-[#c9a84c]"
             style={{ fontFamily: "'Jost', sans-serif" }}>
             Curated · Timeless · Rare
           </p>
 
           <h1
             className="font-light leading-none tracking-[-1px] mb-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(52px, 9vw, 110px)", color: "#f5f0e8" }}
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(40px, 9vw, 110px)", color: "#f5f0e8" }}
           >
             <RevealText text="The" delay={0.3} />
             {" "}
@@ -325,23 +394,23 @@ export default function MainBody() {
           </h1>
 
           <p
-            className="anim-fade-2 italic mt-[18px] mb-11 max-w-[540px] leading-relaxed text-2xl"
+            className="anim-fade-2 italic mt-4 sm:mt-[18px] mb-8 sm:mb-11 max-w-[540px] leading-relaxed text-xl sm:text-2xl px-2"
             style={{ fontFamily: "'Cormorant Garamond', serif", color: "#ffffff" }}
           >
             Literature that endures. Stories that shaped worlds.
-            <br />Collected for those who read with intention.
+            <br className="hidden sm:block" />Collected for those who read with intention.
           </p>
 
-          <div className="relative z-10 flex flex-wrap justify-center gap-4">
+          <div className="relative z-10 flex flex-wrap justify-center gap-3 sm:gap-4 w-full px-4 sm:px-0">
             <button
-              className="mag-cta text-[11px] tracking-[3px] uppercase font-medium px-9 py-[14px] bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer transition-colors duration-300 hover:bg-[#f5f0e8]"
+              className="mag-cta text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase font-medium px-6 sm:px-9 py-3 sm:py-[14px] bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer transition-colors duration-300 hover:bg-[#f5f0e8] w-full sm:w-auto"
               style={{ fontFamily: "'Jost', sans-serif" }}
               onClick={() => document.getElementById("books")?.scrollIntoView({ behavior: "smooth" })}
             >
               Explore Collection
             </button>
             <button
-              className="mag-cta text-[11px] tracking-[3px] uppercase font-[300] px-9 py-[14px] bg-transparent border border-[rgba(201,168,76,0.25)] text-white cursor-pointer transition-[border-color,color] duration-300 hover:border-[#c9a84c] hover:text-[#c9a84c]"
+              className="mag-cta text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase font-[300] px-6 sm:px-9 py-3 sm:py-[14px] bg-transparent border border-[rgba(201,168,76,0.25)] text-white cursor-pointer transition-[border-color,color] duration-300 hover:border-[#c9a84c] hover:text-[#c9a84c] w-full sm:w-auto"
               style={{ fontFamily: "'Jost', sans-serif" }}
               onClick={() => { window.location.href = "/ebooks"; }}
             >
@@ -355,26 +424,6 @@ export default function MainBody() {
           </div>
         </section>
 
-        {/* ════════════════════════════
-            MARQUEE STRIP
-        ════════════════════════════ */}
-        <div className="overflow-hidden py-[14px] bg-[#141416] border-t border-b border-[rgba(201,168,76,0.1)]">
-          <div className="anim-marquee flex gap-12 w-max">
-            {[...Array(2)].map((_, i) =>
-              ["AG Classics", "Curated Literature", "Timeless Works", "First Editions",
-                "Rare Finds", "Signed Copies", "Gift Ready"].map((text, j) => (
-                <div
-                  key={`${i}-${j}`}
-                  className="flex items-center gap-12 whitespace-nowrap text-xs tracking-[4px] uppercase text-white"
-                  style={{ fontFamily: "'Cinzel', serif" }}
-                >
-                  <span>{text}</span>
-                  <div className="w-1 h-1 rotate-45 shrink-0 bg-[#8a6f2e]" />
-                </div>
-              ))
-            )}
-          </div>
-        </div>
 
         {/* ════════════════════════════
             BOOKS SECTION — 2-row infinite scroll
@@ -382,26 +431,15 @@ export default function MainBody() {
         <section id="books">
 
           {/* Section heading */}
-          <div className="text-center px-12 pt-20 pb-12 max-md:px-6 max-md:pt-[60px] max-md:pb-9">
-            <span
-              className="inline-flex items-center gap-2 mb-5 text-[10px] tracking-[4px] uppercase text-[#c9a84c] px-[14px] py-[4px]"
-              style={{ fontFamily: "'Jost', sans-serif", border: "1px solid rgba(201,168,76,0.18)", borderRadius: 999, background: "rgba(201,168,76,0.06)" }}>
-              The Collection
-            </span>
-            <h2
-              className="font-light italic leading-[1.1] mt-4 mb-4 text-[#f5f0e8]"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(36px, 5vw, 58px)" }}
-            >
-              AG Classics
-            </h2>
-            <p className="text-ms max-w-[480px] mx-auto leading-[1.8] tracking-[0.3px] text-white"
+          <div className="text-center px-4 sm:px-12 pt-1 pb-8 sm:pb-12 max-md:pt-[40px] sm:max-md:pt-[60px]">
+            <p className="text-sm sm:text-ms max-w-[480px] mx-auto leading-[1.8] tracking-[0.3px] text-white"
               style={{ fontFamily: "'Jost', sans-serif" }}>
-              Every volume in our AG Classics line is chosen for its enduring significance and the worlds it opens.
+              Every title in the AG Classics series is selected for its lasting significance and the rich worlds it reveals.
             </p>
-            <div className="flex items-center justify-center gap-[14px] mt-7">
-              <div className="w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
+            <div className="flex items-center justify-center gap-[14px] mt-6 sm:mt-7">
+              <div className="w-[40px] sm:w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
               <div className="w-[6px] h-[6px] rotate-45 bg-[#8a6f2e]" />
-              <div className="w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
+              <div className="w-[40px] sm:w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
             </div>
           </div>
 
@@ -425,15 +463,15 @@ export default function MainBody() {
             </div>
 
           ) : error ? (
-            <div className="flex flex-col items-center gap-4 text-center px-6 py-24">
-              <h3 className="text-[28px] font-light italic text-[#f5f0e8]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <div className="flex flex-col items-center gap-4 text-center px-4 sm:px-6 py-16 sm:py-24">
+              <h3 className="text-[24px] sm:text-[28px] font-light italic text-[#f5f0e8]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                 Could not load collection
               </h3>
-              <p className="text-[13px] max-w-[320px] leading-[1.7] text-[#8a8790]" style={{ fontFamily: "'Jost', sans-serif" }}>
+              <p className="text-[12px] sm:text-[13px] max-w-[320px] leading-[1.7] text-[#8a8790]" style={{ fontFamily: "'Jost', sans-serif" }}>
                 {error}
               </p>
               <button
-                className="mag-cta mt-2 text-[11px] tracking-[3px] uppercase font-medium px-9 py-[14px] bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer"
+                className="mag-cta mt-2 text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 sm:px-9 py-[12px] sm:py-[14px] bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer"
                 style={{ fontFamily: "'Jost', sans-serif" }}
                 onClick={() => window.location.reload()}
               >
@@ -456,9 +494,8 @@ export default function MainBody() {
             <div className="books-marquee overflow-hidden" style={{ paddingBottom: 4 }}>
 
               {/* Row 1 — scrolls LEFT (→) */}
-              <div className="flex gap-3 mb-3" style={{ width: "max-content" }}>
-                <div className="row-scroll-right flex gap-3">
-                  {/* Duplicate for seamless loop */}
+              <div className="flex gap-2 sm:gap-3 mb-2 sm:mb-3" style={{ width: "max-content" }}>
+                <div className="row-scroll-right flex gap-2 sm:gap-3">
                   {[...row1, ...row1].map((book, i) => (
                     <BookCard key={`r1-${i}`} book={book} />
                   ))}
@@ -466,9 +503,8 @@ export default function MainBody() {
               </div>
 
               {/* Row 2 — scrolls RIGHT (←) */}
-              <div className="flex gap-3" style={{ width: "max-content" }}>
-                <div className="row-scroll-left flex gap-3">
-                  {/* Duplicate for seamless loop */}
+              <div className="flex gap-2 sm:gap-3" style={{ width: "max-content" }}>
+                <div className="row-scroll-left flex gap-2 sm:gap-3">
                   {[...row2Padded, ...row2Padded].map((book, i) => (
                     <BookCard key={`r2-${i}`} book={book} />
                   ))}
@@ -480,10 +516,10 @@ export default function MainBody() {
 
           {/* View all link */}
           {books.length > 0 && !loading && !error && (
-            <div className="text-center mt-10">
+            <div className="text-center mt-8 sm:mt-10 px-4 sm:px-0">
               <a
-                href="/ag-classics"
-                className="mag-cta inline-block text-[11px] tracking-[3px] uppercase font-medium px-9 py-[13px] border border-[rgba(201,168,76,0.3)] text-[#c9a84c] transition-[background,color] duration-300 hover:bg-[#c9a84c] hover:text-[#0a0a0b]"
+                href="/category/business-professional-skills"
+                className="mag-cta inline-block text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 sm:px-9 py-[11px] sm:py-[13px] border border-[rgba(201,168,76,0.3)] text-[#c9a84c] transition-[background,color] duration-300 hover:bg-[#c9a84c] hover:text-[#0a0a0b]"
                 style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 View Full Collection
@@ -496,17 +532,17 @@ export default function MainBody() {
             QUOTE BANNER
         ════════════════════════════ */}
         <section
-          className="quote-banner relative text-center overflow-hidden mt-16 px-12 py-28 max-md:px-6 max-md:py-20"
+          className="quote-banner relative text-center overflow-hidden mt-12 sm:mt-16 px-4 sm:px-12 py-16 sm:py-28 max-md:px-6 max-md:py-20"
           style={{ background: "#141416", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
         >
           <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%)" }} />
           <p
             className="relative font-light italic max-w-[780px] mx-auto mb-5 leading-[1.5] text-[#f5f0e8]"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(22px, 3.5vw, 38px)" }}
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(18px, 3.5vw, 38px)" }}
           >
             "A reader lives a thousand lives before he dies. The man who never reads lives only one."
           </p>
-          <span className="text-[11px] tracking-[3px] uppercase text-[#c9a84c]" style={{ fontFamily: "'Jost', sans-serif" }}>
+          <span className="text-[10px] sm:text-[11px] tracking-[3px] uppercase text-[#c9a84c]" style={{ fontFamily: "'Jost', sans-serif" }}>
             — George R.R. Martin
           </span>
         </section>
@@ -514,11 +550,11 @@ export default function MainBody() {
         {/* ════════════════════════════
             PRODUCT SLIDERS
         ════════════════════════════ */}
-        <ProductSlider categorySlug="business-professional-skills" eyebrow="Genre" title="Business & Professional Skills"  visibleCount={5} />
-        <ProductSlider categorySlug="finance-wealth" eyebrow="Genre" title="Finance & Wealth"  visibleCount={5} />
-        <ProductSlider categorySlug="self-development" eyebrow="Genre" title="Self Development"  visibleCount={5} />
+        <ProductSlider categorySlug="business-professional-skills" eyebrow="Genre" title="Business & Professional Skills" visibleCount={5} />
+        <ProductSlider categorySlug="finance-wealth" eyebrow="Genre" title="Finance & Wealth" visibleCount={5} />
+        <ProductSlider categorySlug="self-development" eyebrow="Genre" title="Self Development" visibleCount={5} />
         <ProductSlider categorySlug="strategy-philosophy" eyebrow="Genre" title="Strategy & Philosophy" visibleCount={5} />
-        <ProductSlider categorySlug="classic-literature" eyebrow="Genre" title="Classic Literature"  visibleCount={5} />
+        <ProductSlider categorySlug="classic-literature" eyebrow="Genre" title="Classic Literature" visibleCount={5} />
 
         <EbookSection />
 
@@ -526,14 +562,14 @@ export default function MainBody() {
             FEATURES GRID
         ════════════════════════════ */}
         <div
-          className="grid gap-px mx-12 mt-10 max-md:grid-cols-2 max-md:mx-6 max-md:mt-[60px] max-sm:grid-cols-1 max-sm:mx-0 max-sm:mt-10"
-          style={{ gridTemplateColumns: "repeat(4, 1fr)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.05)" }}
+          className="grid gap-px mx-4 sm:mx-12 mt-10 grid-cols-1 xs:grid-cols-2 md:grid-cols-4 max-md:mt-[60px] max-sm:mt-10"
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.05)" }}
         >
           {[
             {
               icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>),
               title: "Instant Access",
-              desc: "Download your eBook immediately after purchase. Start reading in seconds.",
+              desc: "Access your eBook immediately after purchase. Start reading in seconds.",
             },
             {
               icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="16" rx="2" /><line x1="8" y1="8" x2="16" y2="8" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="8" y1="16" x2="13" y2="16" /></svg>),
@@ -553,7 +589,7 @@ export default function MainBody() {
           ].map((f, i) => (
             <div
               key={i}
-              className="flex items-start gap-[18px] p-9 transition-colors duration-300"
+              className="flex items-start gap-[14px] sm:gap-[18px] p-6 sm:p-9 transition-colors duration-300"
               style={{ background: "#141416" }}
               onMouseEnter={e => (e.currentTarget.style.background = "#1c1c1f")}
               onMouseLeave={e => (e.currentTarget.style.background = "#141416")}
@@ -565,7 +601,7 @@ export default function MainBody() {
                 {f.icon}
               </div>
               <div>
-                <h4 className="text-[11px] tracking-[2px] uppercase font-normal mb-[8px] text-[#f0ece4]" style={{ fontFamily: "'Cinzel', serif" }}>
+                <h4 className="text-[10px] sm:text-[11px] tracking-[2px] uppercase font-normal mb-[6px] sm:mb-[8px] text-[#f0ece4]" style={{ fontFamily: "'Cinzel', serif" }}>
                   {f.title}
                 </h4>
                 <p className="text-xs leading-[1.7] text-[#8a8790]" style={{ fontFamily: "'Jost', sans-serif" }}>

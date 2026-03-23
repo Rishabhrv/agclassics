@@ -724,13 +724,13 @@ export default function ProductPage() {
         style={{ fontFamily: "'Jost', sans-serif" }}
       >
         {/* ════════ BREADCRUMB ════════ */}
-        <nav className="border-t border-b border-[rgba(201,168,76,0.12)] py-3 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 pt-[calc(3rem+80px)] sm:pt-[calc(3rem+100px)]">
+        <nav className="border-t border-b-2 border-[rgba(201,168,76,0.6)] py-3 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 pt-[calc(3rem+80px)] sm:pt-[calc(3rem+100px)]">
           <ol className="flex items-center gap-1.5 flex-wrap max-w-6xl mx-auto">
             <li>
               <Link
                 href="/"
                 className="text-xs tracking-[2px] uppercase text-white hover:text-[#c9a84c] transition-colors"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 Home
               </Link>
@@ -741,8 +741,8 @@ export default function ProductPage() {
                 <li>
                   <Link
                     href={`/category/${product.categories[0].slug}`}
-                    className="text-[10px] tracking-[2px] uppercase text-white hover:text-[#c9a84c] transition-colors"
-                    style={{ fontFamily: "'Cinzel', serif" }}
+                    className="text-[10px] tracking-[2px] uppercase text-white hover:text-[#ffc011] transition-colors"
+                    style={{ fontFamily: "'Jost', sans-serif" }}
                   >
                     {product.categories[0].name}
                   </Link>
@@ -751,7 +751,7 @@ export default function ProductPage() {
             )}
             <li className="text-white">›</li>
             <li
-              className="text-xs tracking-[1px] pt-1 uppercase text-[#8a6f2e] truncate max-w-[160px] sm:max-w-lg"
+              className="text-xs tracking-[1px] pt-1 uppercase text-[#ffc011] truncate max-w-[160px] sm:max-w-xl"
               style={{ fontFamily: "'Cinzel', serif" }}
             >
               {product.title}
@@ -942,7 +942,7 @@ export default function ProductPage() {
 
               {/* Title */}
               <h1
-                className="fu1 font-light leading-[1.1] text-[#f5f0e8] mb-3 italic text-3xl"
+                className="fu1 font-light leading-[1.1] text-[#f5f0e8] mb-3 italic text-4xl"
                 style={{ fontFamily: "'Cormorant Garamond', serif"}}
               >
                 {product.title}
@@ -956,7 +956,7 @@ export default function ProductPage() {
                     <span key={a.id}>
                       <Link
                         href={`/author/${a.slug}`}
-                        className="text-[16px] italic text-[#8a6f2e] hover:text-[#c9a84c] transition-colors cursor-pointer"
+                        className="text-lg italic text-[#ffb300] hover:text-[#c9a84c] transition-colors cursor-pointer"
                         style={{ fontFamily: "'Cormorant Garamond', serif" }}
                       >
                         {a.name}
@@ -984,9 +984,9 @@ export default function ProductPage() {
 
               {/* Ornament divider */}
               <div className="fu2 flex items-center gap-3 mb-5">
-                <div className="flex-1 h-px bg-[rgba(201,168,76,0.1)]" />
-                <div className="w-1 h-1 bg-[rgba(201,168,76,0.4)] rotate-45" />
-                <div className="flex-1 h-px bg-[rgba(201,168,76,0.1)]" />
+                <div className="flex-1 h-px bg-[rgba(201,168,76,0.6)]" />
+                <div className="w-1 h-1 bg-[rgba(201,168,76,0.6)] rotate-45" />
+                <div className="flex-1 h-px bg-[rgba(201,168,76,0.6)]" />
               </div>
 
               {/* ── PRICE ── */}
@@ -1147,7 +1147,7 @@ export default function ProductPage() {
                 </div>
 
                 {/* Trust strip */}
-                <div className="grid grid-cols-3 gap-2 pt-5 border-t border-[rgba(201,168,76,0.08)]">
+                <div className="grid grid-cols-3 gap-2 pt-5 border-t-2 border-[rgba(201,168,76,0.6)] ">
                   {[
                     {
                       icon: (
@@ -1211,7 +1211,7 @@ export default function ProductPage() {
         </div>
 
         {/* ════════ DESCRIPTION ════════ */}
-        <div className="border-y border-[rgba(201,168,76,0.09)] py-10 sm:py-14">
+        <div className="border-y-2 border-[rgba(201,168,76,0.6)] py-10 sm:py-14">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-[2px] h-8" style={{ background: "linear-gradient(to bottom,#c9a84c,transparent)" }} />
@@ -1253,7 +1253,7 @@ export default function ProductPage() {
                   {product.attributes.map((a, i) => (
                     <div
                       key={i}
-                      className="flex justify-between gap-4 py-3 border-b border-[rgba(255,255,255,0.04)]"
+                      className="flex justify-between gap-4 py-3 border-b border-[rgba(201,168,76,0.6)]"
                     >
                       <span className="text-sm tracking-[2px] uppercase text-white shrink-0" style={{ fontFamily: "'Cinzel', serif" }}>
                         {a.name}
@@ -1324,7 +1324,7 @@ export default function ProductPage() {
         {/* ════════ AUTHORS ════════ */}
         {product.authors.length > 0 && (
           <>
-            <div className="h-px bg-[rgba(201,168,76,0.09)]" />
+            <div className="h-px bg-[rgba(201,168,76,0.6)]" />
             <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-10">
               <SectionHeading>About the Author</SectionHeading>
               <div className="space-y-4">
@@ -1390,7 +1390,7 @@ export default function ProductPage() {
         )}
 
         {/* ════════ REVIEWS ════════ */}
-        <div className="h-px bg-[rgba(201,168,76,0.09)]" />
+        <div className="h-px bg-[rgba(201,168,76,0.6)]" />
         <div ref={reviewRef} className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-10 sm:py-14">
           <SectionHeading>Reader Reviews</SectionHeading>
 
@@ -1617,7 +1617,7 @@ export default function ProductPage() {
         {/* ════════ RECOMMENDED ════════ */}
         {recommended.length > 0 && (
           <>
-            <div className="h-px bg-[rgba(201,168,76,0.09)]" />
+            <div className="h-px bg-[rgba(201,168,76,0.6)]" />
             <div className="bg-[#0e0e10] py-12 sm:py-16 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 pb-20">
               <div className="max-w-6xl mx-auto">
                 <SectionHeading>You May Also Like</SectionHeading>
@@ -1685,7 +1685,7 @@ export default function ProductPage() {
                   <button
                     className="px-12 py-3.5 text-[11px] tracking-[3px] uppercase bg-transparent border border-[rgba(255,255,255,0.1)] text-[#e8e0d0] cursor-pointer transition-all duration-300 hover:border-[rgba(201,168,76,0.5)] hover:text-[#c9a84c]"
                     style={{ fontFamily: "'Jost', sans-serif" }}
-                    onClick={() => router.push("/ag-classics")}
+                    onClick={() => router.push("/category/business-professional-skills")}
                   >
                     Explore Full Collection
                   </button>
