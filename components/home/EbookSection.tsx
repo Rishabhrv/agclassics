@@ -350,7 +350,7 @@ export default function EbookSection() {
               style={{ fontFamily: "'Jost', sans-serif" }}
             >
               Timeless literature delivered to your screen the moment you purchase.
-              Beautifully formatted for every device — phone, tablet, e-reader, desktop.
+              Beautifully formatted for every device phone, tablet, e-reader, desktop.
             </p>
 
             <div className={`flex flex-wrap gap-2 mt-4 sm:mt-5 ${visible ? "ebook-reveal-3" : "opacity-0"}`}>

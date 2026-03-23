@@ -471,7 +471,7 @@ function Header({ count, loading, onMoveAll }: { count: number; loading?: boolea
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div>
-      <p className="text-[9px] tracking-[2px] uppercase mb-1"
+      <p className="text-ms tracking-[2px] uppercase mb-1"
         style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>{label}</p>
       <p className="text-[18px] font-light"
         style={{ fontFamily: "'Cormorant Garamond', serif", color: accent ? "#c9a84c" : "#f5f0e8" }}>{value}</p>

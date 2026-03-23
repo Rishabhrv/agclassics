@@ -134,7 +134,7 @@ function BrandBlock() {
         className="italic leading-[1.8] max-w-[340px] mb-6 sm:mb-7 text-base sm:text-lg"
         style={{ fontFamily: "'Cormorant Garamond', serif", color: "white" }}
       >
-        Every book is a doorway. We curate the finest literary works — from timeless classics to contemporary masterpieces.
+        Every book is a doorway. We curate the finest literary works from timeless classics to contemporary masterpieces.
       </p>
 
       {/* Social links */}

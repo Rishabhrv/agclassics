@@ -95,7 +95,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         <p className="text-3xl italic text-[#f5f0e8]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           Please sign in
         </p>
-        <p className="text-sm text-zinc-500" style={{ fontFamily: "'Jost', sans-serif" }}>
+        <p className="text-sm text-white" style={{ fontFamily: "'Jost', sans-serif" }}>
           You need to be logged in to view your account.
         </p>
         <button
@@ -129,7 +129,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         }
       `}</style>
 
-      <div className="min-h-screen pt-32 pb-16" style={{ fontFamily: "'Jost', sans-serif" }}>
+      <div className="min-h-screen pt-35 pb-16" style={{ fontFamily: "'Jost', sans-serif" }}>
 
         {/* Header */}
         <div className="text-center px-6 pb-12">
@@ -142,7 +142,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           <p className="text-[32px] italic text-[#f5f0e8] mb-1.5" style={{ fontFamily: "'Cormorant Garamond',serif" }}>
             {user.name}
           </p>
-          <p className="text-xs text-zinc-500 tracking-[0.5px]">{user.email}</p>
+          <p className="text-xs text-white tracking-[0.5px]">{user.email}</p>
           <div className="flex items-center gap-3 justify-center mt-5">
             <div className="w-12 h-px bg-[rgba(201,168,76,0.25)]" />
             <div className="w-[5px] h-[5px] bg-[#8a6f2e] rotate-45" />
@@ -168,7 +168,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                   <Link
                     key={tab.href}
                     href={tab.href}
-                    className={`acct-tab flex items-center gap-2.5 w-full px-[18px] py-3 text-[11px] tracking-[1.5px] uppercase whitespace-nowrap no-underline ${active ? "active text-[#c9a84c]" : "text-zinc-500"}`}
+                    className={`acct-tab flex items-center gap-2.5 w-full px-[18px] py-3 text-[11px] tracking-[1.5px] uppercase whitespace-nowrap no-underline ${active ? "active text-[#c9a84c]" : "text-white"}`}
                   >
                     {tab.icon}
                     {tab.label}
@@ -178,13 +178,13 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             </div>
 
             <div className="border-t border-[rgba(201,168,76,0.08)] py-2">
-              <Link href="/ebooks/library" className="acct-tab flex items-center gap-2.5 w-full px-[18px] py-3 text-[11px] tracking-[1.5px] uppercase text-zinc-500 whitespace-nowrap no-underline">
+              <Link href="/library/MyLibrary" className="acct-tab flex items-center gap-2.5 w-full px-[18px] py-3 text-[11px] tracking-[1.5px] uppercase text-white whitespace-nowrap no-underline">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                 </svg>
                 My Library
               </Link>
-              <Link href="/wishlist" className="acct-tab flex items-center gap-2.5 w-full px-[18px] py-3 text-[11px] tracking-[1.5px] uppercase text-zinc-500 whitespace-nowrap no-underline">
+              <Link href="/wishlist" className="acct-tab flex items-center gap-2.5 w-full px-[18px] py-3 text-[11px] tracking-[1.5px] uppercase text-white whitespace-nowrap no-underline">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>

@@ -20,7 +20,7 @@ function SectionHead({ title, sub }: { title: string; sub: string }) {
       <h2 className="text-[26px] italic text-[#f5f0e8] mb-1.5 m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
         {title}
       </h2>
-      <p className="text-[11px] text-zinc-500 tracking-[0.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>
+      <p className="text-[11px] text-white tracking-[0.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>
         {sub}
       </p>
       <div className="mt-3.5 h-px" style={{ background: "linear-gradient(to right, rgba(201,168,76,0.25), transparent)" }} />
@@ -30,7 +30,7 @@ function SectionHead({ title, sub }: { title: string; sub: string }) {
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block mb-[7px] text-[9px] tracking-[2.5px] uppercase text-zinc-500" style={{ fontFamily: "'Jost', sans-serif" }}>
+    <label className="block mb-[7px] text-[9px] tracking-[2.5px] uppercase text-white" style={{ fontFamily: "'Jost', sans-serif" }}>
       {children}
     </label>
   );
@@ -109,7 +109,7 @@ export default function ProfilePage() {
         ].map((s) => (
           <div key={s.label} className="bg-[#1c1c1e] border border-[rgba(201,168,76,0.1)] p-5 relative overflow-hidden">
             <div className="absolute bottom-0 left-0 w-10 h-px bg-[#8a6f2e]" />
-            <p className="text-[9px] tracking-[2.5px] uppercase text-zinc-500 mb-2 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{s.label}</p>
+            <p className="text-[9px] tracking-[2.5px] uppercase text-white mb-2 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{s.label}</p>
             <p className="text-[22px] italic text-[#f5f0e8] m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{s.value}</p>
           </div>
         ))}

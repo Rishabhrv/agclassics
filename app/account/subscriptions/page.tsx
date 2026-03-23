@@ -38,7 +38,7 @@ const STATUS_COLOR: Record<string, { bg: string; text: string }> = {
 
 /* ── Inline Components ── */
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_COLOR[status] ?? { bg: "bg-zinc-700/40", text: "text-zinc-500" };
+  const s = STATUS_COLOR[status] ?? { bg: "bg-zinc-700/40", text: "text-white" };
   return (
     <span className={`inline-block px-2.5 py-0.5 text-[9px] tracking-[2px] uppercase font-medium ${s.bg} ${s.text}`} style={{ fontFamily: "'Jost', sans-serif" }}>
       {status}
@@ -50,7 +50,7 @@ function SectionHead({ title, sub }: { title: string; sub: string }) {
   return (
     <div className="mb-7">
       <h2 className="text-[26px] italic text-[#f5f0e8] mb-1.5 m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{title}</h2>
-      <p className="text-[11px] text-zinc-500 tracking-[0.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{sub}</p>
+      <p className="text-[11px] text-white tracking-[0.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{sub}</p>
       <div className="mt-3.5 h-px" style={{ background: "linear-gradient(to right, rgba(201,168,76,0.25), transparent)" }} />
     </div>
   );
@@ -59,7 +59,7 @@ function SectionHead({ title, sub }: { title: string; sub: string }) {
 function InfoBlock({ label, value, gold }: { label: string; value: React.ReactNode; gold?: boolean }) {
   return (
     <div>
-      <p className="text-[9px] tracking-[2.5px] uppercase text-zinc-500 mb-1 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{label}</p>
+      <p className="text-[9px] tracking-[2.5px] uppercase text-white mb-1 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{label}</p>
       <div className="text-base" style={{ fontFamily: "'Cormorant Garamond', serif", color: gold ? "#c9a84c" : "#f5f0e8" }}>{value}</div>
     </div>
   );
@@ -109,7 +109,7 @@ export default function SubscriptionsPage() {
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
           <span className="text-4xl">📖</span>
           <p className="text-2xl italic text-[#f5f0e8] m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>No subscriptions yet</p>
-          <p className="text-xs text-zinc-500 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>Subscribe for unlimited reading access.</p>
+          <p className="text-xs text-white m-0" style={{ fontFamily: "'Jost', sans-serif" }}>Subscribe for unlimited reading access.</p>
           <a href="/subscription">
             <button className="mt-2 text-[10px] tracking-[2.5px] uppercase px-7 py-3 bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer hover:bg-[#f5f0e8] transition-colors" style={{ fontFamily: "'Jost', sans-serif" }}>
               Browse Plans
@@ -134,7 +134,7 @@ export default function SubscriptionsPage() {
                 <div className="flex items-start justify-between mb-5">
                   <div>
                     <p className="text-[13px] text-[#c9a84c] mb-1.5 tracking-[1px] m-0" style={{ fontFamily: "'Cinzel', serif" }}>{sub.title}</p>
-                    <p className="text-[11px] text-zinc-500 uppercase tracking-[1.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>
+                    <p className="text-[11px] text-white uppercase tracking-[1.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>
                       {sub.months} Month{sub.months > 1 ? "s" : ""} Plan
                     </p>
                   </div>
@@ -150,7 +150,7 @@ export default function SubscriptionsPage() {
                 {sub.status === "active" && (
                   <div>
                     <div className="flex justify-between mb-[7px]">
-                      <p className="text-[9px] tracking-[2px] uppercase text-zinc-500 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>Time Used</p>
+                      <p className="text-[9px] tracking-[2px] uppercase text-white m-0" style={{ fontFamily: "'Jost', sans-serif" }}>Time Used</p>
                       <p className="text-[10px] text-[#c9a84c] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{daysLeft} day{daysLeft !== 1 ? "s" : ""} remaining</p>
                     </div>
                     <div className="h-[3px] bg-[rgba(201,168,76,0.12)] relative">

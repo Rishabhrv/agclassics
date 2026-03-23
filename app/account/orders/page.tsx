@@ -186,7 +186,7 @@ export default function OrdersPage() {
           </h2>
           <p
             className="text-sm mb-8 max-w-[260px] leading-relaxed"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#555259" }}
+            style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
           >
             Your purchased eBooks and physical books will appear here.
           </p>
@@ -241,10 +241,10 @@ export default function OrdersPage() {
 
                   {/* Date heading */}
                   <div className="flex items-center gap-3 mb-4">
-                    <CalendarFold size={13} style={{ color: "#555259", flexShrink: 0 }} />
+                    <CalendarFold size={13} style={{ color: "white", flexShrink: 0 }} />
                     <span
                       className="text-[11px] uppercase tracking-[3px]"
-                      style={{ fontFamily: "'Cinzel', serif", color: "#555259" }}
+                      style={{ fontFamily: "'Cinzel', serif", color: "white" }}
                     >
                       {new Date(date).toDateString()}
                     </span>
@@ -277,7 +277,7 @@ export default function OrdersPage() {
                                 </p>
                                 <p
                                   className="text-[11px] mt-0.5"
-                                  style={{ color: "#555259" }}
+                                  style={{ color: "white" }}
                                 >
                                   {order.items_count} item{order.items_count !== 1 ? "s" : ""}
                                 </p>
@@ -292,7 +292,7 @@ export default function OrdersPage() {
                                   ₹{Number(order.total_amount).toFixed(2)}
                                 </p>
                                 {Number(order.shipping_cost) > 0 && (
-                                  <p className="text-[10px]" style={{ color: "#555259" }}>
+                                  <p className="text-[10px]" style={{ color: "white" }}>
                                     + ₹{Number(order.shipping_cost).toFixed(0)} shipping
                                   </p>
                                 )}
@@ -362,7 +362,7 @@ export default function OrdersPage() {
                                       )}
                                       <p
                                         className="text-[11px] capitalize"
-                                        style={{ color: "#555259" }}
+                                        style={{ color: "white" }}
                                       >
                                         {item.format} × {item.quantity}
                                       </p>
@@ -388,7 +388,7 @@ export default function OrdersPage() {
                   {/* Day summary */}
                   <div
                     className="mt-3 flex items-center gap-3 text-[12px]"
-                    style={{ color: "#3a3a3e" }}
+                    style={{ color: "white" }}
                   >
                     <span>
                       Day total:{" "}

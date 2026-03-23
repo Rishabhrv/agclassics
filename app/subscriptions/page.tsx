@@ -75,26 +75,14 @@ export default function SubscriptionPage() {
             </em>
           </h1>
           <p
-            className="anim-fade-up mt-4 text-[#9a9aa8] max-w-2xl mx-auto italic text-lg"
+            className="anim-fade-up mt-4 text-white max-w-2xl mx-auto italic text-xl"
             style={{ fontFamily: "'Cormorant Garamond', serif", animationDelay: "0.6s" }}
           >
             Read unlimited eBooks anytime, anywhere. No limits. No ads.
             Collected for those who read with intention.
           </p>
 
-          {/* Monthly price callout */}
-          <div className="mt-10 inline-flex items-baseline gap-2">
-            <span
-              className="text-[#c9a84c] font-light"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(48px, 7vw, 72px)" }}
-            >
-              ₹399
-            </span>
-            <span className="text-[#8a8790] text-base">/month</span>
-          </div>
-          <p className="text-[10px] tracking-[3px] uppercase text-[#8a8790] mt-1">
-            Starting from · Cancel anytime
-          </p>
+
         </section>
 
         {/* ── PLANS ────────────────────────────────────── */}
@@ -164,7 +152,7 @@ export default function SubscriptionPage() {
             className="border border-[rgba(201,168,76,0.12)] overflow-hidden"
             style={{ background: "#141416" }}
           >
-            <div className="grid grid-cols-4 text-[10px] tracking-[2px] uppercase text-[#8a8790] border-b border-[rgba(201,168,76,0.08)] px-6 py-3"
+            <div className="grid grid-cols-4 text-[10px] tracking-[2px] uppercase text-white border-b border-[rgba(201,168,76,0.08)] px-6 py-3"
               style={{ fontFamily: "'Cinzel', serif" }}>
               <span>Plan</span>
               <span className="text-center">Duration</span>
@@ -183,8 +171,8 @@ export default function SubscriptionPage() {
                 <span className="text-[#f0ece4]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                   {row.plan}
                 </span>
-                <span className="text-center text-[#8a8790]">{row.duration}</span>
-                <span className="text-center text-[#555259] line-through">{row.regular}</span>
+                <span className="text-center text-white">{row.duration}</span>
+                <span className="text-center text-white line-through">{row.regular}</span>
                 <div className="text-right">
                   <span className="text-[#c9a84c] font-medium">{row.youPay}</span>
                   {row.saving && (
@@ -207,8 +195,8 @@ export default function SubscriptionPage() {
           <div className="space-y-4">
             <Faq q="Does this include paperback books?" a="No. Subscription is only for digital eBooks. Paperbacks are sold separately." />
             <Faq q="Can I cancel anytime?" a="Yes. You can cancel your subscription anytime from your account settings." />
-            <Faq q="How is the annual price calculated?" a="Annual plan is ₹3,599 vs ₹4,788 if you paid monthly for 12 months — saving you ₹1,189 (25% off)." />
-            <Faq q="What's included in the 3-month plan?" a="3-month plan is ₹999 vs ₹1,197 monthly — saving you ₹198. Full library access, all devices." />
+            <Faq q="How is the annual price calculated?" a="Annual plan is ₹3,599 vs ₹4,788 if you paid monthly for 12 months saving you ₹1,189 (25% off)." />
+            <Faq q="What's included in the 3-month plan?" a="3-month plan is ₹999 vs ₹1,197 monthly saving you ₹198. Full library access, all devices." />
           </div>
         </section>
 
@@ -255,7 +243,7 @@ function PlanCard({
       >
         {title}
       </h3>
-      <p className="text-[#8a8790] text-xs tracking-wide uppercase mb-7">{description}</p>
+      <p className="text-white text-xs tracking-wide uppercase mb-7">{description}</p>
 
       {/* Price */}
       <div className="mb-1 flex items-baseline gap-3">
@@ -266,10 +254,10 @@ function PlanCard({
           {price}
         </span>
         {strikePrice && (
-          <span className="text-[#555259] text-sm line-through">{strikePrice}</span>
+          <span className="text-white text-sm line-through">{strikePrice}</span>
         )}
       </div>
-      <p className="text-[#8a8790] text-xs mb-1">{period}</p>
+      <p className="text-white text-xs mb-1">{period}</p>
       {note && (
         <p className="text-[11px] text-[#8b4a2e] mb-6 font-medium tracking-wide">
           ✦ {note}
@@ -306,7 +294,7 @@ function Faq({ q, a }: { q: string; a: string }) {
   return (
     <div className="p-6 border border-[rgba(201,168,76,0.06)] hover:border-[rgba(201,168,76,0.2)] transition-colors" style={{ background: "#141416" }}>
       <p className="text-[#f5f0e8] font-medium mb-2 tracking-wide text-sm" style={{ fontFamily: "'Cinzel', serif" }}>{q}</p>
-      <p className="text-[#8a8790] text-sm leading-relaxed">{a}</p>
+      <p className="text-white text-sm leading-relaxed">{a}</p>
     </div>
   );
 }

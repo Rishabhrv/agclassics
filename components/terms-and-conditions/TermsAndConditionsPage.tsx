@@ -539,7 +539,7 @@ export default function TermsAndConditionsPage() {
                           style={{ paddingLeft: "56px" }}
                         >
                           <Link
-                            href="https://agclassics.com/contact"
+                            href="https://agphbooks.com/contact-us/"
                             className="mag-cta inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[3px] px-7 py-[13px] transition-colors duration-300"
                             style={{
                               fontFamily: "'Jost', sans-serif",

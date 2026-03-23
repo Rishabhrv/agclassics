@@ -1170,9 +1170,21 @@ export default function ProductPage() {
                     },
                     {
                       icon: (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.3">
-                          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="#c9a84c" 
+                        strokeWidth="1.3" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 5h12" />
+                        <path d="M4 9h12" />
+                        <path d="M6 19l8-6" />
+                        <path d="M6 9c0-2.5 2-4 4.5-4S15 6.5 15 9s-2 4-4.5 4H6" />
+                      </svg>
                       ),
                       title: "Best Price",
                       sub: "Direct from publisher",
@@ -1180,7 +1192,7 @@ export default function ProductPage() {
                   ].map((item, i) => (
                     <div key={i} className="flex flex-col items-center text-center gap-1.5 py-3">
                       <div className="opacity-80">{item.icon}</div>
-                      <p className="text-sm tracking-[1px] uppercase text-[#8a8a8e] leading-tight" style={{ fontFamily: "'Cinzel', serif" }}>
+                      <p className="text-xs tracking-[1px] uppercase text-[#8a8a8e] leading-tight" style={{ fontFamily: "'Cinzel', serif" }}>
                         {item.title}
                       </p>
                       <p className="text-xs text-white hidden sm:block" style={{ fontFamily: "'Jost', sans-serif" }}>
@@ -1197,11 +1209,6 @@ export default function ProductPage() {
                   {product.isbn && (
                     <span className="text-xs text-[#c9a84c]" style={{ fontFamily: "'Jost', sans-serif" }}>
                       ISBN: <span className="text-white">{product.isbn}</span>
-                    </span>
-                  )}
-                  {product.sku && (
-                    <span className="text-xs text-[#c9a84c]" style={{ fontFamily: "'Jost', sans-serif" }}>
-                      SKU: <span className="text-white">{product.sku}</span>
                     </span>
                   )}
                 </div>
@@ -1530,88 +1537,7 @@ export default function ProductPage() {
             </div>
           )}
 
-          {/* Write a Review */}
-          <div className="bg-[#111113] border border-[rgba(201,168,76,0.09)] p-7 sm:p-10">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-[2px] h-7" style={{ background: "linear-gradient(to bottom,#c9a84c,transparent)" }} />
-              <h3 className="text-[9px] tracking-[5px] uppercase text-[#c9a84c]" style={{ fontFamily: "'Cinzel', serif" }}>Write a Review</h3>
-            </div>
 
-            {rvSubmitted ? (
-              <div className="text-center py-10">
-                <div className="w-14 h-14 rounded-full bg-[rgba(201,168,76,0.08)] border border-[rgba(201,168,76,0.3)] flex items-center justify-center mx-auto mb-5">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <p className="text-2xl italic text-[#f5f0e8] mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  Thank you for your review
-                </p>
-                <p className="text-[11px] text-white" style={{ fontFamily: "'Jost', sans-serif" }}>
-                  Your review will appear after moderation.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                {/* Left */}
-                <div className="flex flex-col gap-6">
-                  <div>
-                    <label className="block text-[8px] tracking-[3px] uppercase text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                      Your Rating *
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <Stars rating={rvRating} size={26} interactive onRate={setRvRating} />
-                      {rvRating > 0 && (
-                        <span className="text-base italic text-[#8a6f2e]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                          {(["", "Poor", "Fair", "Good", "Very Good", "Excellent"] as const)[rvRating]}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[8px] tracking-[3px] uppercase text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                      Your Name *
-                    </label>
-                    <input
-                      type="text"
-                      className="agc-rv-input w-full px-4 py-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.09)] text-[#e8e0d0] text-[13px] outline-none transition-all duration-300"
-                      style={{ fontFamily: "'Jost', sans-serif" }}
-                      value={rvName}
-                      onChange={(e) => setRvName(e.target.value)}
-                      placeholder="Enter your name"
-                    />
-                  </div>
-                </div>
-
-                {/* Right */}
-                <div className="flex flex-col gap-6">
-                  <div className="flex-1">
-                    <label className="block text-[8px] tracking-[3px] uppercase text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                      Your Review *
-                    </label>
-                    <textarea
-                      className="agc-rv-input w-full px-4 py-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.09)] text-[#e8e0d0] text-[13px] outline-none transition-all duration-300 resize-y"
-                      style={{ fontFamily: "'Jost', sans-serif" }}
-                      rows={5}
-                      value={rvComment}
-                      onChange={(e) => setRvComment(e.target.value)}
-                      placeholder="Share your thoughts about this book..."
-                    />
-                  </div>
-                  {rvError && <p className="text-[11px] text-[#c97070]" style={{ fontFamily: "'Jost', sans-serif" }}>{rvError}</p>}
-                  <button
-                    className={`agc-cta-g self-start flex items-center gap-2.5 px-9 py-3.5 text-[11px] tracking-[3px] uppercase bg-[#c9a84c] text-[#0c0c0e] border-none cursor-pointer transition-colors hover:bg-[#e4be54] disabled:bg-[#252528] disabled:text-white disabled:cursor-not-allowed ${(!rvRating || !rvName.trim() || !rvComment.trim()) ? "opacity-50" : ""}`}
-                    style={{ fontFamily: "'Jost', sans-serif" }}
-                    onClick={handleReviewSubmit}
-                    disabled={rvSubmitting || !rvRating || !rvName.trim() || !rvComment.trim()}
-                  >
-                    {rvSubmitting && (
-                      <span className="agc-spin block w-3.5 h-3.5 border-2 border-[rgba(12,12,14,0.3)] border-t-[#0c0c0e] rounded-full" />
-                    )}
-                    {rvSubmitting ? "Submitting…" : "Submit Review"}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* ════════ RECOMMENDED ════════ */}
