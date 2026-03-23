@@ -93,7 +93,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
           Featured <em className="italic text-[#c9a84c]">eBook</em>
         </h2>
         <p className="font-['Jost',sans-serif] text-[13px] text-white leading-[1.8] max-w-[480px] mt-3">
-          A handpicked title from our curated collection — read by thousands.
+          A handpicked title from our curated collection read by thousands.
         </p>
       </div>
 
@@ -135,7 +135,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
         </div>
 
         {/* ── RIGHT: Details ── */}
-        <div className="flex flex-col justify-center p-5 px-15 bg-[#131316] border-t md:border-t-0 md:border-l border-[rgba(201,168,76,0.10)]">
+        <div className="flex flex-col justify-center p-5 px-10  bg-[#131316] border-t md:border-t-0 md:border-l border-[rgba(201,168,76,0.10)]">
           
           {/* Label */}
           <p className="font-['Cinzel',serif] text-[8px] tracking-[4px] uppercase text-[#8a6f2e] mb-4">

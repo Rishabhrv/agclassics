@@ -38,7 +38,6 @@ const globalStyles = `
   }
   .search-overlay { animation: searchExpand 0.22s ease both; }
 
-  /* Mobile menu slide-down */
   @keyframes menuSlide {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -62,7 +61,6 @@ const globalStyles = `
     background: rgba(201,168,76,0.65);
   }
 
-  /* Prevent body scroll when mobile menu is open */
   body.menu-open { overflow: hidden; }
 `;
 
@@ -74,6 +72,164 @@ const NAV_LINKS = [
   { href: "/subscriptions",                         label: "Subscription" },
 ];
 
+/* ══════════════════════════════════════════════════════════
+   ROOT CAUSE FIX:
+   SearchInputRow and SearchResultsPanel were previously
+   defined INSIDE HomeHeader. On every keystroke, the parent
+   re-renders, those function references are recreated, React
+   sees new component types, unmounts/remounts the input, and
+   focus is lost after each character typed.
+
+   Moving them OUTSIDE the parent as stable top-level
+   functions means React never remounts them — the input
+   stays mounted and focused across re-renders.
+══════════════════════════════════════════════════════════ */
+
+interface SearchInputRowProps {
+  inputRef:      React.RefObject<HTMLInputElement | null>;
+  query:         string;
+  onQueryChange: (q: string) => void;
+  searchLoading: boolean;
+  onClear:       () => void;
+}
+
+function SearchInputRow({
+  inputRef,
+  query,
+  onQueryChange,
+  searchLoading,
+  onClear,
+}: SearchInputRowProps) {
+  return (
+    <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[rgba(201,168,76,0.1)]">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b70" strokeWidth="1.5" className="shrink-0">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={e => onQueryChange(e.target.value)}
+        placeholder="Search books, authors…"
+        className="flex-1 bg-transparent !border-none !outline-none focus:!ring-0 text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
+        style={{ fontFamily: "'Jost', sans-serif" }}
+      />
+      {searchLoading && (
+        <span className="shrink-0 w-3 h-3 rounded-full animate-spin border-[1.5px] border-[rgba(201,168,76,0.3)] border-t-[#c9a84c]" />
+      )}
+      {query && !searchLoading && (
+        <button
+          onClick={onClear}
+          className="bg-transparent border-none cursor-pointer text-white p-0 leading-none"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
+interface SearchResultsPanelProps {
+  query:         string;
+  searchResults: SearchResults;
+  searchLoading: boolean;
+  hasResults:    boolean;
+  onClose:       () => void;
+  highlightMatch:(text: string) => React.ReactNode;
+}
+
+function SearchResultsPanel({
+  query,
+  searchResults,
+  searchLoading,
+  hasResults,
+  onClose,
+  highlightMatch,
+}: SearchResultsPanelProps) {
+  return (
+    <div className="search-results-scroll overflow-y-auto relative" style={{ maxHeight: "min(380px, 55vh)" }}>
+      {query.trim().length < 2 && (
+        <p className="px-4 py-4 text-[11px] text-white tracking-[1px] m-0"
+          style={{ fontFamily: "'Jost', sans-serif" }}>
+          Type at least 2 characters…
+        </p>
+      )}
+      {query.trim().length >= 2 && !hasResults && !searchLoading && (
+        <p className="px-4 py-5 text-[12px] text-white text-center tracking-[1px] m-0"
+          style={{ fontFamily: "'Jost', sans-serif" }}>
+          No results found
+        </p>
+      )}
+
+      {searchResults.authors.length > 0 && (
+        <div>
+          <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
+            style={{ fontFamily: "'Jost', sans-serif" }}>Authors</p>
+          {searchResults.authors.map(author => (
+            <a key={author.id} href={`/author/${author.slug}`}
+              className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
+              onClick={onClose}>
+              {author.profile_image ? (
+                <img src={`${API_URL}${author.profile_image}`} alt={author.name}
+                  className="w-8 h-8 rounded-full object-cover shrink-0 border border-[rgba(201,168,76,0.2)]" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.2)] flex items-center justify-center shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+              )}
+              <span className="text-[12px] text-[#e8e0d0] tracking-[.5px]"
+                style={{ fontFamily: "'Jost', sans-serif" }}>
+                {highlightMatch(author.name)}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {searchResults.authors.length > 0 && searchResults.products.length > 0 && (
+        <div className="mx-4 my-1 h-px bg-[rgba(201,168,76,0.08)]" />
+      )}
+
+      {searchResults.products.length > 0 && (
+        <div>
+          <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
+            style={{ fontFamily: "'Jost', sans-serif" }}>Books</p>
+          {searchResults.products.map(product => (
+            <a key={product.id} href={`/product/${product.slug}`}
+              className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
+              onClick={onClose}>
+              {product.main_image ? (
+                <img src={`${API_URL}${product.main_image}`} alt={product.title}
+                  className="w-[48px] h-[64px] object-cover shrink-0 border border-[rgba(201,168,76,0.15)]" />
+              ) : (
+                <div className="w-8 h-11 bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.15)] flex items-center justify-center shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                </div>
+              )}
+              <span className="text-[13px] text-[#e8e0d0] leading-[1.3] line-clamp-2"
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                {highlightMatch(product.title)}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#8a6f2e]" />
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   Main header component
+══════════════════════════════════════════════════════════ */
 export default function HomeHeader() {
   const pathname = usePathname() || "";
 
@@ -89,10 +245,10 @@ export default function HomeHeader() {
   const [searchResults, setSearchResults] = useState<SearchResults>({ products: [], authors: [] });
   const [searchLoading, setSearchLoading] = useState(false);
 
-  const dropRef         = useRef<HTMLDivElement>(null);
-  const searchRef       = useRef<HTMLDivElement>(null);
-  const mobileSearchRef = useRef<HTMLDivElement>(null);
-  const searchInput     = useRef<HTMLInputElement>(null);
+  const dropRef           = useRef<HTMLDivElement>(null);
+  const searchRef         = useRef<HTMLDivElement>(null);
+  const mobileSearchRef   = useRef<HTMLDivElement>(null);
+  const searchInput       = useRef<HTMLInputElement>(null);
   const mobileSearchInput = useRef<HTMLInputElement>(null);
 
   const isActive = (href: string) =>
@@ -100,11 +256,7 @@ export default function HomeHeader() {
 
   /* ── Lock body scroll when mobile menu open ── */
   useEffect(() => {
-    if (menuOpen) {
-      document.body.classList.add("menu-open");
-    } else {
-      document.body.classList.remove("menu-open");
-    }
+    document.body.classList.toggle("menu-open", menuOpen);
     return () => document.body.classList.remove("menu-open");
   }, [menuOpen]);
 
@@ -166,17 +318,16 @@ export default function HomeHeader() {
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  /* ── Auto-focus desktop search ── */
+  /* ── Auto-focus search inputs ── */
   useEffect(() => {
     if (searchOpen) setTimeout(() => searchInput.current?.focus(), 80);
   }, [searchOpen]);
 
-  /* ── Auto-focus mobile search ── */
   useEffect(() => {
     if (mobileSearch) setTimeout(() => mobileSearchInput.current?.focus(), 80);
   }, [mobileSearch]);
 
-  /* ── Debounced search fetch ── */
+  /* ── Debounced search ── */
   useEffect(() => {
     if (query.trim().length < 2) { setSearchResults({ products: [], authors: [] }); return; }
     setSearchLoading(true);
@@ -204,7 +355,12 @@ export default function HomeHeader() {
     setSearchResults({ products: [], authors: [] });
   };
 
-  const highlightMatch = (text: string) => {
+  const clearQuery = () => {
+    setQuery("");
+    setSearchResults({ products: [], authors: [] });
+  };
+
+  const highlightMatch = useCallback((text: string) => {
     if (!query) return <>{text}</>;
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
     return (
@@ -216,122 +372,18 @@ export default function HomeHeader() {
         )}
       </>
     );
-  };
+  }, [query]);
 
   const hasResults = searchResults.products.length > 0 || searchResults.authors.length > 0;
   const initials   = user?.name
     ? user.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()
     : "?";
 
-  /* ── Shared search results panel (used in both desktop & mobile) ── */
-  const SearchResultsPanel = () => (
-    <div className="search-results-scroll overflow-y-auto relative" style={{ maxHeight: "min(380px, 55vh)" }}>
-      {query.trim().length < 2 && (
-        <p className="px-4 py-4 text-[11px] text-white tracking-[1px] m-0"
-          style={{ fontFamily: "'Jost', sans-serif" }}>
-          Type at least 2 characters…
-        </p>
-      )}
-      {query.trim().length >= 2 && !hasResults && !searchLoading && (
-        <p className="px-4 py-5 text-[12px] text-white text-center tracking-[1px] m-0"
-          style={{ fontFamily: "'Jost', sans-serif" }}>
-          No results found
-        </p>
-      )}
-
-      {searchResults.authors.length > 0 && (
-        <div>
-          <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
-            style={{ fontFamily: "'Jost', sans-serif" }}>Authors</p>
-          {searchResults.authors.map(author => (
-            <a key={author.id} href={`/author/${author.slug}`}
-              className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
-              onClick={closeSearch}>
-              {author.profile_image ? (
-                <img src={`${API_URL}${author.profile_image}`} alt={author.name}
-                  className="w-8 h-8 rounded-full object-cover shrink-0 border border-[rgba(201,168,76,0.2)]" />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.2)] flex items-center justify-center shrink-0">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1.5">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                  </svg>
-                </div>
-              )}
-              <span className="text-[12px] text-[#e8e0d0] tracking-[.5px]"
-                style={{ fontFamily: "'Jost', sans-serif" }}>
-                {highlightMatch(author.name)}
-              </span>
-            </a>
-          ))}
-        </div>
-      )}
-
-      {searchResults.authors.length > 0 && searchResults.products.length > 0 && (
-        <div className="mx-4 my-1 h-px bg-[rgba(201,168,76,0.08)]" />
-      )}
-
-      {searchResults.products.length > 0 && (
-        <div>
-          <p className="px-4 pt-[10px] pb-[6px] text-[9px] tracking-[3px] uppercase text-[#c9a84c] m-0"
-            style={{ fontFamily: "'Jost', sans-serif" }}>Books</p>
-          {searchResults.products.map(product => (
-            <a key={product.id} href={`/product/${product.slug}`}
-              className="flex items-center gap-3 px-4 py-[10px] no-underline transition-colors duration-200 hover:bg-[rgba(201,168,76,0.06)] cursor-pointer"
-              onClick={closeSearch}>
-              {product.main_image ? (
-                <img src={`${API_URL}${product.main_image}`} alt={product.title}
-                  className="w-[48px] h-[64px] object-cover shrink-0 border border-[rgba(201,168,76,0.15)]" />
-              ) : (
-                <div className="w-8 h-11 bg-[rgba(201,168,76,0.06)] border border-[rgba(201,168,76,0.15)] flex items-center justify-center shrink-0">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                  </svg>
-                </div>
-              )}
-              <span className="text-[13px] text-[#e8e0d0] leading-[1.3] line-clamp-2"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                {highlightMatch(product.title)}
-              </span>
-            </a>
-          ))}
-        </div>
-      )}
-
-      <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#8a6f2e]" />
-    </div>
-  );
-
-  /* ── Shared search input row ── */
-    const SearchInputRow = ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null> }) => (
-      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[rgba(201,168,76,0.1)]">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b70" strokeWidth="1.5" className="shrink-0">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input
-        ref={inputRef}
-        type="text"
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-        placeholder="Search books, authors…"
-        className="flex-1 bg-transparent !border-none !outline-none focus:!ring-0 text-[13px] text-[#e8e0d0] tracking-[.5px] placeholder:text-white"
-        style={{ fontFamily: "'Jost', sans-serif" }}
-      />
-      {searchLoading && (
-        <span className="shrink-0 w-3 h-3 rounded-full animate-spin border-[1.5px] border-[rgba(201,168,76,0.3)] border-t-[#c9a84c]" />
-      )}
-      {query && !searchLoading && (
-        <button
-          onClick={() => { setQuery(""); setSearchResults({ products: [], authors: [] }); }}
-          className="bg-transparent border-none cursor-pointer text-white p-0 leading-none"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      )}
-    </div>
-  );
+  /* Shared props bundles for the two search panel instances */
+  const searchPanelProps: SearchResultsPanelProps = {
+    query, searchResults, searchLoading, hasResults,
+    onClose: closeSearch, highlightMatch,
+  };
 
   return (
     <>
@@ -339,7 +391,9 @@ export default function HomeHeader() {
 
       <header className={[
         "fixed top-0 left-0 right-0 z-[100] transition-all duration-500",
-        scrolled ? "bg-[rgba(10,10,11,0.95)] backdrop-blur-[16px] border-b border-[rgba(201,168,76,0.15)]" : "bg-[rgba(10,10,11,0.6)] backdrop-blur-[8px]",
+        scrolled
+          ? "bg-[rgba(10,10,11,0.95)] backdrop-blur-[16px] border-b border-[rgba(201,168,76,0.15)]"
+          : "bg-[rgba(10,10,11,0.6)] backdrop-blur-[8px]",
       ].join(" ")}>
 
         {/* ── Ticker ── */}
@@ -361,10 +415,8 @@ export default function HomeHeader() {
             <Image
               src="/images/logo/AGClassicLogo.png"
               alt="AGPH Store Logo"
-              width={110}
-              height={54}
-              priority
-              className="sm:w-[140px] sm:h-[68px]"
+              width={110} height={44} priority
+              className="sm:w-[140px] sm:h-10"
             />
           </Link>
 
@@ -373,23 +425,16 @@ export default function HomeHeader() {
             {NAV_LINKS.map(({ href, label }) => {
               const active = isActive(href);
               return (
-                <a
-                  key={href}
-                  href={href}
+                <a key={href} href={href}
                   className="relative group text-[11px] lg:text-[12px] tracking-[2px] uppercase font-normal no-underline transition-colors duration-300"
-                  style={{
-                    fontFamily: "'Jost', sans-serif",
-                    color: active ? "#c9a84c" : "#ffffff",
-                  }}
+                  style={{ fontFamily: "'Jost', sans-serif", color: active ? "#c9a84c" : "#ffffff" }}
                 >
                   {label}
-                  <span
-                    className={[
-                      "absolute -bottom-[4px] left-0 right-0 h-px bg-[#c9a84c]",
-                      "transition-transform duration-300 origin-left",
-                      active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
-                    ].join(" ")}
-                  />
+                  <span className={[
+                    "absolute -bottom-[4px] left-0 right-0 h-px bg-[#c9a84c]",
+                    "transition-transform duration-300 origin-left",
+                    active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
+                  ].join(" ")} />
                   {!active && (
                     <style>{`a[href="${href}"]:hover { color: #e8e0d0 !important; }`}</style>
                   )}
@@ -423,15 +468,16 @@ export default function HomeHeader() {
               {searchOpen && (
                 <div
                   className="search-overlay fixed z-[300] overflow-hidden bg-[#1c1c1e] border border-[rgba(201,168,76,0.15)]"
-                  style={{
-                    top: "20%",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "min(650px, 90vw)",
-                  }}
+                  style={{ top: "100%", left: "25%", transform: "translateX(-50%)", width: "min(650px, 90vw)" }}
                 >
-                  <SearchInputRow inputRef={searchInput} />
-                  <SearchResultsPanel />
+                  <SearchInputRow
+                    inputRef={searchInput}
+                    query={query}
+                    onQueryChange={setQuery}
+                    searchLoading={searchLoading}
+                    onClear={clearQuery}
+                  />
+                  <SearchResultsPanel {...searchPanelProps} />
                 </div>
               )}
             </div>
@@ -485,10 +531,8 @@ export default function HomeHeader() {
                 <path d="M16 10a4 4 0 0 1-8 0"/>
               </svg>
               {cartCount > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-[3px] rounded-full text-[9px] flex items-center justify-center font-semibold bg-[#c9a84c] text-[#0a0a0b]"
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                >
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-[3px] rounded-full text-[9px] flex items-center justify-center font-semibold bg-[#c9a84c] text-[#0a0a0b]"
+                  style={{ fontFamily: "'Jost', sans-serif" }}>
                   {cartCount}
                 </span>
               )}
@@ -556,9 +600,7 @@ export default function HomeHeader() {
                             ].join(" ")}
                             style={{ fontFamily: "'Jost', sans-serif" }}
                           >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                              {icon}
-                            </svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">{icon}</svg>
                             {label}
                           </a>
                         ))}
@@ -604,14 +646,18 @@ export default function HomeHeader() {
           </div>
         </div>
 
-        {/* ── Mobile search bar (below main bar, above ornament) ── */}
+        {/* ── Mobile search bar ── */}
         {mobileSearch && (
-          <div
-            ref={mobileSearchRef}
-            className="md:hidden search-overlay mx-4 mb-1 bg-[#1c1c1e] border border-[rgba(201,168,76,0.15)] overflow-hidden"
-          >
-            <SearchInputRow inputRef={mobileSearchInput} />
-            <SearchResultsPanel />
+          <div ref={mobileSearchRef}
+            className="md:hidden search-overlay mx-4 mb-1 bg-[#1c1c1e] border border-[rgba(201,168,76,0.15)] overflow-hidden">
+            <SearchInputRow
+              inputRef={mobileSearchInput}
+              query={query}
+              onQueryChange={setQuery}
+              searchLoading={searchLoading}
+              onClear={clearQuery}
+            />
+            <SearchResultsPanel {...searchPanelProps} />
           </div>
         )}
 
@@ -624,148 +670,133 @@ export default function HomeHeader() {
             style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6), transparent)" }} />
         </div>
 
-        {/* ══════════════════════════════
-            MOBILE MENU — full-screen drawer
-        ══════════════════════════════ */}
-        {menuOpen && (
-          <div className="mobile-menu-anim md:hidden fixed inset-0 top-0 z-[90] flex flex-col bg-[#0a0a0b] overflow-y-auto"
-            style={{ paddingTop: "var(--header-height, 110px)" }}>
-
-            {/* Overlay backdrop for close-on-tap outside nav area */}
-            <div className="flex-1 flex flex-col">
-
-              {/* Top gold accent */}
-              <div className="h-px bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.4)] to-transparent mx-6" />
-
-              {/* Nav links */}
-              <nav className="flex flex-col px-6 pt-6 pb-4">
-                {NAV_LINKS.map(({ href, label }, i) => {
-                  const active = isActive(href);
-                  return (
-                    <a key={href} href={href}
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center justify-between py-4 no-underline border-b border-[rgba(255,255,255,0.05)] transition-colors duration-200 active:bg-[rgba(201,168,76,0.04)]"
-                      style={{
-                        fontFamily: "'Jost', sans-serif",
-                        color: active ? "#c9a84c" : "#d0ccc4",
-                        animationDelay: `${i * 0.04}s`,
-                      }}
-                    >
-                      <span className="text-[13px] tracking-[3px] uppercase font-normal">{label}</span>
-                      <span className="flex items-center gap-2">
-                        {active && <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c]" />}
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                          stroke={active ? "#c9a84c" : "#4a4a52"} strokeWidth="1.5">
-                          <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                      </span>
-                    </a>
-                  );
-                })}
-              </nav>
-
-              {/* Divider */}
-              <div className="mx-6 my-1 flex items-center gap-3">
-                <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
-                <div className="w-[4px] h-[4px] rotate-45 bg-[rgba(201,168,76,0.3)]" />
-                <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
-              </div>
-
-              {/* ── Auth section ── */}
-              <div className="px-6 py-5">
-                {authLoading ? (
-                  <div className="h-12 rounded-sm bg-[rgba(201,168,76,0.06)] animate-pulse" />
-                ) : user ? (
-                  <div className="flex flex-col gap-0">
-                    {/* User card */}
-                    <div className="flex items-center gap-3 mb-5 p-4 bg-[rgba(201,168,76,0.04)] border border-[rgba(201,168,76,0.1)]">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8a6f2e] to-[#c9a84c] flex items-center justify-center shrink-0 text-[11px] font-semibold text-[#0a0a0b]"
-                        style={{ fontFamily: "'Cinzel', serif" }}>
-                        {initials}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[16px] italic text-[#f5f0e8] m-0 leading-tight"
-                          style={{ fontFamily: "'Cormorant Garamond', serif" }}>{user.name}</p>
-                        <p className="text-[10px] text-[#6b6b70] mt-[2px] mb-0 truncate"
-                          style={{ fontFamily: "'Jost', sans-serif" }}>{user.email}</p>
-                      </div>
-                    </div>
-
-                    {/* Account links — 2-col grid */}
-                    <div className="grid grid-cols-2 gap-2 mb-4">
-                      {[
-                        { href: "/account",           label: "My Account", icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
-                        { href: "/account/orders",    label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
-                        { href: "/library/MyLibrary", label: "My Library", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
-                        { href: "/my-books",          label: "My Books",   icon: <><path d="M2 6v14a2 2 0 0 1 2-2h6V4H4a2 2 0 0 0-2 2z"/><path d="M22 6v14a2 2 0 0 0-2-2h-6V4h6a2 2 0 0 1 2 2z"/></> },
-                        { href: "/wishlist",          label: "Wishlist",   icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/> },
-                        { href: "/cart",              label: "My Cart",    icon: <><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></> },
-                      ].map(({ href, label, icon }) => (
-                        <a key={href} href={href}
-                          onClick={() => setMenuOpen(false)}
-                          className={[
-                            "flex flex-col items-center gap-2 py-4 px-3 text-center border transition-colors duration-200",
-                            pathname === href
-                              ? "border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.07)] text-[#c9a84c]"
-                              : "border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-[#8a8790] active:bg-[rgba(201,168,76,0.05)]",
-                          ].join(" ")}
-                          style={{ fontFamily: "'Jost', sans-serif" }}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            {icon}
-                          </svg>
-                          <span className="text-[9px] tracking-[1.5px] uppercase font-medium">{label}</span>
-                        </a>
-                      ))}
-                    </div>
-
-                    <button
-                      className="w-full flex items-center justify-center gap-2 py-[11px] text-[11px] tracking-[2px] uppercase
-                        bg-[rgba(139,58,58,0.12)] border border-[rgba(139,58,58,0.25)] text-[#e07070] cursor-pointer
-                        transition-colors duration-200 active:bg-[rgba(139,58,58,0.22)]"
-                      style={{ fontFamily: "'Jost', sans-serif" }}
-                      onClick={handleLogout}
-                    >
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        <polyline points="16 17 21 12 16 7"/>
-                        <line x1="21" y1="12" x2="9" y2="12"/>
-                      </svg>
-                      Sign Out
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-3">
-                    <p className="text-[11px] tracking-[1px] text-[#6b6b70] mb-1 text-center"
-                      style={{ fontFamily: "'Jost', sans-serif" }}>
-                      Sign in to access your library & orders
-                    </p>
-                    <button
-                      className="w-full py-[13px] text-[11px] tracking-[3px] uppercase font-medium
-                        bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer
-                        transition-colors duration-300 active:bg-[#f5f0e8]"
-                      style={{ fontFamily: "'Jost', sans-serif" }}
-                      onClick={() => { window.location.href = "/login"; }}
-                    >
-                      Sign In
-                    </button>
-                    <a href="/register"
-                      className="w-full py-[12px] text-[11px] tracking-[3px] uppercase font-normal text-center
-                        border border-[rgba(201,168,76,0.25)] text-[#c9a84c] no-underline
-                        transition-colors duration-300 active:bg-[rgba(201,168,76,0.08)]"
-                      style={{ fontFamily: "'Jost', sans-serif" }}>
-                      Create Account
-                    </a>
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom padding for safe area */}
-              <div className="pb-8" />
-            </div>
-          </div>
-        )}
       </header>
+
+      {/* ══════════════════════════════
+          MOBILE MENU — outside <header> so backdrop-filter
+          does NOT create a new stacking context that clips
+          or repositions this fixed overlay.
+          z-[200] sits above the header's z-[100].
+      ══════════════════════════════ */}
+      {menuOpen && (
+        <div
+          className="mobile-menu-anim md:hidden fixed inset-0 z-[50] flex flex-col bg-[#0a0a0b] overflow-y-auto"
+          style={{ paddingTop: "var(--header-height, 110px)" }}
+        >
+          <div className="flex-1 flex flex-col">
+            <div className="h-px bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.4)] to-transparent mx-6" />
+
+            <nav className="flex flex-col px-6 pt-6 pb-4">
+              {NAV_LINKS.map(({ href, label }, i) => {
+                const active = isActive(href);
+                return (
+                  <a key={href} href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-between py-4 no-underline border-b border-[rgba(255,255,255,0.05)] transition-colors duration-200 active:bg-[rgba(201,168,76,0.04)]"
+                    style={{ fontFamily: "'Jost', sans-serif", color: active ? "#c9a84c" : "#d0ccc4", animationDelay: `${i * 0.04}s` }}
+                  >
+                    <span className="text-[13px] tracking-[3px] uppercase font-normal">{label}</span>
+                    <span className="flex items-center gap-2">
+                      {active && <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c]" />}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke={active ? "#c9a84c" : "#4a4a52"} strokeWidth="1.5">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    </span>
+                  </a>
+                );
+              })}
+            </nav>
+
+            <div className="mx-6 my-1 flex items-center gap-3">
+              <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
+              <div className="w-[4px] h-[4px] rotate-45 bg-[rgba(201,168,76,0.3)]" />
+              <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
+            </div>
+
+            <div className="px-6 py-5">
+              {authLoading ? (
+                <div className="h-12 rounded-sm bg-[rgba(201,168,76,0.06)] animate-pulse" />
+              ) : user ? (
+                <div className="flex flex-col gap-0">
+                  <div className="flex items-center gap-3 mb-5 p-4 bg-[rgba(201,168,76,0.04)] border border-[rgba(201,168,76,0.1)]">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8a6f2e] to-[#c9a84c] flex items-center justify-center shrink-0 text-[11px] font-semibold text-[#0a0a0b]"
+                      style={{ fontFamily: "'Cinzel', serif" }}>
+                      {initials}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[16px] italic text-[#f5f0e8] m-0 leading-tight"
+                        style={{ fontFamily: "'Cormorant Garamond', serif" }}>{user.name}</p>
+                      <p className="text-[10px] text-[#6b6b70] mt-[2px] mb-0 truncate"
+                        style={{ fontFamily: "'Jost', sans-serif" }}>{user.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    {[
+                      { href: "/account",           label: "My Account", icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
+                      { href: "/account/orders",    label: "My Orders",  icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
+                      { href: "/library/MyLibrary", label: "My Library", icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></> },
+                      { href: "/my-books",          label: "My Books",   icon: <><path d="M2 6v14a2 2 0 0 1 2-2h6V4H4a2 2 0 0 0-2 2z"/><path d="M22 6v14a2 2 0 0 0-2-2h-6V4h6a2 2 0 0 1 2 2z"/></> },
+                      { href: "/wishlist",          label: "Wishlist",   icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/> },
+                      { href: "/cart",              label: "My Cart",    icon: <><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></> },
+                    ].map(({ href, label, icon }) => (
+                      <a key={href} href={href} onClick={() => setMenuOpen(false)}
+                        className={[
+                          "flex flex-col items-center gap-2 py-4 px-3 text-center border transition-colors duration-200",
+                          pathname === href
+                            ? "border-[rgba(201,168,76,0.35)] bg-[rgba(201,168,76,0.07)] text-[#c9a84c]"
+                            : "border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] text-[#8a8790] active:bg-[rgba(201,168,76,0.05)]",
+                        ].join(" ")}
+                        style={{ fontFamily: "'Jost', sans-serif" }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">{icon}</svg>
+                        <span className="text-[9px] tracking-[1.5px] uppercase font-medium">{label}</span>
+                      </a>
+                    ))}
+                  </div>
+
+                  <button
+                    className="w-full flex items-center justify-center gap-2 py-[11px] text-[11px] tracking-[2px] uppercase
+                      bg-[rgba(139,58,58,0.12)] border border-[rgba(139,58,58,0.25)] text-[#e07070] cursor-pointer
+                      transition-colors duration-200 active:bg-[rgba(139,58,58,0.22)]"
+                    style={{ fontFamily: "'Jost', sans-serif" }}
+                    onClick={handleLogout}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                      <polyline points="16 17 21 12 16 7"/>
+                      <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <p className="text-[11px] tracking-[1px] text-[#6b6b70] mb-1 text-center"
+                    style={{ fontFamily: "'Jost', sans-serif" }}>
+                    Sign in to access your library &amp; orders
+                  </p>
+                  <button
+                    className="w-full py-[13px] text-[11px] tracking-[3px] uppercase font-medium bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer transition-colors duration-300 active:bg-[#f5f0e8]"
+                    style={{ fontFamily: "'Jost', sans-serif" }}
+                    onClick={() => { window.location.href = "/login"; }}
+                  >
+                    Sign In
+                  </button>
+                  <a href="/register"
+                    className="w-full py-[12px] text-[11px] tracking-[3px] uppercase font-normal text-center border border-[rgba(201,168,76,0.25)] text-[#c9a84c] no-underline transition-colors duration-300 active:bg-[rgba(201,168,76,0.08)]"
+                    style={{ fontFamily: "'Jost', sans-serif" }}>
+                    Create Account
+                  </a>
+                </div>
+              )}
+            </div>
+
+            <div className="pb-8" />
+          </div>
+        </div>
+      )}
     </>
   );
 }

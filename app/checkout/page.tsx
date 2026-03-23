@@ -314,7 +314,7 @@ export default function CheckoutPage() {
         .co-fade { animation: co-fadeUp 0.4s ease both; }
         .co-input {
           width:100%; background:transparent;
-          border:1px solid rgba(255,255,255,0.07); color:#f5f0e8;
+          border:1px solid rgba(151, 151, 151, 0.89); color:#f5f0e8;
           font-family:'Jost',sans-serif; font-size:13px;
           padding:11px 14px; outline:none;
           transition:border-color 0.2s; -webkit-appearance:none;
@@ -327,7 +327,7 @@ export default function CheckoutPage() {
         .co-label {
           display:block; font-family:'Jost',sans-serif;
           font-size:9px; letter-spacing:2px; text-transform:uppercase;
-          color:#6b6b70; margin-bottom:6px;
+          color:white; margin-bottom:6px;
         }
         @keyframes spin { to{transform:rotate(360deg)} }
         .co-spin {
@@ -379,7 +379,7 @@ export default function CheckoutPage() {
                     Instant eBook Delivery
                   </p>
                   <p className="text-[12px] leading-[1.8]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                    style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                     Your eBook{cart.filter(i => i.format === "ebook").length > 1 ? "s" : ""} will be
                     available <strong style={{ color: "#f5f0e8" }}>instantly</strong> in your{" "}
                     <strong style={{ color: "#c9a84c" }}>My Books</strong> section right after payment.
@@ -414,7 +414,7 @@ export default function CheckoutPage() {
                   }}>
                   <span className="text-base flex-shrink-0 mt-0.5">📖</span>
                   <p className="text-[11px] leading-[1.8]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                    style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                     Your <strong style={{ color: "#c9a84c" }}>eBook{cart.filter(i => i.format === "ebook").length > 1 ? "s" : ""}</strong> will
                     appear instantly in <strong style={{ color: "#f5f0e8" }}>My Books</strong> after
                     payment. Paperback will be shipped to the address below.
@@ -438,14 +438,14 @@ export default function CheckoutPage() {
                           onClick={() => { setSelectedSaved(i); setAddr(p => ({ ...p, ...a })); }}
                         >
                           <div className="w-3 h-3 mt-0.5 flex-shrink-0 flex items-center justify-center"
-                            style={{ border: `1px solid ${selectedSaved === i ? "#c9a84c" : "#6b6b70"}` }}>
+                            style={{ border: `1px solid ${selectedSaved === i ? "#c9a84c" : "white"}` }}>
                             {selectedSaved === i && <div className="w-1.5 h-1.5" style={{ background: "#c9a84c" }} />}
                           </div>
                           <div>
                             <p className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "#f5f0e8" }}>
                               {a.address}, {a.city}
                             </p>
-                            <p className="text-[11px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                            <p className="text-[11px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                               {a.state} — {a.pincode}
                             </p>
                           </div>
@@ -508,7 +508,7 @@ export default function CheckoutPage() {
                     style={{ accentColor: "#c9a84c" }}
                   />
                   <span className="text-[10px] tracking-[1px]"
-                    style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                    style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                     Save this address for future orders
                   </span>
                 </label>
@@ -527,7 +527,7 @@ export default function CheckoutPage() {
                         <p className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "#f5f0e8" }}>
                           Standard Delivery · DTDC
                         </p>
-                        <p className="text-[10px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                        <p className="text-[10px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                           5–7 business days
                         </p>
                       </div>
@@ -542,7 +542,7 @@ export default function CheckoutPage() {
                   </div>
                   {!addr.state && (
                     <p className="text-[10px] mt-2"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                      style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                       Select a state to see shipping cost
                     </p>
                   )}
@@ -556,9 +556,9 @@ export default function CheckoutPage() {
             style={{ background: "#1c1c1e" }}>
             <button
               className="text-[9px] tracking-[2px] uppercase transition-colors duration-200"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70", background: "none", border: "none" }}
+              style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "none", border: "none" }}
               onMouseEnter={e => (e.currentTarget.style.color = "#c9a84c")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#6b6b70")}
+              onMouseLeave={e => (e.currentTarget.style.color = "white")}
               onClick={() => (window.location.href = "/cart")}
             >
               ← Edit Cart
@@ -578,7 +578,7 @@ export default function CheckoutPage() {
               <div key={b.text} className="flex items-center gap-2">
                 <span className="text-base">{b.icon}</span>
                 <span className="text-[9px] tracking-[2px] uppercase"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>{b.text}</span>
+                  style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>{b.text}</span>
               </div>
             ))}
           </div>
@@ -590,7 +590,7 @@ export default function CheckoutPage() {
           {/* Cart items */}
           <div className="p-6" style={{ background: "#1c1c1e" }}>
             <p className="text-[9px] tracking-[3px] uppercase mb-5"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
               Order Summary · {cart.length} {cart.length === 1 ? "item" : "items"}
             </p>
             {cartLoading ? (
@@ -633,7 +633,7 @@ export default function CheckoutPage() {
                         <span className="inline-block text-[8px] tracking-[1.5px] uppercase mt-0.5 px-[6px] py-[2px]"
                           style={{
                             fontFamily: "'Jost', sans-serif",
-                            color:      item.format === "ebook" ? "#c9a84c" : "#6b6b70",
+                            color:      item.format === "ebook" ? "#c9a84c" : "white",
                             background: item.format === "ebook" ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.04)",
                             border:     `1px solid ${item.format === "ebook" ? "rgba(201,168,76,0.2)" : "rgba(255,255,255,0.06)"}`,
                           }}>
@@ -645,7 +645,7 @@ export default function CheckoutPage() {
                           </span>
                           {d > 0 && (
                             <span className="text-[10px] line-through"
-                              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                               {fmt(original * item.quantity)}
                             </span>
                           )}
@@ -663,7 +663,7 @@ export default function CheckoutPage() {
                 style={{ borderTop: "1px solid rgba(201,168,76,0.08)" }}>
                 <span className="text-[11px] flex-shrink-0 mt-0.5">📖</span>
                 <p className="text-[10px] leading-[1.7]"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                  style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                   eBook{cart.filter(i => i.format === "ebook").length > 1 ? "s" : ""} available
                   instantly in <strong style={{ color: "#c9a84c" }}>My Books</strong> after payment.
                 </p>
@@ -680,7 +680,7 @@ export default function CheckoutPage() {
                 onChange={e => { setCoupon(e.target.value.toUpperCase()); setCouponError(""); }}
                 placeholder="ENTER CODE"
                 disabled={couponApplied}
-                className={`co-input flex-1 ${couponError ? "err" : ""}`}
+                className={`co-input flex-1 text-white ${couponError ? "err" : ""}`}
                 style={{ letterSpacing: "2px" }}
                 onKeyDown={e => e.key === "Enter" && applyCoupon()}
               />
@@ -740,7 +740,7 @@ export default function CheckoutPage() {
               </span>
             </div>
             <p className="text-[10px] text-center"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
               Taxes included · GST compliant
             </p>
           </div>
@@ -809,7 +809,7 @@ function SummaryRow({ label, value, green }: { label: string; value: string; gre
   return (
     <div className="flex items-center justify-between">
       <span className="text-[11px] tracking-[1px]"
-        style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>{label}</span>
+        style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>{label}</span>
       <span className="text-[13px]"
         style={{ fontFamily: "'Jost', sans-serif", color: green ? "#4a9a5a" : "#f5f0e8" }}>{value}</span>
     </div>
@@ -868,7 +868,7 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
       </div>
 
       <p className="text-[13px] leading-[1.8]"
-        style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+        style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
         Your order has been placed successfully.
         A confirmation has been sent to your email.
       </p>
@@ -884,7 +884,7 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
               Your eBook is Ready
             </p>
             <p className="text-[11px] leading-[1.8]"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
               Head to <strong style={{ color: "#f5f0e8" }}>My Books</strong> to access your
               eBook{/* plural handled by parent */} instantly — no waiting required.
             </p>
@@ -896,13 +896,13 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
         style={{ background: "#1c1c1e", border: "1px solid rgba(201,168,76,0.1)" }}>
         <div className="flex items-center justify-between mb-3">
           <span className="text-[10px] tracking-[2px] uppercase"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>Order ID</span>
+            style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>Order ID</span>
           <span className="text-[13px] font-medium"
             style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}>#{orderId}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-[10px] tracking-[2px] uppercase"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>Amount Paid</span>
+            style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>Amount Paid</span>
           <span className="text-[18px] font-light"
             style={{ fontFamily: "'Cormorant Garamond', serif", color: "#f5f0e8" }}>{fmt(total)}</span>
         </div>
@@ -917,10 +917,10 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
         </GoldBtn>
         <button
           className="px-8 py-[13px] text-[10px] tracking-[3px] uppercase transition-colors duration-200"
-          style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70", background: "transparent",
+          style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "transparent",
                    border: "1px solid rgba(255,255,255,0.08)" }}
           onMouseEnter={e => { e.currentTarget.style.color = "#c9a84c"; e.currentTarget.style.borderColor = "rgba(201,168,76,0.3)"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "#6b6b70"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "white"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
           onClick={() => (window.location.href = "/")}
         >Continue Shopping</button>
       </div>

@@ -574,7 +574,7 @@ export default function MainBody() {
             {
               icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="16" rx="2" /><line x1="8" y1="8" x2="16" y2="8" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="8" y1="16" x2="13" y2="16" /></svg>),
               title: "Device Compatible",
-              desc: "Compatible with all major devices — mobile, tablet, desktop & e-readers.",
+              desc: "Compatible with all major devices mobile, tablet, desktop & e-readers.",
             },
             {
               icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>),

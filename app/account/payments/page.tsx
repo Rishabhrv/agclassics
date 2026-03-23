@@ -36,7 +36,7 @@ const STATUS_COLOR: Record<string, { bg: string; text: string }> = {
 
 /* ── Inline Components ── */
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_COLOR[status] ?? { bg: "bg-zinc-700/40", text: "text-zinc-500" };
+  const s = STATUS_COLOR[status] ?? { bg: "bg-zinc-700/40", text: "text-white" };
   return (
     <span className={`inline-block px-2.5 py-0.5 text-[9px] tracking-[2px] uppercase font-medium ${s.bg} ${s.text}`} style={{ fontFamily: "'Jost', sans-serif" }}>
       {status}
@@ -48,7 +48,7 @@ function SectionHead({ title, sub }: { title: string; sub: string }) {
   return (
     <div className="mb-7">
       <h2 className="text-[26px] italic text-[#f5f0e8] mb-1.5 m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{title}</h2>
-      <p className="text-[11px] text-zinc-500 tracking-[0.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{sub}</p>
+      <p className="text-[11px] text-white tracking-[0.5px] m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{sub}</p>
       <div className="mt-3.5 h-px" style={{ background: "linear-gradient(to right, rgba(201,168,76,0.25), transparent)" }} />
     </div>
   );
@@ -100,14 +100,14 @@ export default function PaymentsPage() {
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
           <span className="text-4xl">💳</span>
           <p className="text-2xl italic text-[#f5f0e8] m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>No payment records</p>
-          <p className="text-xs text-zinc-500 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>Payments will appear here once processed.</p>
+          <p className="text-xs text-white m-0" style={{ fontFamily: "'Jost', sans-serif" }}>Payments will appear here once processed.</p>
         </div>
       ) : (
         <>
           {/* Header */}
           <div className="px-5 py-2.5 border-b border-[rgba(201,168,76,0.12)] bg-[rgba(201,168,76,0.03)]" style={{ display: "grid", gridTemplateColumns: COL, gap: 12 }}>
             {["Plan", "Payment ID", "Amount", "Status"].map((h) => (
-              <p key={h} className="text-[9px] tracking-[2.5px] uppercase text-zinc-500 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{h}</p>
+              <p key={h} className="text-[9px] tracking-[2.5px] uppercase text-white m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{h}</p>
             ))}
           </div>
 
@@ -121,9 +121,9 @@ export default function PaymentsPage() {
                 <p className="text-sm text-[#f5f0e8] mb-[3px] m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                   {p.plan_title ?? "Subscription"}
                 </p>
-                <p className="text-[10px] text-zinc-500 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{fmtDate(p.created_at)}</p>
+                <p className="text-[10px] text-white m-0" style={{ fontFamily: "'Jost', sans-serif" }}>{fmtDate(p.created_at)}</p>
               </div>
-              <p className="text-[10px] text-zinc-500 overflow-hidden text-ellipsis whitespace-nowrap m-0" style={{ fontFamily: "'Jost', sans-serif" }}>
+              <p className="text-[10px] text-white overflow-hidden text-ellipsis whitespace-nowrap m-0" style={{ fontFamily: "'Jost', sans-serif" }}>
                 {p.gateway_payment_id ?? "—"}
               </p>
               <p className="text-base text-[#c9a84c] m-0" style={{ fontFamily: "'Cormorant Garamond', serif" }}>

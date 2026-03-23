@@ -155,7 +155,7 @@ export default function CartPage() {
           style={{ fontFamily: "'Cormorant Garamond', serif", color: "#f5f0e8" }}>
           Something went wrong
         </p>
-        <p className="text-sm" style={{ color: "#6b6b70" }}>{error}</p>
+        <p className="text-sm" style={{ color: "white" }}>{error}</p>
         <GoldBtn onClick={fetchCart}>Retry</GoldBtn>
       </div>
     </PageWrap>
@@ -175,7 +175,7 @@ export default function CartPage() {
           Your cart is empty
         </h2>
         <p className="text-[13px] max-w-xs leading-relaxed"
-          style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+          style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
           Discover our curated collection of timeless literature and add your favourites.
         </p>
         <GoldBtn onClick={() => (window.location.href = "/")}>Browse Collection</GoldBtn>
@@ -238,7 +238,7 @@ export default function CartPage() {
             className="shrink-0 flex items-center gap-2 px-4 py-[9px] text-[9px] tracking-[2px] uppercase transition-all duration-200"
             style={{
               fontFamily: "'Jost', sans-serif",
-              color: removingOos ? "#6b6b70" : "#d4756a",
+              color: removingOos ? "white" : "#d4756a",
               background: "rgba(139,58,58,0.12)",
               border: "1px solid rgba(139,58,58,0.3)",
               cursor: removingOos ? "not-allowed" : "pointer",
@@ -287,9 +287,17 @@ export default function CartPage() {
                   className="flex-shrink-0 relative overflow-hidden block"
                   style={{ width: 80, height: 112, background: "#2a2a2d", opacity: oos ? 0.5 : 1 }}>
                   {item.main_image ? (
-                    <img src={`${API_URL}${item.main_image}`} alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      style={{ filter: oos ? "brightness(0.5) grayscale(0.8)" : "brightness(0.9)" }} />
+<div className=" w-full overflow-hidden">
+  <img 
+    src={`${API_URL}${item.main_image}`} 
+    alt={item.title}
+    className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+    style={{
+      filter: oos ? "brightness(0.5) grayscale(0.8)" : "brightness(0.95)",
+      imageRendering: "auto"
+    }}
+  />
+</div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1" className="opacity-40">
@@ -311,7 +319,7 @@ export default function CartPage() {
                   <div>
                     <a href={`/product/${item.slug}`}
                       className="block text-[17px] font-semibold leading-[1.3] mb-1 hover:text-[#c9a84c] transition-colors duration-200"
-                      style={{ fontFamily: "'Cormorant Garamond', serif", color: oos ? "#6b6b70" : "#f5f0e8" }}>
+                      style={{ fontFamily: "'Cormorant Garamond', serif", color: oos ? "white" : "#f5f0e8" }}>
                       {item.title}
                     </a>
 
@@ -321,7 +329,7 @@ export default function CartPage() {
                       <span className="inline-block text-[9px] tracking-[2px] uppercase px-[8px] py-[3px]"
                         style={{
                           fontFamily: "'Jost', sans-serif",
-                          color:      isEbook ? "#c9a84c" : "#6b6b70",
+                          color:      isEbook ? "#c9a84c" : "white",
                           background: isEbook ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.04)",
                           border:     `1px solid ${isEbook ? "rgba(201,168,76,0.25)" : "rgba(255,255,255,0.07)"}`,
                         }}>
@@ -350,9 +358,9 @@ export default function CartPage() {
                           onClick={() => updateQty(item, -1)}
                           disabled={updatingId === item.id || oos}
                           className="w-8 h-8 flex items-center justify-center transition-colors duration-200 disabled:opacity-40"
-                          style={{ color: "#6b6b70" }}
+                          style={{ color: "white" }}
                           onMouseEnter={(e) => { if (!oos) e.currentTarget.style.color = "#c9a84c"; }}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#6b6b70")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
                         >
                           {item.quantity === 1 ? (
                             /* trash icon when qty would go to 0 */
@@ -366,7 +374,7 @@ export default function CartPage() {
                         </button>
 
                         <span className="w-9 text-center text-[13px]"
-                          style={{ fontFamily: "'Jost', sans-serif", color: oos ? "#6b6b70" : "#f5f0e8" }}>
+                          style={{ fontFamily: "'Jost', sans-serif", color: oos ? "white" : "#f5f0e8" }}>
                           {updatingId === item.id ? (
                             <span className="inline-block w-3 h-3 border border-[#c9a84c] border-t-transparent rounded-full animate-spin" />
                           ) : item.quantity}
@@ -376,16 +384,16 @@ export default function CartPage() {
                           onClick={() => updateQty(item, 1)}
                           disabled={updatingId === item.id || oos || maxedOut}
                           className="w-8 h-8 flex items-center justify-center text-[18px] transition-colors duration-200 disabled:opacity-40"
-                          style={{ color: "#6b6b70" }}
+                          style={{ color: "white" }}
                           onMouseEnter={(e) => { if (!oos && !maxedOut) e.currentTarget.style.color = "#c9a84c"; }}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#6b6b70")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
                         >+</button>
                       </div>
                     ) : (
                       /* Ebook: show a static "Qty: 1" pill instead of controls */
                       <div className="flex items-center px-3 py-1 text-[9px] tracking-[2px] uppercase"
                         style={{
-                          fontFamily: "'Jost', sans-serif", color: "#6b6b70",
+                          fontFamily: "'Jost', sans-serif", color: "white",
                           background: "rgba(255,255,255,0.03)",
                           border: "1px solid rgba(255,255,255,0.06)",
                         }}>
@@ -393,7 +401,6 @@ export default function CartPage() {
                           strokeWidth="1.5" className="mr-[5px]">
                           <rect x="4" y="4" width="16" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>
                         </svg>
-                        1 licence
                       </div>
                     )}
 
@@ -401,12 +408,12 @@ export default function CartPage() {
                     <div className="flex items-center gap-2">
                       {originalPrice && (
                         <span className="text-[12px] line-through"
-                          style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>
+                          style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                           {fmt(originalPrice * item.quantity)}
                         </span>
                       )}
                       <span className="text-[16px] font-medium"
-                        style={{ fontFamily: "'Jost', sans-serif", color: oos ? "#6b6b70" : "#c9a84c" }}>
+                        style={{ fontFamily: "'Jost', sans-serif", color: oos ? "white" : "#c9a84c" }}>
                         {fmt(displayPrice * item.quantity)}
                       </span>
                     </div>
@@ -416,9 +423,9 @@ export default function CartPage() {
                       onClick={() => removeItem(item.id)}
                       disabled={removingId === item.id}
                       className="text-[9px] tracking-[2px] uppercase transition-colors duration-200 disabled:opacity-40"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "#3a3a3e" }}
+                      style={{ fontFamily: "'Jost', sans-serif", color: "#ffffff" }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = "#8b3a3a")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "#3a3a3e")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "#ffffff")}
                     >
                       {removingId === item.id ? "Removing…" : "Remove"}
                     </button>
@@ -433,7 +440,7 @@ export default function CartPage() {
         <div className="flex flex-col gap-0.5 lg:sticky lg:top-6">
           <div className="p-6" style={{ background: "#1c1c1e" }}>
             <p className="text-[9px] tracking-[3px] uppercase mb-5"
-              style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>Order Summary</p>
+              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>Order Summary</p>
 
             <div className="flex flex-col gap-3 mb-5">
               <SummaryRow label="Subtotal" value={fmt(subtotal)} />
@@ -462,7 +469,7 @@ export default function CartPage() {
                   style={{
                     fontFamily: "'Jost', sans-serif",
                     background: "rgba(80,80,80,0.25)",
-                    color: "#6b6b70",
+                    color: "white",
                     border: "1px solid rgba(80,80,80,0.2)",
                   }}
                 >
@@ -496,18 +503,18 @@ export default function CartPage() {
             )}
 
             <div className="flex items-center justify-center gap-4 mt-4">
-              {["Secure Payment", "Easy Returns"].map((t) => (
+              {["Secure Payment"].map((t) => (
                 <span key={t} className="text-[9px] tracking-[1px]"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "#3a3a3e" }}>{t}</span>
+                  style={{ fontFamily: "'Jost', sans-serif", color: "#ffffff" }}>{t}</span>
               ))}
             </div>
           </div>
 
           <button
             className="py-4 text-[9px] tracking-[3px] uppercase transition-colors duration-300"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70", background: "transparent", border: "none" }}
+            style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "transparent", border: "none" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#c9a84c")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#6b6b70")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
             onClick={() => (window.location.href = "/")}
           >← Continue Shopping</button>
         </div>
@@ -545,9 +552,9 @@ function Header({ count, loading, onClear }: { count: number; loading?: boolean;
         </h1>
         {onClear && count > 0 && (
           <button className="text-[9px] tracking-[2px] uppercase mb-2 transition-colors duration-200"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#3a3a3e" }}
+            style={{ fontFamily: "'Jost', sans-serif", color: "#ffffff" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#8b3a3a")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#3a3a3e")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#ffffff")}
             onClick={onClear}>Clear All</button>
         )}
       </div>
@@ -563,7 +570,7 @@ function SummaryRow({ label, value, accent }: { label: string; value: string; ac
   return (
     <div className="flex items-center justify-between">
       <span className="text-[11px] tracking-[1px]"
-        style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>{label}</span>
+        style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>{label}</span>
       <span className="text-[13px]"
         style={{ fontFamily: "'Jost', sans-serif", color: accent ? "#4a9a5a" : "#f5f0e8" }}>{value}</span>
     </div>

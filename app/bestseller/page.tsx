@@ -33,7 +33,7 @@ function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
   }, [onDone]);
   return (
     <div
-      className="fixed bottom-6 left-1/2 z-[9999] flex items-center gap-3 px-4 sm:px-5 py-3 uppercase tracking-[2px] whitespace-nowrap"
+      className="fixed bottom-6 left-1/2 z-[9999] flex items-center gap-3 px-4 sm:px-5 py-3 uppercase tracking-[2px]"
       style={{
         transform: "translateX(-50%)",
         background: "#1c1c1e",
@@ -43,6 +43,10 @@ function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
         fontSize: "10px",
         boxShadow: "0 8px 32px rgba(0,0,0,0.7)",
         animation: "toastIn 0.3s ease both",
+        maxWidth: "calc(100vw - 32px)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
       }}
     >
       <div className="w-[6px] h-[6px] rotate-45 bg-[#d4aa4e] shrink-0" />
@@ -238,7 +242,7 @@ export default function BestSellersPage() {
           background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23g)' opacity='.038'/%3E%3C/svg%3E");
           opacity:.48;mix-blend-mode:soft-light;}
 
-        /* Vault bento */
+        /* ── Vault bento ── */
         .vi{position:relative;overflow:hidden;cursor:pointer;transition:transform .4s cubic-bezier(.16,1,.3,1);}
         .vi:hover{transform:scale(1.025);}
         .vi:hover .vi-img{filter:brightness(.42) saturate(.35)!important;}
@@ -246,7 +250,7 @@ export default function BestSellersPage() {
         .vi-img{transition:filter .4s;filter:brightness(.74) saturate(.62);}
         .vi-info{transition:opacity .3s,transform .35s;}
 
-        /* Rankings */
+        /* ── Rankings row ── */
         .rr{display:grid;grid-template-columns:52px 56px 1fr auto;align-items:center;cursor:pointer;position:relative;transition:background .2s;border-bottom:1px solid rgba(212,170,78,.05);}
         .rr::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#a07c2a,#7a5e1a);transform:scaleY(0);transform-origin:bottom;transition:transform .3s;}
         .rr:hover{background:rgba(212,170,78,.04)!important;}
@@ -260,34 +264,63 @@ export default function BestSellersPage() {
 
         .sk{background:linear-gradient(90deg,#0e0c14 0%,rgba(212,170,78,.06) 50%,#0e0c14 100%);background-size:400% 100%;animation:shimmer 2s infinite;}
 
-        /* Responsive */
+        /* ═══════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════ */
+
+        /* ── Tablet & mobile (≤768px) ── */
         @media(max-width:768px){
+          /* Hero: hide decorative left panel, fix right padding */
           .hero-left{display:none!important;}
-          .hero-r{padding:48px 20px!important;}
-          .sect-inner{padding:0 16px!important;}
-          .vault-grid{grid-template-columns:1fr 1fr!important;grid-template-rows:auto!important;}
+          .hero-r{padding:52px 20px 48px!important;}
+
+          /* Section horizontal padding */
+          .sect-inner{padding-left:16px!important;padding-right:16px!important;}
+
+          /* Vault: collapse to 2-col uniform grid */
+          .vault-grid{
+            grid-template-columns:1fr 1fr!important;
+            grid-template-rows:none!important;
+            grid-auto-rows:160px!important;
+          }
           .vi.big{grid-column:span 1!important;grid-row:span 1!important;}
-          .rr{grid-template-columns:44px 52px 1fr auto!important;}
+
+          /* Show vault info on touch (no hover available) */
+          .vi .vi-info{opacity:1!important;transform:none!important;}
+
+          /* Rankings: tighten columns */
+          .rr{grid-template-columns:44px 48px 1fr auto!important;}
+
+          /* Always show cart/wish buttons on touch */
+          .rr-btns{opacity:1!important;}
         }
+
+        /* ── Small phones (≤480px) ── */
         @media(max-width:480px){
-          .rr{grid-template-columns:38px 0px 1fr auto!important;}
+          /* Drop thumbnail column entirely */
+          .rr{grid-template-columns:36px 0px 1fr auto!important;}
           .rr-thumb{display:none!important;}
           .rr-author{display:none!important;}
+
+          /* Smaller vault cells */
+          .vault-grid{grid-auto-rows:130px!important;}
         }
       `}</style>
 
       {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
       <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />
 
-      <div className="relative z-[1] min-h-screen pt-[90px] sm:pt-[130px] overflow-x-hidden text-[#f0ebe0]"
-        style={{ background: "rgba(5,4,10,.9)", fontFamily: "var(--fs)" }}>
+      <div
+        className="relative z-[1] min-h-screen pt-[90px] sm:pt-[130px] overflow-x-hidden text-[#f0ebe0]"
+        style={{ background: "rgba(5,4,10,.9)", fontFamily: "var(--fs)" }}
+      >
 
         {/* ══════════════════════════════════════
             HERO
         ══════════════════════════════════════ */}
-        <section className="relative flex overflow-hidden" style={{ minHeight: "90vh" }}>
+        <section className="relative flex overflow-hidden" >
 
-          {/* LEFT — big BEST text */}
+          {/* LEFT — decorative BEST stacked text (hidden on mobile via .hero-left) */}
           <div className="hero-left w-[36%] flex-shrink-0 relative flex items-center justify-center border-r border-[rgba(212,170,78,.1)]">
             <div className="absolute top-0 bottom-0 -right-px w-px"
               style={{ background: "linear-gradient(to bottom,transparent,rgba(212,170,78,.35),transparent)" }} />
@@ -299,7 +332,7 @@ export default function BestSellersPage() {
               style={{ right: "-50px", width: "100px", background: "rgba(5,4,10,.9)", clipPath: "polygon(50px 0,100% 0,100% 100%,0 100%)" }} />
           </div>
 
-          {/* RIGHT — editorial */}
+          {/* RIGHT — editorial copy */}
           <div className="hero-r flex-1 flex flex-col justify-center relative"
             style={{ padding: "80px 72px 80px 96px" }}>
 
@@ -307,7 +340,7 @@ export default function BestSellersPage() {
               <div className="w-[6px] h-[6px] rotate-45 bg-[#a07c2a] shrink-0" />
               <span className="uppercase text-[#d4aa4e] tracking-[4px]"
                 style={{ fontFamily: "var(--fm)", fontSize: "7px" }}>
-                AG Classics — Bestsellers
+                AG Classics / Bestsellers
               </span>
               <div className="flex-1 max-w-[72px] h-px hidden sm:block"
                 style={{ background: "linear-gradient(to right,#a07c2a,transparent)" }} />
@@ -328,10 +361,11 @@ export default function BestSellersPage() {
               Every volume here has earned its place — chosen by thousands of readers who keep coming back.
             </p>
 
-            <div className="a5 flex gap-3 flex-col xs:flex-row flex-wrap items-start sm:items-center">
+            {/* FIX: xs: → sm: (xs is not a Tailwind default breakpoint) */}
+            <div className="a5 flex gap-3 flex-col sm:flex-row flex-wrap items-start sm:items-center">
               <button
                 onClick={() => document.getElementById("rankings")?.scrollIntoView({ behavior: "smooth" })}
-                className="uppercase tracking-[3px] border-none text-[#05040a] cursor-pointer transition-[transform,filter] duration-200 w-full xs:w-auto"
+                className="uppercase tracking-[3px] border-none text-[#05040a] cursor-pointer transition-[transform,filter] duration-200 w-full sm:w-auto"
                 style={{ fontFamily: "var(--fm)", fontSize: "8px", padding: "13px 28px", background: "linear-gradient(135deg,#d4aa4e,#a07c2a)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.filter = "brightness(1.12)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "none"; (e.currentTarget as HTMLElement).style.filter = "none"; }}>
@@ -390,9 +424,7 @@ export default function BestSellersPage() {
 
         {!loading && !error && books.length > 0 && (<>
 
-          {/* ══════════════════════════════════════
-              § 02 — CAROUSEL  (auto-slides every 3.2s)
-          ══════════════════════════════════════ */}
+
           {books.length > 1 && (
             <section className="py-12 sm:py-[88px] bg-[#05040a] overflow-hidden">
               <div className="sect-inner max-w-[1680px] mx-auto px-4 sm:px-16">
@@ -400,14 +432,13 @@ export default function BestSellersPage() {
                 {/* Header */}
                 <div className="flex items-end justify-between mb-8 sm:mb-12 flex-wrap gap-4">
                   <div>
-                    <div className="uppercase text-[#d4aa4e] tracking-[5px] mb-[10px] text-[7px]"
-                      style={{ fontFamily: "var(--fm)" }}>§ 02</div>
+
                     <h2 className="uppercase text-[#f0ebe0] leading-[.88] tracking-[3px]"
                       style={{ fontFamily: "var(--fh)", fontSize: "clamp(32px,7vw,92px)" }}>
                       The Books
                     </h2>
-                    <p className="italic text-[#8a8490] mt-2 text-sm" style={{ fontFamily: "var(--fs)" }}>
-                      Top picks — auto-scrolling
+                    <p className="italic text-white mt-2 text-lg" style={{ fontFamily: "var(--fs)" }}>
+                      Top picks auto-scrolling
                     </p>
                   </div>
 
@@ -419,14 +450,12 @@ export default function BestSellersPage() {
                     </span>
                     <button
                       onClick={() => manualNav(reelIdx === 0 ? reelBooks.length - 1 : reelIdx - 1)}
-                      className="w-10 h-10 border border-[rgba(212,170,78,.25)] bg-transparent text-[#d4aa4e] flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-[rgba(212,170,78,.08)] hover:border-[rgba(212,170,78,.6)]"
-                      style={{ fontFamily: "var(--fm)" }}>
+                      className="w-10 h-10 border border-[rgba(212,170,78,.25)] bg-transparent text-[#d4aa4e] flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-[rgba(212,170,78,.08)] hover:border-[rgba(212,170,78,.6)]">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
                     <button
                       onClick={() => manualNav(reelIdx === reelBooks.length - 1 ? 0 : reelIdx + 1)}
-                      className="w-10 h-10 border border-[rgba(212,170,78,.25)] bg-transparent text-[#d4aa4e] flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-[rgba(212,170,78,.08)] hover:border-[rgba(212,170,78,.6)]"
-                      style={{ fontFamily: "var(--fm)" }}>
+                      className="w-10 h-10 border border-[rgba(212,170,78,.25)] bg-transparent text-[#d4aa4e] flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-[rgba(212,170,78,.08)] hover:border-[rgba(212,170,78,.6)]">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   </div>
@@ -440,11 +469,15 @@ export default function BestSellersPage() {
                   <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 z-10 pointer-events-none"
                     style={{ background: "linear-gradient(to left,#05040a,transparent)" }} />
 
-                  {/* Slide track — translates by card-width * reelIdx */}
+                  {/*
+                    FIX: gap-3 = 12px on mobile, gap-4 = 16px on desktop.
+                    The translateX calc must match the actual gap being applied.
+                    Using CSS clamp keeps it in sync across breakpoints.
+                  */}
                   <div
                     className="flex gap-3 sm:gap-4 pb-2"
                     style={{
-                      transform: `translateX(calc(-${reelIdx} * (min(260px, 44vw) + 16px)))`,
+                      transform: `translateX(calc(-${reelIdx} * (min(240px, 42vw) + clamp(12px, 1.5vw, 16px))))`,
                       transition: "transform 0.55s cubic-bezier(.16,1,.3,1)",
                       willChange: "transform",
                     }}
@@ -455,10 +488,10 @@ export default function BestSellersPage() {
                       return (
                         <div
                           key={book.id}
-                          className="relative flex-shrink-0 overflow-hidden cursor-pointer group"
+                          className="relative flex-shrink-0 overflow-hidden cursor-pointer"
                           style={{
-                            width:  "min(260px, 44vw)",
-                            height: "min(380px, 64vw)",
+                            width:  "min(240px, 42vw)",
+                            height: "min(360px, 63vw)",
                             border: `1px solid ${isActive ? "rgba(212,170,78,.4)" : "rgba(212,170,78,.08)"}`,
                             background: "#181520",
                             transition: "border-color .4s, transform .4s, box-shadow .4s",
@@ -472,7 +505,7 @@ export default function BestSellersPage() {
                             className="absolute top-3 left-3 z-[10] leading-none select-none"
                             style={{
                               fontFamily: "var(--fh)",
-                              fontSize: "clamp(32px,6vw,56px)",
+                              fontSize: "clamp(28px,5vw,56px)",
                               color: "transparent",
                               WebkitTextStroke: `1px rgba(212,170,78,${isActive ? .7 : .25})`,
                               letterSpacing: "-2px",
@@ -481,13 +514,11 @@ export default function BestSellersPage() {
                             {String(i + 1).padStart(2, "0")}
                           </div>
 
-                          {/* Active top-bar accent */}
                           {isActive && (
                             <div className="absolute top-0 left-0 right-0 h-[2px] z-[11]"
                               style={{ background: "linear-gradient(to right,transparent,#d4aa4e,transparent)" }} />
                           )}
 
-                          {/* Cover image */}
                           {book.main_image
                             ? <img
                                 src={`${API_URL}${book.main_image}`} alt={book.title}
@@ -500,9 +531,9 @@ export default function BestSellersPage() {
                             : <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#221f2c,#181520)" }} />
                           }
 
-                          {/* Gradient overlay + info */}
+                          {/* Info overlay — always visible on active card (works on touch too) */}
                           <div
-                            className="absolute inset-0 flex flex-col justify-end p-4 sm:p-5"
+                            className="absolute inset-0 flex flex-col justify-end p-3 sm:p-5"
                             style={{
                               background: "linear-gradient(to top,rgba(5,4,10,.98) 0%,rgba(5,4,10,.6) 50%,rgba(5,4,10,.05) 100%)",
                               opacity: isActive ? 1 : 0,
@@ -516,19 +547,18 @@ export default function BestSellersPage() {
                               </p>
                             )}
                             <h3 className="font-bold text-[#f0ebe0] leading-[1.2] mb-2 line-clamp-2"
-                              style={{ fontFamily: "var(--fs)", fontSize: "clamp(14px,1.6vw,18px)" }}>
+                              style={{ fontFamily: "var(--fs)", fontSize: "clamp(13px,1.6vw,18px)" }}>
                               {book.title}
                             </h3>
                             <div className="mb-2"><Stars r={book.avg_rating} /></div>
                             <div className="flex items-center gap-2 mb-3 flex-wrap">
                               <span className="font-bold text-[#d4aa4e]"
-                                style={{ fontFamily: "var(--fm)", fontSize: "15px" }}>
+                                style={{ fontFamily: "var(--fm)", fontSize: "clamp(12px,1.4vw,15px)" }}>
                                 ₹{parseFloat(String(book.sell_price)).toFixed(0)}
                               </span>
                               {d > 0 && (
                                 <>
-                                  <span className="text-[10px] line-through text-[#8a8490]"
-                                    style={{ fontFamily: "var(--fm)" }}>
+                                  <span className="text-[10px] line-through text-[#8a8490]" style={{ fontFamily: "var(--fm)" }}>
                                     ₹{parseFloat(String(book.price)).toFixed(0)}
                                   </span>
                                   <span className="px-[6px] py-[2px] text-[#c07070]"
@@ -538,19 +568,17 @@ export default function BestSellersPage() {
                                 </>
                               )}
                             </div>
-
-                            {/* Action buttons — always visible on active card */}
                             <div className="flex gap-2">
                               <CartBtn book={book} size="sm" />
-                              <WishBtn book={book} sz={34} />
+                              <WishBtn book={book} sz={30} />
                             </div>
                           </div>
 
-                          {/* Minimal title overlay for inactive cards */}
+                          {/* Minimal title for inactive cards */}
                           {!isActive && (
-                            <div className="absolute bottom-0 left-0 right-0 p-3"
+                            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3"
                               style={{ background: "linear-gradient(to top,rgba(5,4,10,.9),transparent)" }}>
-                              <p className="text-[#8a8490] truncate text-[11px]"
+                              <p className="text-[#8a8490] truncate text-[10px] sm:text-[11px]"
                                 style={{ fontFamily: "var(--fs)" }}>
                                 {book.title}
                               </p>
@@ -564,18 +592,12 @@ export default function BestSellersPage() {
 
                 {/* Progress bar + dots */}
                 <div className="flex items-center gap-4 mt-6 sm:mt-8">
-                  {/* Animated progress bar */}
                   <div className="flex-1 h-px bg-[rgba(212,170,78,.1)] relative overflow-hidden">
                     <div
-                      className="absolute left-0 top-0 h-full bg-[#d4aa4e] transition-all duration-[3200ms] ease-linear"
-                      style={{
-                        width: "100%",
-                        transformOrigin: "left",
-                        animation: "progressBar 3.2s linear infinite",
-                      }}
+                      className="absolute left-0 top-0 h-full bg-[#d4aa4e]"
+                      style={{ width: "100%", transformOrigin: "left", animation: "progressBar 3.2s linear infinite" }}
                     />
                   </div>
-                  {/* Dots */}
                   <div className="flex gap-[6px] flex-shrink-0">
                     {reelBooks.map((_, i) => (
                       <button key={i} onClick={() => manualNav(i)}
@@ -593,23 +615,35 @@ export default function BestSellersPage() {
           )}
 
 
+    
           {books.length >= 9 && (
             <section className="py-12 sm:py-[88px] bg-[#0e0c14]">
               <div className="sect-inner max-w-[1680px] mx-auto px-4 sm:px-16">
                 <div className="mb-8 sm:mb-12">
-                  <div className="uppercase text-[#d4aa4e] tracking-[5px] mb-[10px] text-[7px]"
-                    style={{ fontFamily: "var(--fm)" }}>§ 03</div>
+ 
                   <h2 className="uppercase text-[#f0ebe0] leading-[.88] tracking-[3px]"
                     style={{ fontFamily: "var(--fh)", fontSize: "clamp(32px,7vw,92px)" }}>
                     The Vault
                   </h2>
-                  <p className="italic text-[#8a8490] mt-2 text-sm" style={{ fontFamily: "var(--fs)" }}>
+                  <p className="italic text-white mt-2 text-lg" style={{ fontFamily: "var(--fs)" }}>
                     Every title worth owning
                   </p>
                 </div>
 
-                <div className="vault-grid gap-[5px] sm:gap-[6px]"
-                  style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gridTemplateRows: "280px 200px 240px" }}>
+                {/*
+                  FIX: Added gridAutoRows as a fallback.
+                  The CSS media query overrides grid-template-rows on mobile
+                  and switches to grid-auto-rows:160px so cells have height.
+                */}
+                <div
+                  className="vault-grid gap-[5px] sm:gap-[6px]"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(5,1fr)",
+                    gridTemplateRows: "280px 200px 240px",
+                    gridAutoRows: "160px",
+                  }}
+                >
                   {books.slice(0, 10).map((book, i) => {
                     const spans = [
                       { cs: 2, rs: 2 }, { cs: 1, rs: 1 }, { cs: 1, rs: 1 },
@@ -670,14 +704,13 @@ export default function BestSellersPage() {
           )}
 
 
-          {/* ══════════════════════════════════════
-              § 05 — FULL RANKINGS
-          ══════════════════════════════════════ */}
+
           {books.length > 3 && (
             <section id="rankings" className="py-12 sm:py-[88px] bg-[#0e0c14]">
               <div className="sect-inner max-w-[1680px] mx-auto px-4 sm:px-16">
                 <div className="flex items-end justify-between mb-8 sm:mb-12 flex-wrap gap-4">
                   <div>
+
                     <h2 className="uppercase text-[#f0ebe0] leading-[.88] tracking-[3px]"
                       style={{ fontFamily: "var(--fh)", fontSize: "clamp(32px,7vw,92px)" }}>
                       Full Rankings
@@ -693,7 +726,7 @@ export default function BestSellersPage() {
                 <div className="rr py-[10px] pr-4 border-b border-[rgba(212,170,78,.15)] mb-[2px]"
                   style={{ background: "rgba(212,170,78,.025)" }}>
                   {["Rank", "", "Title", "Price"].map((h, i) => (
-                    <div key={i} className="uppercase tracking-[3px] text-[rgba(230, 171, 43, 0.13)] text-xs"
+                    <div key={i} className="uppercase tracking-[3px] text-[rgba(255, 255, 255, 0.3)] text-[11px]"
                       style={{ fontFamily: "var(--fm)", textAlign: i === 0 ? "center" : i === 3 ? "right" : "left", paddingLeft: i === 2 ? "10px" : 0, paddingRight: i === 3 ? "10px" : 0 }}>
                       {h}
                     </div>
@@ -708,21 +741,21 @@ export default function BestSellersPage() {
                     const isNew = new Date(book.created_at) > new Date(Date.now() - 30 * 864e5);
                     return (
                       <div key={book.id} className="rr"
-                        style={{ background: rank % 2 === 0 ? "rgba(253, 253, 253, 0.01)" : "transparent" }}
+                        style={{ background: rank % 2 === 0 ? "rgba(253,253,253,.01)" : "transparent" }}
                         onClick={() => (window.location.href = `/product/${book.slug}`)}>
 
-                        {/* Rank */}
-                        <div className="flex items-center justify-center py-4 sm:py-5 border-r border-[rgba(212,170,78,.06)] relative">
+                        {/* Rank number */}
+                        <div className="flex items-center justify-center py-3 sm:py-5 border-r border-[rgba(212,170,78,.06)] relative">
                           <span className="rr-n leading-none select-none"
-                            style={{ fontFamily: "var(--fh)", fontSize:  "28px" , color: "rgba(212,170,78,.65)", letterSpacing: "-1px" }}>
+                            style={{ fontFamily: "var(--fh)", fontSize:  "28px", color: "rgba(212,170,78,.65)", letterSpacing: "-1px" }}>
                             {String(rank).padStart(2, "0")}
                           </span>
                           {rank <= 3 && <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[14px] h-px bg-[#d4aa4e] opacity-35" />}
                         </div>
 
                         {/* Thumbnail */}
-                        <div className="rr-thumb py-[10px] pl-2 sm:pl-[14px]">
-                          <div className="w-10 sm:w-22 h-[52px] sm:h-34 overflow-hidden">
+                        <div className="rr-thumb py-[8px] pl-2 sm:pl-[14px]">
+                          <div className="w-9 h-[48px] sm:w-25 sm:h-35 overflow-hidden">
                             {book.main_image
                               ? <img className="rr-img w-full h-full object-cover" src={`${API_URL}${book.main_image}`} alt={book.title} />
                               : <div className="w-full h-full bg-[#181520]" />
@@ -731,15 +764,15 @@ export default function BestSellersPage() {
                         </div>
 
                         {/* Info */}
-                        <div className="py-3 px-10 sm:px-17 min-w-0">
+                        <div className="py-3 px-2 sm:px-24 min-w-0">
                           {book.authors?.[0] && (
                             <p className="rr-author uppercase text-[#7a5e1a] tracking-[2px] mb-[3px] truncate text-xs"
                               style={{ fontFamily: "var(--fm)" }}>
                               {book.authors[0].name}
                             </p>
                           )}
-                          <h3 className="rr-t font-bold text-[#f0ebe0] leading-[1.25] mb-[5px] text-ms truncate"
-                            style={{ fontFamily: "var(--fs)" }}>
+                          <h3 className="rr-t font-bold text-[#f0ebe0] leading-[1.25] mb-[5px] truncate text-lg"
+                            style={{ fontFamily: "var(--fs)"}}>
                             {book.title}
                           </h3>
                           <div className="flex items-center gap-2 flex-wrap">
@@ -750,7 +783,7 @@ export default function BestSellersPage() {
                                 {book.review_count}r
                               </span>
                             )}
-
+        
                             {oos && (
                               <span className="uppercase tracking-[2px] px-[6px] py-[2px] text-[#8a8490] text-[6px]"
                                 style={{ fontFamily: "var(--fm)", background: "rgba(100,100,105,.2)" }}>Sold Out</span>
@@ -759,7 +792,7 @@ export default function BestSellersPage() {
                         </div>
 
                         {/* Price + actions */}
-                        <div className="py-3 px-2 sm:px-5 flex flex-col items-end gap-2">
+                        <div className="py-3 px-2 sm:px-4 flex flex-col items-end gap-2">
                           <div className="text-right">
                             <div className="font-bold text-[#d4aa4e]"
                               style={{ fontFamily: "var(--fm)", fontSize: "clamp(11px,1vw,15px)" }}>
@@ -767,7 +800,9 @@ export default function BestSellersPage() {
                             </div>
                             {d > 0 && (
                               <div className="flex items-center gap-1 justify-end mt-[2px]">
-                                <span className="text-[9px] line-through text-[#8a8490]">₹{parseFloat(String(book.price)).toFixed(0)}</span>
+                                <span className="text-[9px] line-through text-[#8a8490]">
+                                  ₹{parseFloat(String(book.price)).toFixed(0)}
+                                </span>
                                 <span className="px-[5px] py-[1px] text-[#c07070] text-[7px]"
                                   style={{ fontFamily: "var(--fm)", background: "rgba(139,58,58,.15)" }}>
                                   {d}%
@@ -775,6 +810,7 @@ export default function BestSellersPage() {
                               </div>
                             )}
                           </div>
+                          {/* rr-btns: hidden by default, shown on hover (desktop) or always on mobile via CSS */}
                           <div className="rr-btns flex gap-[4px] opacity-0">
                             <CartBtn book={book} size="sm" />
                             <WishBtn book={book} sz={28} />
@@ -797,7 +833,7 @@ export default function BestSellersPage() {
               style={{ background: "linear-gradient(to right,transparent,#a07c2a,transparent)" }} />
 
             <div className="max-w-[1680px] mx-auto flex items-center justify-between gap-8 sm:gap-12 flex-wrap">
-              <div className="flex-1 min-w-[220px]">
+              <div className="flex-1 min-w-[200px]">
                 <div className="leading-[.88] mb-5 uppercase"
                   style={{ fontFamily: "var(--fh)", fontSize: "clamp(26px,5vw,68px)", letterSpacing: "2px", color: "transparent", WebkitTextStroke: "1px rgba(233,171,36,.79)" }}>
                   The Archive<br/>Never Closes
@@ -806,13 +842,13 @@ export default function BestSellersPage() {
                   style={{ fontFamily: "var(--fs)", fontSize: "clamp(14px,1.8vw,22px)" }}>
                   "Not all readers are leaders, but all leaders are readers."
                 </p>
-                <span className="block mt-3 uppercase tracking-[4px] text-[#7a5e1a] text-[8px]"
+                <span className="block mt-3 uppercase tracking-[4px] text-[#7a5e1a] text-xs"
                   style={{ fontFamily: "var(--fm)" }}>
                   — Harry S. Truman
                 </span>
               </div>
 
-              {/* Diamond ornament */}
+              {/* Diamond ornament — hidden on mobile */}
               <div className="hidden sm:flex flex-col items-center gap-2">
                 <div className="w-px h-[60px]"
                   style={{ background: "linear-gradient(to bottom,transparent,rgba(201,168,76,.6))" }} />

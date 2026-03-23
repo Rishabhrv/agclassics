@@ -147,7 +147,7 @@ export default function OrderDetailsPage() {
   }, [orderId]);
 
   if (!orderId) return (
-    <p className="p-6 text-sm" style={{ fontFamily: "'Jost', sans-serif", color: "#555259" }}>
+    <p className="p-6 text-sm" style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
       Invalid order
     </p>
   );
@@ -157,7 +157,7 @@ export default function OrderDetailsPage() {
       <style>{globalStyles}</style>
       <div
         className="flex items-center justify-center py-24 gap-3 text-sm"
-        style={{ fontFamily: "'Jost', sans-serif", color: "#555259" }}
+        style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
       >
         <svg
           style={{ width: 16, height: 16, animation: "spin 0.8s linear infinite" }}
@@ -172,7 +172,7 @@ export default function OrderDetailsPage() {
   );
 
   if (!items.length) return (
-    <p className="p-6 text-sm" style={{ fontFamily: "'Jost', sans-serif", color: "#555259" }}>
+    <p className="p-6 text-sm" style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
       Order not found
     </p>
   );
@@ -201,9 +201,9 @@ export default function OrderDetailsPage() {
           <Link
             href="/account/orders"
             className="inline-flex items-center gap-1 text-xs mb-4 transition-colors"
-            style={{ color: "#555259" }}
+            style={{ color: "white" }}
             onMouseEnter={e => (e.currentTarget.style.color = "#c9a84c")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#555259")}
+            onMouseLeave={e => (e.currentTarget.style.color = "white")}
           >
             <ChevronLeft size={14} />
             Back to orders
@@ -218,7 +218,7 @@ export default function OrderDetailsPage() {
                 Order{" "}
                 <em className="italic" style={{ color: "#c9a84c" }}>#{order.order_id}</em>
               </h1>
-              <p className="text-[12px] mt-1" style={{ color: "#555259" }}>
+              <p className="text-[12px] mt-1" style={{ color: "white" }}>
                 Placed on {new Date(order.created_at).toLocaleDateString()} at{" "}
                 {new Date(order.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </p>
@@ -283,7 +283,7 @@ export default function OrderDetailsPage() {
                           ? <BookOpen size={10} style={{ color: "#c9a84c", flexShrink: 0 }} />
                           : <Package  size={10} style={{ color: "#8a8790", flexShrink: 0 }} />
                         }
-                        <p className="text-[11px] capitalize" style={{ color: "#555259" }}>
+                        <p className="text-[11px] capitalize" style={{ color: "white" }}>
                           {item.format} × {item.quantity}
                         </p>
                       </div>
@@ -326,7 +326,7 @@ export default function OrderDetailsPage() {
                       <p className="font-medium text-sm" style={{ color: "#c9a84c" }}>
                         ₹{item.price}
                       </p>
-                      <p className="text-[10px] mt-0.5" style={{ color: "#555259" }}>
+                      <p className="text-[10px] mt-0.5" style={{ color: "white" }}>
                         × {item.quantity}
                       </p>
                     </div>
@@ -344,13 +344,13 @@ export default function OrderDetailsPage() {
           <div className="dark-card p-4 sm:p-5" style={{ borderRadius: 12 }}>
             <h2
               className="text-[11px] uppercase tracking-[3px] mb-4 pb-3"
-              style={{ fontFamily: "'Cinzel', serif", color: "#555259", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              style={{ fontFamily: "'Cinzel', serif", color: "white", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
             >
               Payment Details
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-[12px]" style={{ color: "#555259" }}>Status</span>
+                <span className="text-[12px]" style={{ color: "white" }}>Status</span>
                 <span
                   className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full border capitalize ${paymentStatusClass}`}
                 >
@@ -359,7 +359,7 @@ export default function OrderDetailsPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[12px]" style={{ color: "#555259" }}>Method</span>
+                <span className="text-[12px]" style={{ color: "white" }}>Method</span>
                 <span className="text-[12px] font-medium" style={{ color: "#e8e0d0" }}>
                   {order.payment_method || "Razorpay"}
                 </span>
@@ -368,7 +368,7 @@ export default function OrderDetailsPage() {
                 className="flex justify-between items-center pt-3"
                 style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
               >
-                <span className="text-[12px]" style={{ color: "#555259" }}>Amount Paid</span>
+                <span className="text-[12px]" style={{ color: "white" }}>Amount Paid</span>
                 <span
                   className="font-medium text-base"
                   style={{ fontFamily: "'Cormorant Garamond', serif", color: "#c9a84c", fontSize: 20 }}
@@ -383,20 +383,20 @@ export default function OrderDetailsPage() {
           <div className="dark-card p-4 sm:p-5" style={{ borderRadius: 12 }}>
             <h2
               className="text-[11px] uppercase tracking-[3px] mb-4 pb-3"
-              style={{ fontFamily: "'Cinzel', serif", color: "#555259", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              style={{ fontFamily: "'Cinzel', serif", color: "white", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
             >
               Order Summary
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-[12px]" style={{ color: "#555259" }}>Subtotal</span>
+                <span className="text-[12px]" style={{ color: "white" }}>Subtotal</span>
                 <span className="text-[12px] font-medium" style={{ color: "#e8e0d0" }}>
                   ₹{(order.total_amount - Number(order.shipping_cost)).toFixed(2)}
                 </span>
               </div>
               {Number(order.shipping_cost) > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-[12px]" style={{ color: "#555259" }}>Shipping</span>
+                  <span className="text-[12px]" style={{ color: "white" }}>Shipping</span>
                   <span className="text-[12px] font-medium" style={{ color: "#e8e0d0" }}>
                     ₹{Number(order.shipping_cost).toFixed(2)}
                   </span>
@@ -426,7 +426,7 @@ export default function OrderDetailsPage() {
           <div className="dark-card p-4 sm:p-5" style={{ borderRadius: 12 }}>
             <h2
               className="text-[11px] uppercase tracking-[3px] mb-4 pb-3"
-              style={{ fontFamily: "'Cinzel', serif", color: "#555259", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              style={{ fontFamily: "'Cinzel', serif", color: "white", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
             >
               Shipping Address
             </h2>
@@ -437,10 +437,10 @@ export default function OrderDetailsPage() {
               <p>{order.address}</p>
               <p>{order.city}, {order.state} – {order.pincode}</p>
               {order.phone && (
-                <p className="mt-1.5" style={{ color: "#555259" }}>📞 {order.phone}</p>
+                <p className="mt-1.5" style={{ color: "white" }}>📞 {order.phone}</p>
               )}
               {order.shipping_email && (
-                <p style={{ color: "#555259" }}>✉ {order.shipping_email}</p>
+                <p style={{ color: "white" }}>✉ {order.shipping_email}</p>
               )}
             </div>
           </div>
@@ -463,9 +463,9 @@ export default function OrderDetailsPage() {
                 <button
                   onClick={() => setReviewItem(null)}
                   className="transition-colors cursor-pointer text-lg leading-none"
-                  style={{ color: "#555259" }}
+                  style={{ color: "white" }}
                   onMouseEnter={e => (e.currentTarget.style.color = "#c9a84c")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "#555259")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "white")}
                 >
                   ✕
                 </button>
