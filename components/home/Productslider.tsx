@@ -28,34 +28,12 @@ interface ProductSliderProps {
   onWishlist?: (book: Book) => void;
 }
 
-/* ─────────────────────────────────────────────────────────
-   Price + format resolution rules
-   ┌─────────────┬──────────────────────────────────────────┐
-   │ type        │ behaviour                                │
-   ├─────────────┼──────────────────────────────────────────┤
-   │ ebook       │ ebook_price / ebook_sell_price           │
-   │             │ format = "ebook"                         │
-   ├─────────────┼──────────────────────────────────────────┤
-   │ physical    │ product price / sell_price               │
-   │             │ format = "paperback"                     │
-   │             │ OOS when stock = 0                       │
-   ├─────────────┼──────────────────────────────────────────┤
-   │ both        │ product price / sell_price  (in stock)   │
-   │             │ format = "paperback"                     │
-   │             │                                          │
-   │ both + OOS  │ ebook_price / ebook_sell_price           │
-   │             │ format = "ebook"  ← fallback             │
-   │             │ never truly OOS — ebook still available  │
-   └─────────────┴──────────────────────────────────────────┘
-───────────────────────────────────────────────────────── */
 function resolvePrice(book: Book): {
   displayPrice:  number;
   originalPrice: number | null;
   discount:      number;
   format:        "ebook" | "paperback";
-  /** Small label shown beside price, e.g. "e-book" or "print" */
   label:         string | null;
-  /** True only when physical is unavailable AND no ebook fallback exists */
   soldOut:       boolean;
 } {
   const price      = Number(book.price);
@@ -66,7 +44,6 @@ function resolvePrice(book: Book): {
   const disc = (orig: number, sell: number) =>
     orig > sell ? Math.round(((orig - sell) / orig) * 100) : 0;
 
-  /* ── pure ebook ── */
   if (book.product_type === "ebook") {
     const sell = ebookSell  ?? sellPrice;
     const orig = ebookPrice ?? price;
@@ -76,11 +53,10 @@ function resolvePrice(book: Book): {
       discount:      disc(orig, sell),
       format:        "ebook",
       label:         "e-book",
-      soldOut:       false, // ebooks don't go OOS
+      soldOut:       false,
     };
   }
 
-  /* ── pure physical ── */
   if (book.product_type === "physical") {
     return {
       displayPrice:  sellPrice,
@@ -92,9 +68,7 @@ function resolvePrice(book: Book): {
     };
   }
 
-  /* ── both ── */
   if (book.stock > 0) {
-    // Physical still in stock → show print price, add as paperback
     return {
       displayPrice:  sellPrice,
       originalPrice: price > sellPrice ? price : null,
@@ -105,7 +79,6 @@ function resolvePrice(book: Book): {
     };
   }
 
-  // Physical OOS but ebook exists → fall back to ebook price & format
   if (ebookSell !== null) {
     const orig = ebookPrice ?? price;
     return {
@@ -113,12 +86,11 @@ function resolvePrice(book: Book): {
       originalPrice: orig > ebookSell ? orig : null,
       discount:      disc(orig, ebookSell),
       format:        "ebook",
-      label:         "e-book",  // label changes to clarify it's the digital edition
+      label:         "e-book",
       soldOut:       false,
     };
   }
 
-  // "both" but OOS and no ebook row yet → truly sold out
   return {
     displayPrice:  sellPrice,
     originalPrice: price > sellPrice ? price : null,
@@ -130,7 +102,69 @@ function resolvePrice(book: Book): {
 }
 
 const GAP      = 2;
-const TRACK_PX = 96;
+const TRACK_PX = 96; // desktop padding (px-12 × 2)
+
+/* ─── Toast notification ─── */
+function SliderToast({ msg, onDone }: { msg: string; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2400);
+    return () => clearTimeout(t);
+  }, [onDone]);
+  return (
+    <div
+      className="fixed bottom-6 left-1/2 z-[200] flex items-center gap-3 px-4 sm:px-5 py-3
+        text-[10px] sm:text-[11px] tracking-[2px] uppercase"
+      style={{
+        transform: "translateX(-50%)",
+        background: "#1c1c1e",
+        border: "1px solid rgba(201,168,76,0.25)",
+        color: "#c9a84c",
+        fontFamily: "'Jost', sans-serif",
+        animation: "ps-toast-in 0.3s ease both",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      <style>{`@keyframes ps-toast-in { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }`}</style>
+      <div className="w-[6px] h-[6px] rotate-45 bg-[#c9a84c] shrink-0" />
+      {msg}
+    </div>
+  );
+}
+
+/** Returns effective visible card count based on viewport width */
+function useResponsiveVisibleCount(desktopCount: number) {
+  const [count, setCount] = useState(desktopCount);
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      if (w < 480)       setCount(2);
+      else if (w < 768)  setCount(3);
+      else if (w < 1024) setCount(Math.min(desktopCount, 4));
+      else               setCount(desktopCount);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [desktopCount]);
+
+  return count;
+}
+
+/** Returns the horizontal padding used on the track (mirrors Tailwind responsive px) */
+function useTrackPadding() {
+  const [pad, setPad] = useState(TRACK_PX);
+  useEffect(() => {
+    const update = () => setPad(window.innerWidth < 768 ? 48 : TRACK_PX); // px-6 × 2 = 48
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return pad;
+}
+
+
 
 export default function ProductSlider({
   categorySlug,
@@ -151,17 +185,28 @@ export default function ProductSlider({
   const [loadingCart, setLoadingCart]         = useState<number | null>(null);
   const [loadingWishlist, setLoadingWishlist] = useState<number | null>(null);
   const [wishlistedIds, setWishlistedIds]     = useState<Set<number>>(new Set());
+  const [toast, setToast]                     = useState<string | null>(null);
 
+  // Responsive values
+  const effectiveCount = useResponsiveVisibleCount(visibleCount);
+  const trackPad       = useTrackPadding();
+
+  // Mouse drag
   const isDragging    = useRef(false);
   const dragStartX    = useRef(0);
   const scrollStartX  = useRef(0);
   const hasDragged    = useRef(false);
 
-  const CARDS_PER_PAGE = visibleCount;
-  const cardWidth      = `calc((100% - ${TRACK_PX}px - ${(visibleCount - 1) * GAP}px) / ${visibleCount})`;
+  // Touch drag
+  const touchStartX   = useRef(0);
+  const touchScrollX  = useRef(0);
+
+  const CARDS_PER_PAGE = effectiveCount;
+  const cardWidth      = `calc((100% - ${trackPad}px - ${(effectiveCount - 1) * GAP}px) / ${effectiveCount})`;
   const minWidthMap: Record<number, string> = {
-    3: "200px", 4: "175px", 5: "155px", 6: "130px",
+    2: "140px", 3: "160px", 4: "175px", 5: "155px", 6: "130px",
   };
+  const minWidth = minWidthMap[effectiveCount] ?? "140px";
 
   /* ── fetch ── */
   useEffect(() => {
@@ -219,7 +264,7 @@ export default function ProductSlider({
     el.scrollTo({ left: (el.scrollWidth / Math.max(books.length, 1)) * p * CARDS_PER_PAGE, behavior: "smooth" });
   };
 
-  /* ── drag ── */
+  /* ── Mouse drag ── */
   const onMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true; hasDragged.current = false;
     dragStartX.current = e.pageX; scrollStartX.current = trackRef.current?.scrollLeft ?? 0;
@@ -236,9 +281,31 @@ export default function ProductSlider({
     if (trackRef.current) trackRef.current.style.cursor = "grab";
   };
 
+  /* ── Touch drag (mobile swipe) ── */
+  const onTouchStart = (e: React.TouchEvent) => {
+    hasDragged.current  = false;
+    touchStartX.current = e.touches[0].pageX;
+    touchScrollX.current = trackRef.current?.scrollLeft ?? 0;
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!trackRef.current) return;
+    const d = e.touches[0].pageX - touchStartX.current;
+    if (Math.abs(d) > 6) {
+      hasDragged.current = true;
+      // Prevent vertical scroll only when clearly horizontal
+      e.preventDefault();
+    }
+    trackRef.current.scrollLeft = touchScrollX.current - d;
+  };
+  const onTouchEnd = () => {
+    // nothing extra needed — native momentum scroll takes over
+  };
+
   /* ── cart ── */
   const handleAddToCart = async (e: React.MouseEvent, book: Book) => {
     e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) { setToast("Please log in to add to cart"); return; }
     const { format, soldOut } = resolvePrice(book);
     if (soldOut || loadingCart === book.id) return;
     setLoadingCart(book.id);
@@ -247,7 +314,7 @@ export default function ProductSlider({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ product_id: book.id, format, quantity: 1 }),
       });
@@ -264,6 +331,8 @@ export default function ProductSlider({
   /* ── wishlist ── */
   const handleWishlist = async (e: React.MouseEvent, book: Book) => {
     e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) { setToast("Please log in to save to wishlist"); return; }
     if (loadingWishlist === book.id) return;
     setLoadingWishlist(book.id);
     const already = wishlistedIds.has(book.id);
@@ -272,7 +341,7 @@ export default function ProductSlider({
         method: already ? "DELETE" : "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ product_id: book.id }),
       });
@@ -297,7 +366,6 @@ export default function ProductSlider({
   function TypeBadge({ book }: { book: Book }) {
     const { format, soldOut } = resolvePrice(book);
 
-    // "both" with physical OOS fallen back to ebook → show "E-Book Only" badge
     if (book.product_type === "both" && book.stock === 0 && !soldOut) {
       return (
         <span
@@ -324,7 +392,6 @@ export default function ProductSlider({
         </span>
       );
     }
-
     return null;
   }
 
@@ -335,15 +402,15 @@ export default function ProductSlider({
         @keyframes ps-shimmer { from{background-position:-200% 0} to{background-position:200% 0} }
         .ps-skeleton-shimmer { animation: ps-shimmer 1.8s infinite; background-size: 200% 100%; }
       `}</style>
-      <div className="px-12 pt-16 pb-8 max-md:px-6">
+      <div className="px-4 sm:px-12 pt-12 sm:pt-16 pb-6 sm:pb-8 max-md:px-6">
         <div className="w-20 h-3 mb-3 rounded-sm bg-[rgba(201,168,76,0.15)]" />
         <div className="w-48 h-8 mb-2 rounded-sm bg-[rgba(245,240,232,0.06)]" />
         <div className="w-72 h-3 rounded-sm bg-[rgba(107,107,112,0.2)]" />
       </div>
-      <div className="flex gap-0.5 px-12 overflow-hidden max-md:px-6">
-        {[...Array(visibleCount)].map((_, i) => (
+      <div className="flex gap-0.5 px-4 sm:px-12 overflow-hidden max-md:px-6">
+        {[...Array(effectiveCount)].map((_, i) => (
           <div key={i} className="flex-shrink-0 relative overflow-hidden bg-[#1c1c1e]"
-            style={{ width: cardWidth, minWidth: minWidthMap[visibleCount], height: "360px" }}>
+            style={{ width: cardWidth, minWidth, height: "300px" }}>
             <div className="ps-skeleton-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.05)] to-transparent"
               style={{ animationDelay: `${i * 0.12}s` }} />
           </div>
@@ -354,7 +421,7 @@ export default function ProductSlider({
 
   /* ─────────── ERROR ─────────── */
   if (fetchError) return (
-    <section className="relative w-full px-12 py-16 text-center max-md:px-6">
+    <section className="relative w-full px-4 sm:px-12 py-12 sm:py-16 text-center max-md:px-6">
       <p className="text-sm text-white">
         Could not load <em className="not-italic text-[#c9a84c]">{title}</em> — {fetchError}
       </p>
@@ -366,16 +433,28 @@ export default function ProductSlider({
   /* ─────────── MAIN ─────────── */
   return (
     <>
+      {toast && <SliderToast msg={toast} onDone={() => setToast(null)} />}
       <style>{`
-        .ps-card:hover .ps-img   { transform:scale(1.03); filter:brightness(0.62) saturate(0.5); }
-        .ps-card:hover .ps-overlay {
-          background: linear-gradient(
-            to top, rgba(10,10,11,1) 0%, rgba(10,10,11,0.78) 55%, rgba(10,10,11,0.22) 100%
-          ) !important;
+        @keyframes ps-toast-in {
+          from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
-        .ps-card:hover .ps-info    { transform: translateY(0) !important; }
-        .ps-card:hover .ps-actions { opacity: 1 !important; transform: translateY(0) !important; }
-        .ps-card:hover .ps-title   { color: #c9a84c !important; }
+        @media (hover: hover) {
+          .ps-card:hover .ps-img   { transform:scale(1.03); filter:brightness(0.62) saturate(0.5); }
+          .ps-card:hover .ps-overlay {
+            background: linear-gradient(
+              to top, rgba(10,10,11,1) 0%, rgba(10,10,11,0.78) 55%, rgba(10,10,11,0.22) 100%
+            ) !important;
+          }
+          .ps-card:hover .ps-info    { transform: translateY(0) !important; }
+          .ps-card:hover .ps-actions { opacity: 1 !important; transform: translateY(0) !important; }
+          .ps-card:hover .ps-title   { color: #c9a84c !important; }
+        }
+        /* On touch devices always show info & actions */
+        @media (hover: none) {
+          .ps-info    { transform: translateY(0) !important; }
+          .ps-actions { opacity: 1 !important; transform: translateY(0) !important; }
+        }
         .ps-track { scrollbar-width:none; -ms-overflow-style:none; }
         .ps-track::-webkit-scrollbar { display:none; }
         @keyframes ps-spin { to { transform: rotate(360deg); } }
@@ -390,16 +469,16 @@ export default function ProductSlider({
       <section className="relative w-full">
 
         {/* ── Header ── */}
-        <div className="flex items-end justify-between px-12 pt-16 pb-8 max-md:flex-col max-md:items-start max-md:gap-5 max-md:px-6">
+        <div className="flex items-end justify-between px-4 sm:px-12 pt-10 sm:pt-16 pb-5 sm:pb-8 max-md:flex-col max-md:items-start max-md:gap-4 max-md:px-6">
           <div>
-            <span className="block mb-3 text-[10px] tracking-[5px] uppercase text-[#c9a84c]">{eyebrow}</span>
+            <span className="block mb-2 sm:mb-3 text-[10px] tracking-[5px] uppercase text-[#c9a84c]">{eyebrow}</span>
             <h2 className="font-light italic leading-[1.1] mb-2 text-[#f5f0e8]"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(30px,4vw,50px)" }}>
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(24px,4vw,50px)" }}>
               {title}
             </h2>
           </div>
 
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <span className="hidden sm:block text-[11px] tracking-[2px] tabular-nums mr-1 text-white">
               {String(activeIndex + 1).padStart(2, "0")}&nbsp;/&nbsp;{String(books.length).padStart(2, "0")}
             </span>
@@ -409,12 +488,12 @@ export default function ProductSlider({
                 <button key={dir}
                   onClick={() => scrollByCards(dir === "left" ? -CARDS_PER_PAGE : CARDS_PER_PAGE)}
                   disabled={!active} aria-label={dir === "left" ? "Previous" : "Next"}
-                  className={`w-10 h-10 flex items-center justify-center transition-all duration-300
+                  className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-all duration-300
                     disabled:opacity-100 disabled:cursor-not-allowed
                     ${active
                       ? "bg-[rgba(201,168,76,0.08)] border border-[rgba(201,168,76,0.35)] text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0a0a0b]"
                       : "bg-transparent border border-[rgba(255,255,255,0.07)] text-white"}`}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     {dir === "left"
                       ? <polyline points="15 18 9 12 15 6" />
                       : <polyline points="9 18 15 12 9 6" />}
@@ -427,31 +506,28 @@ export default function ProductSlider({
 
         {/* ── Viewport ── */}
         <div className="relative overflow-hidden">
-          <div className={`absolute left-0 top-0 bottom-0 w-14 z-10 pointer-events-none
+          <div className={`absolute left-0 top-0 bottom-0 w-8 sm:w-14 z-10 pointer-events-none
             bg-gradient-to-r from-[#0a0a0b] to-transparent transition-opacity duration-300
             ${canScrollLeft ? "opacity-100" : "opacity-0"}`} />
-          <div className={`absolute right-0 top-0 bottom-0 w-14 z-10 pointer-events-none
+          <div className={`absolute right-0 top-0 bottom-0 w-8 sm:w-14 z-10 pointer-events-none
             bg-gradient-to-l from-[#0a0a0b] to-transparent transition-opacity duration-300
             ${canScrollRight ? "opacity-100" : "opacity-0"}`} />
 
           <div ref={trackRef}
-            className="ps-track flex gap-0.5 overflow-x-auto px-12 pb-5 select-none cursor-grab max-md:px-6"
-            style={{ scrollSnapType: "x mandatory" }}
-            onMouseDown={onMouseDown} onMouseMove={onMouseMove}
-            onMouseUp={stopDrag} onMouseLeave={stopDrag}
+            className="ps-track flex gap-0.5 overflow-x-auto px-4 sm:px-12 pb-4 sm:pb-5 select-none cursor-grab max-md:px-6"
+            style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={stopDrag}
+            onMouseLeave={stopDrag}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
             {books.map((book) => {
               const { displayPrice, originalPrice, discount, format, label, soldOut } = resolvePrice(book);
-              const isNew        = new Date(book.created_at) > new Date(Date.now() - 30 * 86400000);
               const isWishlisted = wishlistedIds.has(book.id);
 
-              /*
-                Cart button label:
-                - soldOut                          → "Sold Out"
-                - "both" + OOS → fallback ebook    → "Add E-Book"
-                - pure ebook                       → "Add E-Book"
-                - physical / both in stock         → "Add to Cart"
-              */
               const cartLabel = soldOut
                 ? "Sold Out"
                 : format === "ebook"
@@ -461,35 +537,36 @@ export default function ProductSlider({
               return (
                 <div key={book.id}
                   className="ps-card relative overflow-hidden flex-shrink-0 hover:z-10 cursor-pointer
-                    transition-[transform,box-shadow] duration-[400ms] ease-in-out bg-[#1c1c1e] h-90 w-full"
+                    transition-[transform,box-shadow] duration-[400ms] ease-in-out bg-[#1c1c1e]"
                   style={{
-                    width: cardWidth, minWidth: minWidthMap[visibleCount],
-                     scrollSnapAlign: "start",
+                    width: cardWidth,
+                    minWidth,
+                    height: "clamp(220px, 30vw, 360px)",
+                    scrollSnapAlign: "start",
                   }}
                   onClick={() => { if (!hasDragged.current) window.location.href = `/product/${book.slug}`; }}
                 >
-                  {/* ── Left badge: OOS / discount / new ── */}
+                  {/* ── Left badge ── */}
                   {soldOut ? (
-                    <span className="absolute top-3 left-3 z-10 text-[8px] tracking-[2px] uppercase
-                      font-medium px-[9px] py-[4px] bg-gray-300 text-gray-700"
+                    <span className="absolute top-2 left-2 z-10 text-[7px] sm:text-[8px] tracking-[2px] uppercase
+                      font-medium px-[7px] sm:px-[9px] py-[3px] sm:py-[4px] bg-gray-300 text-gray-700"
                       style={{ fontFamily: "'Jost', sans-serif" }}>
                       Out of Stock
                     </span>
                   ) : discount > 5 ? (
-                    <span className="absolute top-3 left-3 z-10 text-[8px] tracking-[2px] uppercase
-                      font-medium px-[9px] py-[4px] bg-[#8b3a3a] text-[#f5f0e8]"
+                    <span className="absolute top-2 left-2 z-10 text-[7px] sm:text-[8px] tracking-[2px] uppercase
+                      font-medium px-[7px] sm:px-[9px] py-[3px] sm:py-[4px] bg-[#8b3a3a] text-[#f5f0e8]"
                       style={{ fontFamily: "'Jost', sans-serif" }}>
                       {discount}% Off
                     </span>
-                  ) :  null}
+                  ) : null}
 
-                  {/* ── Right badge: type ── */}
                   <TypeBadge book={book} />
 
                   {/* ── Cover ── */}
                   {book.main_image ? (
                     <img src={`${API_URL}${book.main_image}`} alt={book.title} draggable={false}
-                      className="ps-img absolute inset-0  object-cover brightness-[0.83]
+                      className="ps-img absolute inset-0 object-cover brightness-[0.83]
                         saturate-[0.75] w-full h-full transition-[transform,filter] duration-[560ms] ease-in-out"
                       loading="lazy"
                       onError={(e) => (e.currentTarget.style.display = "none")} />
@@ -503,31 +580,31 @@ export default function ProductSlider({
                   )}
 
                   {/* ── Overlay + info ── */}
-                  <div className="ps-overlay absolute inset-0 flex flex-col justify-end px-4 pb-4
+                  <div className="ps-overlay absolute inset-0 flex flex-col justify-end px-3 sm:px-4 pb-3 sm:pb-4
                     transition-[background] duration-[380ms]"
                     style={{ background: "linear-gradient(to top, rgba(10,10,11,0.97) 0%, rgba(10,10,11,0.46) 42%, transparent 68%)" }}>
                     <div className="ps-info transition-transform duration-[380ms] ease-in-out translate-y-[6px]">
 
-                      <h3 className="ps-title font-semibold leading-[1.2] mb-[5px] transition-colors
+                      <h3 className="ps-title font-semibold leading-[1.2] mb-[4px] sm:mb-[5px] transition-colors
                         duration-300 text-[#f5f0e8] line-clamp-2"
-                        style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(13px,1.1vw,16px)" }}>
+                        style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(12px,1.1vw,16px)" }}>
                         {book.title}
                       </h3>
 
                       {/* Price row */}
-                      <div className="flex items-center gap-2 flex-wrap mb-3">
-                        <span className="text-[14px] font-medium text-[#c9a84c]"
+                      <div className="flex items-center gap-1 sm:gap-2 flex-wrap mb-2 sm:mb-3">
+                        <span className="text-[13px] sm:text-[14px] font-medium text-[#c9a84c]"
                           style={{ fontFamily: "'Jost', sans-serif" }}>
                           ₹{displayPrice.toFixed(0)}
                         </span>
                         {originalPrice && (
-                          <span className="text-[11px] line-through text-white"
+                          <span className="text-[10px] sm:text-[11px] line-through text-white"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             ₹{originalPrice.toFixed(0)}
                           </span>
                         )}
                         {label && (
-                          <span className="text-[8px] tracking-[1px] uppercase text-white"
+                          <span className="text-[7px] sm:text-[8px] tracking-[1px] uppercase text-white"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             {label}
                           </span>
@@ -535,14 +612,14 @@ export default function ProductSlider({
                       </div>
 
                       {/* Action buttons */}
-                      <div className="ps-actions flex gap-[5px] opacity-0 translate-y-2
+                      <div className="ps-actions flex gap-[4px] sm:gap-[5px] opacity-0 translate-y-2
                         transition-[opacity,transform] duration-[360ms] ease-in-out">
 
                         <button
                           disabled={soldOut || loadingCart === book.id}
                           onClick={(e) => handleAddToCart(e, book)}
-                          className={`flex-1 text-[9px] tracking-[2px] uppercase font-medium
-                            py-2 px-2 border-none flex items-center justify-center gap-1
+                          className={`flex-1 text-[8px] sm:text-[9px] tracking-[2px] uppercase font-medium
+                            py-2 px-1 sm:px-2 border-none flex items-center justify-center gap-1
                             transition-colors duration-300
                             ${soldOut
                               ? "bg-[#2a2a2d] text-white cursor-not-allowed"
@@ -554,20 +631,7 @@ export default function ProductSlider({
                           {loadingCart === book.id ? (
                             <span className="ps-spinner" />
                           ) : (
-                            <>
-                              {format === "ebook" ? (
-                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <rect x="4" y="4" width="16" height="12" rx="2" /><path d="M8 20h8M12 16v4" />
-                                </svg>
-                              ) : (
-                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                                  <line x1="3" y1="6" x2="21" y2="6" />
-                                  <path d="M16 10a4 4 0 0 1-8 0" />
-                                </svg>
-                              )}
-                              {cartLabel}
-                            </>
+                            cartLabel
                           )}
                         </button>
 
@@ -613,11 +677,11 @@ export default function ProductSlider({
         )}
 
         {/* ── Ornament ── */}
-<div className="flex items-center gap-3 px-12 pt-3 pb-2 max-md:px-6">
-  <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.5)] to-transparent" />
-  <div className="w-[6px] h-[6px] rotate-45 flex-shrink-0 bg-[rgba(201,168,76,0.8)]" />
-  <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.5)] to-transparent" />
-</div>
+        <div className="flex items-center gap-3 px-4 sm:px-12 pt-3 pb-2 max-md:px-6">
+          <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.5)] to-transparent" />
+          <div className="w-[6px] h-[6px] rotate-45 flex-shrink-0 bg-[rgba(201,168,76,0.8)]" />
+          <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.5)] to-transparent" />
+        </div>
       </section>
     </>
   );

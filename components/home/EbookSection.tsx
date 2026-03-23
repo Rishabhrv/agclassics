@@ -8,10 +8,8 @@ interface Ebook {
   id: number;
   title: string;
   slug: string;
-  /* Product-level prices (physical fallback) */
   price: number;
   sell_price: number;
-  /* Ebook-specific prices from `ebooks` table — null if no ebook entry yet */
   ebook_price: number | null;
   ebook_sell_price: number | null;
   main_image: string;
@@ -55,8 +53,6 @@ const ebookStyles = `
   .ebook-reveal-2 { animation: ebookFadeUp 0.8s ease 0.30s both; }
   .ebook-reveal-3 { animation: ebookFadeUp 0.8s ease 0.45s both; }
 
-
-
   .ebook-cover-wrap { position: relative; overflow: hidden; }
   .ebook-cover-wrap::before {
     content: '';
@@ -66,7 +62,9 @@ const ebookStyles = `
     transition: transform 0.6s ease;
     z-index: 2; pointer-events: none;
   }
-  .ebook-card:hover .ebook-cover-wrap::before { transform: translateX(100%); }
+  @media (hover: hover) {
+    .ebook-card:hover .ebook-cover-wrap::before { transform: translateX(100%); }
+  }
 
   .device-pill {
     display: inline-flex; align-items: center; gap: 5px;
@@ -91,19 +89,14 @@ const ebookStyles = `
   .heart-pop   { animation: heartPop   0.4s ease; }
   .cart-bounce { animation: cartBounce 0.35s ease; }
 
-  .ebook-actions {
-    max-height: 0; overflow: hidden;
-    transition: max-height 0.35s cubic-bezier(0.23,1,0.32,1);
+  /* Stats responsive */
+  @media (max-width: 480px) {
+    .ebook-stats { gap: 16px !important; }
+    .ebook-stat-num { font-size: 20px !important; }
   }
-  .ebook-card:hover .ebook-actions { max-height: 50px; }
 `;
 
 /* ─── helpers ─── */
-
-/**
- * Returns the effective display prices for an ebook card.
- * Priority: ebook-specific price → product price fallback
- */
 function getEbookPrices(book: Ebook): { displayPrice: number; originalPrice: number | null } {
   if (book.ebook_sell_price !== null) {
     return {
@@ -113,7 +106,6 @@ function getEbookPrices(book: Ebook): { displayPrice: number; originalPrice: num
         : null,
     };
   }
-  // fallback to product-level pricing
   return {
     displayPrice:  book.sell_price,
     originalPrice: book.price > book.sell_price ? book.price : null,
@@ -156,7 +148,7 @@ function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
   }, [onDone]);
   return (
     <div
-      className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 px-5 py-3 text-[11px] tracking-[2px] uppercase"
+      className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 px-4 sm:px-5 py-3 text-[10px] sm:text-[11px] tracking-[2px] uppercase mx-4"
       style={{
         transform: "translateX(-50%)",
         background: "#1c1c1e",
@@ -165,6 +157,7 @@ function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
         fontFamily: "'Jost', sans-serif",
         animation: "ebookFadeUp 0.35s ease both",
         boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+        whiteSpace: "nowrap",
       }}
     >
       <div className="w-[6px] h-[6px] rotate-45 bg-[#c9a84c] shrink-0" />
@@ -238,7 +231,6 @@ export default function EbookSection() {
       .catch(() => {});
   }, []);
 
-  /* Dynamic stats */
   const totalReviews = ebooks.reduce((acc, b) => acc + (b.review_count ?? 0), 0);
 
   /* ─── Add to cart ─── */
@@ -296,7 +288,6 @@ export default function EbookSection() {
     }
   };
 
-  /* ── Hide section entirely if no ebooks ── */
   if (!loading && (error || ebooks.length === 0)) return null;
 
   return (
@@ -306,7 +297,7 @@ export default function EbookSection() {
 
       <section
         ref={sectionRef}
-        className="relative overflow-hidden mt-16 mb-4"
+        className="relative overflow-hidden mt-12 sm:mt-16 mb-4"
         style={{ background: "linear-gradient(180deg, #111113 0%, #1a1a1c 100%)" }}
       >
         {/* Grid texture */}
@@ -327,7 +318,7 @@ export default function EbookSection() {
         />
 
         {/* ═══ HEADER ═══ */}
-        <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-8 px-12 pt-20 pb-12 max-md:px-6 max-md:pt-14 max-md:pb-8">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-8 px-4 sm:px-12 pt-12 sm:pt-20 pb-8 sm:pb-12 max-md:px-6 max-md:pt-14 max-md:pb-8">
           <div>
             {/* Eyebrow */}
             <div className={`flex items-center gap-3 mb-4 ${visible ? "ebook-reveal" : "opacity-0"}`}>
@@ -348,7 +339,7 @@ export default function EbookSection() {
 
             <h2
               className={`font-light leading-[1.05] text-[#f5f0e8] ${visible ? "ebook-reveal-1" : "opacity-0"}`}
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(34px, 5vw, 58px)" }}
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 5vw, 58px)" }}
             >
               Read Anywhere.{" "}
               <em className="italic text-[#c9a84c]">Instantly.</em>
@@ -362,7 +353,7 @@ export default function EbookSection() {
               Beautifully formatted for every device — phone, tablet, e-reader, desktop.
             </p>
 
-            <div className={`flex flex-wrap gap-2 mt-5 ${visible ? "ebook-reveal-3" : "opacity-0"}`}>
+            <div className={`flex flex-wrap gap-2 mt-4 sm:mt-5 ${visible ? "ebook-reveal-3" : "opacity-0"}`}>
               {["Desktop", "Tablet", "Mobile"].map((d) => (
                 <span key={d} className="device-pill" style={{ fontFamily: "'Jost', sans-serif" }}>
                   <DeviceIcon /> {d}
@@ -371,9 +362,9 @@ export default function EbookSection() {
             </div>
           </div>
 
-          {/* Right: dynamic stats + CTA */}
+          {/* Right: stats + CTA */}
           <div className={`flex flex-col items-start md:items-end gap-5 shrink-0 ${visible ? "ebook-reveal-2" : "opacity-0"}`}>
-            <div className="flex gap-8">
+            <div className="flex gap-5 sm:gap-8 ebook-stats">
               {[
                 {
                   num:   loading ? "—" : `${total}+`,
@@ -390,12 +381,12 @@ export default function EbookSection() {
               ].map((s) => (
                 <div key={s.label} className="text-center">
                   <div
-                    className="text-2xl font-light text-[#c9a84c] leading-none"
+                    className="ebook-stat-num text-xl sm:text-2xl font-light text-[#c9a84c] leading-none"
                     style={{ fontFamily: "'Cormorant Garamond', serif" }}
                   >
                     {s.num}
                   </div>
-                  <div className="text-[9px] tracking-[2px] uppercase text-white mt-1"
+                  <div className="text-[8px] sm:text-[9px] tracking-[2px] uppercase text-white mt-1"
                     style={{ fontFamily: "'Jost', sans-serif" }}>
                     {s.label}
                   </div>
@@ -404,7 +395,7 @@ export default function EbookSection() {
             </div>
 
             <button
-              className="eb-cta text-[10px] tracking-[3px] uppercase font-medium px-8 py-[13px]
+              className="eb-cta w-full md:w-auto text-center text-[10px] tracking-[3px] uppercase font-medium px-8 py-[13px]
                 bg-transparent border border-[rgba(201,168,76,0.35)] text-[#c9a84c] cursor-pointer
                 transition-all duration-300 hover:bg-[#c9a84c] hover:text-[#0a0a0b] hover:border-[#c9a84c]"
               style={{ fontFamily: "'Jost', sans-serif" }}
@@ -416,20 +407,21 @@ export default function EbookSection() {
         </div>
 
         {/* Ornament */}
-        <div className="flex items-center px-12 mb-10 max-md:px-6">
+        <div className="flex items-center px-4 sm:px-12 mb-6 sm:mb-10 max-md:px-6">
           <div className="flex-1 h-px bg-[rgba(201,168,76,0.1)]" />
           <div className="w-[5px] h-[5px] rotate-45 bg-[#8a6f2e] mx-3 shrink-0" />
           <div className="flex-1 h-px bg-[rgba(201,168,76,0.1)]" />
         </div>
 
         {/* ═══ GRID ═══ */}
-        <div className="relative z-10 px-12 pb-20 max-md:px-6 max-md:pb-14">
+        <div className="relative z-10 px-4 sm:px-12 pb-12 sm:pb-20 max-md:px-6 max-md:pb-14">
 
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            /* Loading skeleton — single column on mobile */
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="flex gap-4 p-4 bg-[rgba(255,255,255,0.02)] border border-[rgba(201,168,76,0.06)]">
-                  <div className="w-[80px] h-[110px] shrink-0 bg-[#222224] animate-pulse rounded-sm" />
+                <div key={i} className="flex gap-3 sm:gap-4 p-3 sm:p-4 bg-[rgba(255,255,255,0.02)] border border-[rgba(201,168,76,0.06)]">
+                  <div className="w-[70px] sm:w-[80px] h-[100px] sm:h-[110px] shrink-0 bg-[#222224] animate-pulse rounded-sm" />
                   <div className="flex-1 flex flex-col gap-2 pt-1">
                     <div className="h-3 bg-[#222224] animate-pulse rounded w-4/5" />
                     <div className="h-2 bg-[#1a1a1c] animate-pulse rounded w-3/5" />
@@ -439,29 +431,30 @@ export default function EbookSection() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            /* Main grid — 1 col on mobile, 2 on sm, 3 on md */
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {ebooks.map((book) => {
                 const { displayPrice, originalPrice } = getEbookPrices(book);
                 const disc   = calcDiscount(originalPrice, displayPrice);
-                const isNew  = new Date(book.created_at) > new Date(Date.now() - 30 * 86400000);
                 const inWish = !!wishlisted[book.id];
 
                 return (
                   <div
                     key={book.id}
-                    className="ebook-card relative flex flex-col bg-[#161618] border border-[rgba(201,168,76,0.08)] cursor-pointer overflow-hidden"
+                    className="ebook-card relative flex flex-col bg-[#161618] border border-[rgba(201,168,76,0.08)] cursor-pointer overflow-hidden active:opacity-90 transition-opacity"
                     onClick={() => (window.location.href = `/product/${book.slug}`)}
                   >
-                    {/* Cover + info */}
-                    <div className="flex gap-4 p-4">
+                    {/* Cover + info row */}
+                    <div className="flex gap-3 sm:gap-4 p-3 sm:p-4">
 
-                      {/* Cover */}
-                      <div className="ebook-cover-wrap shrink-0 w-30 h-45 bg-[#1c1c1e] relative">
+                      {/* Cover — slightly smaller on mobile */}
+                      <div className="ebook-cover-wrap shrink-0 bg-[#1c1c1e] relative"
+                        style={{ width: "clamp(70px,22vw,120px)", height: "clamp(100px,32vw,180px)" }}>
                         {book.main_image ? (
                           <img
                             src={`${API_URL}${book.main_image}`}
                             alt={book.title}
-                            className=" object-cover block"
+                            className="w-full h-full object-cover block"
                             loading="lazy"
                           />
                         ) : (
@@ -481,28 +474,28 @@ export default function EbookSection() {
 
                       {/* Info */}
                       <div className="flex-1 flex flex-col min-w-0 pt-[2px]">
-                        {/* Badges */}
-                        <div className="flex gap-[6px] mb-[7px] flex-wrap">
-                          {disc > 5 && (
+                        {/* Discount badge */}
+                        {disc > 5 && (
+                          <div className="flex gap-[6px] mb-[5px]">
                             <span className="text-[7px] tracking-[1.5px] uppercase px-[7px] py-[3px] bg-[rgba(139,58,58,0.18)] text-[#d47070]"
                               style={{ fontFamily: "'Jost', sans-serif" }}>{disc}% Off</span>
-                          )}
-                        </div>
+                          </div>
+                        )}
 
-                        <h3 className="text-[15px] font-semibold leading-[1.25] text-[#f0ece4] line-clamp-2 mb-[5px]"
+                        <h3 className="text-[13px] sm:text-[15px] font-semibold leading-[1.25] text-[#f0ece4] line-clamp-2 mb-[4px] sm:mb-[5px]"
                           style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                           {book.title}
                         </h3>
 
                         {book.authors && book.authors.length > 0 && (
-                          <p className="text-[10px] text-white mb-[8px] truncate"
+                          <p className="text-[9px] sm:text-[10px] text-white mb-[6px] sm:mb-[8px] truncate"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             {book.authors.map((a) => a.name).join(", ")}
                           </p>
                         )}
 
                         {book.avg_rating && (
-                          <div className="flex items-center gap-[6px] mb-[8px]">
+                          <div className="flex items-center gap-[6px] mb-[6px] sm:mb-[8px]">
                             <StarRating rating={book.avg_rating} />
                             <span className="text-[9px] text-white" style={{ fontFamily: "'Jost', sans-serif" }}>
                               ({book.review_count})
@@ -510,84 +503,81 @@ export default function EbookSection() {
                           </div>
                         )}
 
-                        {/* ─── Price block uses ebook-specific pricing ─── */}
-                        <div className="flex items-baseline gap-[8px] mt-auto flex-wrap">
-                          <span className="text-[15px] font-medium text-[#c9a84c]"
+                        {/* Price block */}
+                        <div className="flex items-baseline gap-[6px] sm:gap-[8px] mt-auto flex-wrap">
+                          <span className="text-[13px] sm:text-[15px] font-medium text-[#c9a84c]"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             ₹{displayPrice.toFixed(0)}
                           </span>
                           {originalPrice && (
-                            <span className="text-[11px] line-through text-[#4a4a4f]"
+                            <span className="text-[10px] sm:text-[11px] line-through text-[#4a4a4f]"
                               style={{ fontFamily: "'Jost', sans-serif" }}>
                               ₹{originalPrice.toFixed(0)}
                             </span>
                           )}
-                          {/* Label so users know this is the ebook price */}
-                          <span className="text-[8px] tracking-[1px] uppercase text-white"
+                          <span className="text-[7px] sm:text-[8px] tracking-[1px] uppercase text-white"
                             style={{ fontFamily: "'Jost', sans-serif" }}>
                             e-book
                           </span>
                         </div>
-                         <div className="flex">
 
-                        {/* Add to Cart */}
-                        <button
-                          disabled={cartLoading[book.id]}
-                          className={[
-                            "flex-1 flex items-center justify-center gap-[6px] py-3",
-                            "text-[9px] tracking-[2px] uppercase border-none bg-[rgba(201,168,76,0.06)] cursor-pointer",
-                            " duration-200",
-                            cartLoading[book.id]
-                              ? "text-white bg-white"
-                              : "text-[#8a6f2e] hover:text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]",
-                          ].join(" ")}
-                          style={{ fontFamily: "'Jost', sans-serif" }}
-                          onClick={(e) => handleCart(e, book)}
-                        >
-                          <svg
-                            width="11" height="11" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" strokeWidth="1.5"
-                            className={cartAnim[book.id] ? "cart-bounce" : ""}
+                        {/* Action buttons */}
+                        <div className="flex mt-2">
+                          {/* Add to Cart */}
+                          <button
+                            disabled={cartLoading[book.id]}
+                            className={[
+                              "flex-1 flex items-center justify-center gap-[5px] py-[10px] sm:py-3",
+                              "text-[8px] sm:text-[9px] tracking-[2px] uppercase border-none bg-[rgba(201,168,76,0.06)] cursor-pointer",
+                              "transition-colors duration-200",
+                              cartLoading[book.id]
+                                ? "text-white"
+                                : "text-[#8a6f2e] hover:text-[#c9a84c] hover:bg-[rgba(201,168,76,0.1)]",
+                            ].join(" ")}
+                            style={{ fontFamily: "'Jost', sans-serif" }}
+                            onClick={(e) => handleCart(e, book)}
                           >
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                            <line x1="3" y1="6" x2="21" y2="6" />
-                            <path d="M16 10a4 4 0 0 1-8 0" />
-                          </svg>
-                          {cartLoading[book.id] ? "Adding…" : "Add to Cart"}
-                        </button>
+                            <svg
+                              width="10" height="10" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" strokeWidth="1.5"
+                              className={cartAnim[book.id] ? "cart-bounce" : ""}
+                            >
+                              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                              <line x1="3" y1="6" x2="21" y2="6" />
+                              <path d="M16 10a4 4 0 0 1-8 0" />
+                            </svg>
+                            {cartLoading[book.id] ? "Adding…" : "Add to Cart"}
+                          </button>
 
-                        <div className="w-px bg-[rgba(201,168,76,0.08)]" />
+                          <div className="w-px bg-[rgba(201,168,76,0.08)]" />
 
-                        {/* Wishlist */}
-                        <button
-                          disabled={wishLoading[book.id]}
-                          className={[
-                            "flex items-center justify-center px-4 py-[10px]",
-                            "border-none bg-transparent cursor-pointer transition-colors duration-200",
-                            wishLoading[book.id]
-                              ? "text-white"
-                              : inWish
-                              ? "text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]"
-                              : "text-[#8a6f2e] hover:text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]",
-                          ].join(" ")}
-                          aria-label={inWish ? "Remove from wishlist" : "Add to wishlist"}
-                          onClick={(e) => handleWishlist(e, book)}
-                        >
-                          <svg
-                            width="13" height="13" viewBox="0 0 24 24"
-                            fill={inWish ? "currentColor" : "none"}
-                            stroke="currentColor" strokeWidth="1.5"
-                            className={heartAnim[book.id] ? "heart-pop" : ""}
+                          {/* Wishlist */}
+                          <button
+                            disabled={wishLoading[book.id]}
+                            className={[
+                              "flex items-center justify-center px-3 sm:px-4 py-[10px] sm:py-3",
+                              "border-none bg-transparent cursor-pointer transition-colors duration-200",
+                              wishLoading[book.id]
+                                ? "text-white"
+                                : inWish
+                                ? "text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]"
+                                : "text-[#8a6f2e] hover:text-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]",
+                            ].join(" ")}
+                            aria-label={inWish ? "Remove from wishlist" : "Add to wishlist"}
+                            onClick={(e) => handleWishlist(e, book)}
                           >
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                          </svg>
-                        </button>
-
-                      </div>
+                            <svg
+                              width="13" height="13" viewBox="0 0 24 24"
+                              fill={inWish ? "currentColor" : "none"}
+                              stroke="currentColor" strokeWidth="1.5"
+                              className={heartAnim[book.id] ? "heart-pop" : ""}
+                            >
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-
                   </div>
                 );
               })}
@@ -597,7 +587,7 @@ export default function EbookSection() {
           {/* Bottom CTA banner */}
           {!loading && ebooks.length > 0 && (
             <div
-              className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-10 px-8 py-6
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 mt-8 sm:mt-10 px-5 sm:px-8 py-5 sm:py-6
                 border border-[rgba(201,168,76,0.12)]"
               style={{ background: "rgba(201,168,76,0.03)" }}
             >
@@ -607,19 +597,19 @@ export default function EbookSection() {
                     <div key={i} className="ebook-screen-line" style={{ animationDelay: `${i * 0.3}s` }} />
                   ))}
                 </div>
-                <div>
-                  <p className="text-[15px] font-light italic text-[#f5f0e8] leading-snug"
+                <div className="text-center sm:text-left">
+                  <p className="text-[14px] sm:text-[15px] font-light italic text-[#f5f0e8] leading-snug"
                     style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                     Discover our complete digital library
                   </p>
-                  <p className="text-[11px] text-white mt-[3px]" style={{ fontFamily: "'Jost', sans-serif" }}>
+                  <p className="text-[10px] sm:text-[11px] text-white mt-[3px]" style={{ fontFamily: "'Jost', sans-serif" }}>
                     {total}+ titles · Instant download · All formats included
                   </p>
                 </div>
               </div>
 
               <button
-                className="eb-cta shrink-0 text-[10px] tracking-[3px] uppercase font-medium px-9 py-[13px]
+                className="eb-cta w-full sm:w-auto shrink-0 text-[10px] tracking-[3px] uppercase font-medium px-7 sm:px-9 py-[13px]
                   bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer
                   transition-colors duration-300 hover:bg-[#f5f0e8]"
                 style={{ fontFamily: "'Jost', sans-serif" }}

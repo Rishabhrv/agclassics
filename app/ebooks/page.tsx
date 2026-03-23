@@ -80,7 +80,7 @@ const HeroCarousel = ({ books, loading }: { books: Book[], loading: boolean }) =
 
   return (
     <div 
-      className="anim-fadeUp-3 relative w-full max-w-[1400px] py-40  mb-8 flex justify-center items-center z-10 perspective-1000"
+      className="anim-fadeUp-3 relative w-full max-w-[1400px] py-50  mb-8 flex justify-center items-center z-10 perspective-1000"
       onMouseEnter={() => (isPausedRef.current = true)}
       onMouseLeave={() => (isPausedRef.current = false)}
       onTouchStart={() => (isPausedRef.current = true)}
@@ -289,7 +289,7 @@ export default function EbooksPage() {
           />
 
           {/* ── Main Content ── */}
-          <div className="relative z-10 w-full flex flex-col items-center px-4">
+          <div className="relative z-10 w-full flex flex-col items-center px-4 mt-10">
 
 
             {/* Headline */}
@@ -553,47 +553,6 @@ export default function EbooksPage() {
           )}
         </section>
 
-        {/* ════════ HOW IT WORKS ════════ */}
-        <section className="pt-20 px-[clamp(20px,5vw,80px)]">
-
-          <h2 className="font-light leading-[1.05] text-[#f5f0e8]"
-              style={{ ...F_CORMORANT, fontSize: "clamp(30px,4.5vw,52px)" }}>
-            Start Reading in <em className="italic text-[#c9a84c]">Seconds</em>
-          </h2>
-          <p className="text-[13px] text-white leading-[1.8] max-w-[480px] mt-3" style={F_JOST}>
-            Four simple steps between you and your next great read.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0.5 mt-12">
-            {[
-              { n:"01", title:"Browse",
-                icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>,
-                desc:"Explore hundreds of timeless classics organised by genre, author, and era." },
-              { n:"02", title:"Purchase",
-                icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
-                desc:"Secure checkout via Razorpay — credit card, UPI, or NetBanking accepted." },
-              { n:"03", title:"Access",
-                icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>,
-                desc:"Your eBook appears instantly in My Books. Read it Instantly — your choice." },
-              { n:"04", title:"Read Forever",
-                icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
-                desc:"No subscriptions. No expiry. Your library lives in your account permanently." },
-            ].map((s, i) => (
-              <div key={i}
-                   className="how-step relative bg-[#131316] p-[40px_32px] border border-r-0 last:border-r border-[rgba(201,168,76,0.10)] transition-colors duration-200 hover:bg-[#1a1a1d]">
-                <span className="how-num" style={F_CORMORANT}>{s.n}</span>
-                <div className="text-[#c9a84c] mb-4">{s.icon}</div>
-                <h4 className="text-[10px] tracking-[2px] uppercase text-[#f5f0e8] mb-2.5" style={F_CINZEL}>
-                  {s.title}
-                </h4>
-                <p className="text-[12px] text-white leading-[1.75]" style={F_JOST}>{s.desc}</p>
-                <span className="how-arrow hidden absolute right-[-12px] top-1/2 -translate-y-1/2 text-[#8a6f2e] text-[18px] z-10">
-                  ›
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* ════════ WHY DIGITAL ════════ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0.5 mx-[clamp(20px,5vw,80px)] mt-20">
@@ -667,7 +626,7 @@ export default function EbooksPage() {
             { icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
               title:"Secure Payment", desc:"Bank-grade encryption via Razorpay on every transaction." },
             { icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-              title:"Lifetime Access", desc:"No subscription required. Buy once and it's yours forever." },
+              title:"Lifetime Access", desc:"Lifetime Ownership. Buy it today, keep it for life." },
           ].map((f, i) => (
             <div key={i}
                  className="bg-[#131316] p-[32px_28px] border border-[rgba(201,168,76,0.10)] transition-colors duration-200 hover:bg-[#1a1a1d]">
