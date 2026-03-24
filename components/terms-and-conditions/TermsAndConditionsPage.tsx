@@ -429,7 +429,7 @@ export default function TermsAndConditionsPage() {
                     Questions about these terms?
                   </p>
                   <Link
-                    href="https://agclassics.com/contact"
+                    href="https://agphbooks.com/contact-us/"
                     className="inline-flex items-center gap-2 text-[11px] font-medium transition-colors duration-200"
                     style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}
                   >

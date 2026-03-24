@@ -407,7 +407,7 @@ export default function HomeHeader() {
         {/* ── Main bar ── */}
         <div className={[
           "flex items-center justify-between px-4 sm:px-6 md:px-12 transition-[padding] duration-[400ms]",
-          scrolled ? "py-[10px] sm:py-[14px]" : "py-[14px] sm:py-5",
+          scrolled ? "py-[10px] sm:py-[10px]" : "py-[14px] sm:py-2",
         ].join(" ")}>
 
           {/* Logo */}
@@ -416,7 +416,7 @@ export default function HomeHeader() {
               src="/images/logo/AGClassicLogo.png"
               alt="AGPH Store Logo"
               width={110} height={44} priority
-              className="sm:w-[140px] sm:h-10"
+              className="sm:w-50 sm:h-17"
             />
           </Link>
 

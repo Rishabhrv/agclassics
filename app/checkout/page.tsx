@@ -316,7 +316,7 @@ export default function CheckoutPage() {
           width:100%; background:transparent;
           border:1px solid rgba(151, 151, 151, 0.89); color:#f5f0e8;
           font-family:'Jost',sans-serif; font-size:13px;
-          padding:11px 14px; outline:none;
+          padding:9px 14px; outline:none;
           transition:border-color 0.2s; -webkit-appearance:none;
         }
         .co-input::placeholder { color:#3a3a3e; }
@@ -525,7 +525,7 @@ export default function CheckoutPage() {
                       </div>
                       <div>
                         <p className="text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "#f5f0e8" }}>
-                          Standard Delivery · DTDC
+                          Standard Delivery
                         </p>
                         <p className="text-[10px] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
                           5–7 business days
@@ -776,7 +776,7 @@ function Field({ id, label, value, onChange, error, type = "text", placeholder, 
   error?: string; type?: string; placeholder?: string; maxLength?: number; textarea?: boolean;
 }) {
   return (
-    <div id={id}>
+    <div id={id} className="mx-1">
       <label className="co-label">{label}</label>
       {textarea ? (
         <textarea value={value} onChange={onChange} placeholder={placeholder} rows={2}

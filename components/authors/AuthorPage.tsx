@@ -274,21 +274,6 @@ export default function AuthorPage({ params }: Props) {
                 </div>
               </div>
 
-              {/* Vertical meta — mirrors "Since / year" */}
-              <div className="mt-7 space-y-1">
-                <p
-                  className="text-[10px] uppercase tracking-[0.3em] text-white"
-                  style={{ fontFamily:"'Cinzel',serif" }}
-                >
-                  Since
-                </p>
-                <p
-                  className="text-2xl font-light text-[#c9a84c]"
-                  style={{ fontFamily:"'Cormorant Garamond',serif" }}
-                >
-                  {joinYear}
-                </p>
-              </div>
             </div>
 
             {/* ── Name + Bio column ── */}
@@ -324,21 +309,12 @@ export default function AuthorPage({ params }: Props) {
                 <div>
                   <p
                     ref={bioRef}
-                    className={`text-[#ffffff] text-[15px] leading-[1.85] transition-all ${bioExpanded ? "" : "line-clamp-5"}`}
+                    className={`text-[#ffffff] text-[15px] leading-[1.85] transition-all `}
                     style={{ fontFamily:"'Cormorant Garamond',serif" }}
                   >
                     {author.bio}
                   </p>
-                  {bioOverflows && (
-                    <button
-                      onClick={() => setBioExpanded(!bioExpanded)}
-                      className="mt-4 flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-[#8a6f2e] hover:text-[#c9a84c] transition-colors cursor-pointer bg-transparent border-none"
-                      style={{ fontFamily:"'Cinzel',serif" }}
-                    >
-                      {bioExpanded ? "Collapse" : "Read Full Biography"}
-                      <span className="text-base leading-none">{bioExpanded ? "↑" : "↓"}</span>
-                    </button>
-                  )}
+
                 </div>
               ) : (
                 <p className="text-white italic text-lg" style={{ fontFamily:"'Cormorant Garamond',serif" }}>

@@ -589,7 +589,7 @@ function GoldBtn({ children, onClick }: { children: React.ReactNode; onClick?: (
 
 function Ornament() {
   return (
-    <div className="flex items-center gap-3 mt-16">
+    <div className="flex items-center gap-3 ">
       <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.12), transparent)" }} />
       <div className="w-[5px] h-[5px] rotate-45 flex-shrink-0" style={{ background: "rgba(201,168,76,0.25)" }} />
       <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.12), transparent)" }} />

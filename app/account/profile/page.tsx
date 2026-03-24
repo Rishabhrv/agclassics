@@ -288,7 +288,6 @@ export default function ProfilePage() {
         {[
           { label: "Member Since", value: new Date().getFullYear().toString() },
           { label: "Account Type", value: isGoogleUser ? "Google" : "Email" },
-          { label: "Role", value: "Customer" },
         ].map((s) => (
           <div key={s.label} className="bg-[#1c1c1e] border border-[rgba(201,168,76,0.1)] p-4 md:p-5 relative overflow-hidden">
             <div className="absolute bottom-0 left-0 w-10 h-px bg-[#8a6f2e]" />

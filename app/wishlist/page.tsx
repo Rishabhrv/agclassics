@@ -223,8 +223,6 @@ export default function WishlistPage() {
         <div className="w-px h-8" style={{ background: "rgba(255,255,255,0.06)" }} />
         <Stat label="Available" value={String(availableCount)} accent />
         <div className="w-px h-8" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <Stat label="Est. Value"
-          value={fmt(items.reduce((s, i) => s + resolveItem(i).displayPrice, 0))} />
       </div>
 
       {/* Grid */}
@@ -248,7 +246,7 @@ export default function WishlistPage() {
 
           return (
             <div key={item.id}
-              className={`wl-item wl-card relative overflow-hidden cursor-pointer ${isRemoving ? "wl-removing" : ""}`}
+              className={`m-5 md:m-1 wl-item wl-card relative overflow-hidden cursor-pointer ${isRemoving ? "wl-removing" : ""}`}
               style={{ background: "#1c1c1e", animationDelay: `${idx * 55}ms`, aspectRatio: "3 / 4" }}
               onClick={() => { window.location.href = `/product/${item.slug}`; }}
             >
@@ -471,7 +469,7 @@ function Header({ count, loading, onMoveAll }: { count: number; loading?: boolea
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div>
-      <p className="text-ms tracking-[2px] uppercase mb-1"
+      <p className="text-xs md:text-sm tracking-[2px] uppercase mb-1"
         style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>{label}</p>
       <p className="text-[18px] font-light"
         style={{ fontFamily: "'Cormorant Garamond', serif", color: accent ? "#c9a84c" : "#f5f0e8" }}>{value}</p>
