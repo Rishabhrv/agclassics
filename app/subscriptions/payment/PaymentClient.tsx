@@ -34,6 +34,23 @@ const paymentStyles = `
   div[id*="razorpay-backdrop"] { display: none !important; }
   .razorpay-container { z-index: 2147483647 !important; position: fixed !important; }
   body.razorpay-payment-open { overflow: hidden !important; }
+
+  /* Comparison table horizontal scroll on very small screens */
+  .comparison-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .comparison-scroll::-webkit-scrollbar { display: none; }
+
+  /* Tighter tap targets for plan buttons on mobile */
+  @media (max-width: 640px) {
+    .plan-toggle-btn {
+      padding-top: 14px !important;
+      padding-bottom: 14px !important;
+      font-size: 9px !important;
+      letter-spacing: 1.5px !important;
+    }
+  }
 `;
 
 type PlanKey = "monthly" | "quarterly" | "yearly";
@@ -52,16 +69,12 @@ const PLANS: Record<PlanKey, Plan> = {
   yearly:    { label: "Annual Heritage Pass",   basePrice: 3599,  regularPrice: 4788, durationLabel: "per year",     saving: "Save ₹1,189" },
 };
 
-// ── Monthly duration: actual price per number of months ──────────
-// 1–11 months: ₹399 × n
-// 12 months:   ₹3,599 (annual deal, same as yearly plan)
-// ────────────────────────────────────────────────────────────────
 const MONTHLY_PRICE: Record<number, number> = {
   1:  399,
   2:  798,
-  3:  999,   // same as quarterly deal
+  3:  999,
   6:  2394,
-  12: 3599,  // same as annual deal
+  12: 3599,
 };
 
 const MONTHLY_REGULAR: Record<number, number> = {
@@ -96,19 +109,16 @@ function PaymentContent() {
 
   const selected = PLANS[plan];
 
-  // Actual amount the user will pay
   const totalPrice = plan === "monthly"
     ? MONTHLY_PRICE[months]
     : selected.basePrice;
 
-  // What it would cost at full monthly rate (for strikethrough / saving calc)
   const regularTotal = plan === "monthly"
     ? MONTHLY_REGULAR[months]
     : selected.regularPrice;
 
   const totalSaving = regularTotal - totalPrice;
 
-  // Label shown next to each month option in the select
   const monthOptionLabel = (m: number) => {
     const price   = MONTHLY_PRICE[m];
     const regular = MONTHLY_REGULAR[m];
@@ -171,41 +181,42 @@ function PaymentContent() {
 
   return (
     <div
-      className="min-h-screen bg-[#0a0a0b] text-[#e8e0d0] pt-[140px] pb-20 px-6"
+      className="min-h-screen bg-[#0a0a0b] text-[#e8e0d0] pt-[100px] sm:pt-[140px] pb-20 px-4 sm:px-6"
       style={{ fontFamily: "'Jost', sans-serif" }}
     >
       <style>{paymentStyles}</style>
 
       <div className="max-w-6xl mx-auto">
-        <header className="mb-12 text-center md:text-left">
+        {/* ── HEADER ── */}
+        <header className="mb-8 sm:mb-12 text-center md:text-left">
           <span className="text-[10px] tracking-[5px] uppercase text-[#c9a84c] block mb-3">Secure Checkout</span>
           <h1
             className="text-[#f5f0e8] italic font-light leading-none"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 5vw, 48px)" }}
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(26px, 5vw, 48px)" }}
           >
             Complete your <em className="text-[#c9a84c]">Subscription</em>
           </h1>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
 
           {/* ── LEFT ── */}
-          <div className="md:col-span-2 space-y-6">
-            <div className="payment-card p-8 rounded-sm">
+          <div className="md:col-span-2 space-y-5 sm:space-y-6">
+            <div className="payment-card p-5 sm:p-8 rounded-sm">
               <h2
-                className="text-[#f5f0e8] text-lg mb-6 italic"
+                className="text-[#f5f0e8] text-lg mb-5 sm:mb-6 italic"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
                 Select Plan
               </h2>
 
               {/* Plan toggle */}
-              <div className="grid grid-cols-3 gap-px bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.1)] overflow-hidden mb-8">
+              <div className="grid grid-cols-3 gap-px bg-[rgba(201,168,76,0.1)] border border-[rgba(201,168,76,0.1)] overflow-hidden mb-6 sm:mb-8">
                 {(["monthly", "quarterly", "yearly"] as PlanKey[]).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPlan(p)}
-                    className={`py-4 text-[10px] tracking-[2px] uppercase transition-all duration-300 cursor-pointer ${
+                    className={`plan-toggle-btn py-4 text-[10px] tracking-[2px] uppercase transition-all duration-300 cursor-pointer ${
                       plan === p ? "plan-btn-active" : "bg-[#0a0a0b] text-[#8a8790] hover:text-[#e8e0d0]"
                     }`}
                   >
@@ -215,15 +226,15 @@ function PaymentContent() {
               </div>
 
               {/* Plan detail */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 bg-[#0a0a0b] border border-[rgba(201,168,76,0.06)] mb-8">
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center p-4 sm:p-6 bg-[#0a0a0b] border border-[rgba(201,168,76,0.06)] mb-6 sm:mb-8">
                 <div>
                   <h3
-                    className="text-[#f5f0e8] text-xl font-semibold mb-1"
+                    className="text-[#f5f0e8] text-lg sm:text-xl font-semibold mb-1"
                     style={{ fontFamily: "'Cormorant Garamond', serif" }}
                   >
                     {selected.label}
                   </h3>
-                  <div className="flex items-baseline gap-3 flex-wrap">
+                  <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
                     <span className="text-[#c9a84c] text-xl" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                       ₹{totalPrice.toLocaleString("en-IN")}
                     </span>
@@ -237,7 +248,7 @@ function PaymentContent() {
                 </div>
                 {totalSaving > 0 && (
                   <span
-                    className="text-[10px] tracking-[1px] px-3 py-1.5 uppercase font-medium"
+                    className="self-start sm:self-auto text-[10px] tracking-[1px] px-3 py-1.5 uppercase font-medium"
                     style={{ background: "rgba(139,74,46,0.18)", color: "#d4845a", border: "1px solid rgba(139,74,46,0.25)" }}
                   >
                     Save ₹{totalSaving.toLocaleString("en-IN")}
@@ -247,7 +258,7 @@ function PaymentContent() {
 
               {/* Monthly: duration selector */}
               {plan === "monthly" && (
-                <div className="space-y-2 mb-8">
+                <div className="space-y-2 mb-6 sm:mb-8">
                   <label className="text-[11px] tracking-[2px] uppercase text-[#8a8790]">
                     Duration
                   </label>
@@ -263,7 +274,6 @@ function PaymentContent() {
                     ))}
                   </select>
 
-                  {/* Inline price breakdown */}
                   <div className="flex justify-between text-[11px] pt-1">
                     <span className="text-[#555259]">
                       {months < 12
@@ -275,7 +285,6 @@ function PaymentContent() {
                     </span>
                   </div>
 
-                  {/* 12-month tip */}
                   {months === 12 && (
                     <p className="text-[11px] px-3 py-2 mt-1 border border-[rgba(201,168,76,0.15)]"
                       style={{ background: "rgba(201,168,76,0.05)", color: "#c9a84c" }}>
@@ -292,7 +301,7 @@ function PaymentContent() {
               )}
 
               {/* Features */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[rgba(201,168,76,0.06)]">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4 pt-4 border-t border-[rgba(201,168,76,0.06)]">
                 {["Unlimited Library Access", "Multi-Device Sync", "Early Collection Access", "Premium Support"].map((f, i) => (
                   <div key={i} className="flex items-center gap-3 text-sm text-[#c4bfb5]">
                     <Check size={14} className="text-[#c9a84c] shrink-0" /> {f}
@@ -302,49 +311,91 @@ function PaymentContent() {
             </div>
 
             {/* Plan comparison */}
-            <div className="payment-card p-6 rounded-sm">
+            <div className="payment-card p-5 sm:p-6 rounded-sm">
               <h3 className="text-[11px] tracking-[2px] uppercase text-[#8a8790] mb-4" style={{ fontFamily: "'Cinzel', serif" }}>
                 Price Comparison
               </h3>
-              <div className="space-y-0 divide-y divide-[rgba(255,255,255,0.04)]">
-                {[
-                  { label: "1 month",   price: 399,  regular: 399,  effPm: 399 },
-                  { label: "3 months",  price: 999,  regular: 1197, effPm: 333 },
-                  { label: "6 months",  price: 2394, regular: 2394, effPm: 399 },
-                  { label: "12 months", price: 3599, regular: 4788, effPm: 300 },
-                ].map((row) => {
-                  const saving = row.regular - row.price;
-                  return (
-                    <div key={row.label} className="flex items-center justify-between py-3 text-sm">
-                      <span className="text-[#c4bfb5]">{row.label}</span>
-                      <div className="flex items-center gap-4">
-                        {saving > 0 && (
-                          <span className="text-[#555259] text-xs line-through">
-                            ₹{row.regular.toLocaleString("en-IN")}
+              <div className="comparison-scroll">
+                <div className="min-w-[360px] space-y-0 divide-y divide-[rgba(255,255,255,0.04)]">
+                  {[
+                    { label: "1 month",   price: 399,  regular: 399,  effPm: 399 },
+                    { label: "3 months",  price: 999,  regular: 1197, effPm: 333 },
+                    { label: "6 months",  price: 2394, regular: 2394, effPm: 399 },
+                    { label: "12 months", price: 3599, regular: 4788, effPm: 300 },
+                  ].map((row) => {
+                    const saving = row.regular - row.price;
+                    return (
+                      <div key={row.label} className="flex items-center justify-between py-3 text-sm">
+                        <span className="text-[#c4bfb5] shrink-0 w-20">{row.label}</span>
+                        <div className="flex items-center gap-2 sm:gap-4 ml-2">
+                          {saving > 0 && (
+                            <span className="text-[#555259] text-xs line-through hidden sm:inline">
+                              ₹{row.regular.toLocaleString("en-IN")}
+                            </span>
+                          )}
+                          <span className="text-[#c9a84c] font-medium w-16 sm:w-20 text-right">
+                            ₹{row.price.toLocaleString("en-IN")}
                           </span>
-                        )}
-                        <span className="text-[#c9a84c] font-medium w-20 text-right">
-                          ₹{row.price.toLocaleString("en-IN")}
-                        </span>
-                        <span className="text-[#555259] text-xs w-24 text-right">
-                          ₹{row.effPm}/mo
-                        </span>
-                        {saving > 0 && (
-                          <span className="text-[10px] w-20 text-right" style={{ color: "#d4845a" }}>
-                            −₹{saving.toLocaleString("en-IN")}
+                          <span className="text-[#555259] text-xs w-16 sm:w-24 text-right">
+                            ₹{row.effPm}/mo
                           </span>
-                        )}
+                          {saving > 0 && (
+                            <span className="text-[10px] w-16 sm:w-20 text-right" style={{ color: "#d4845a" }}>
+                              −₹{saving.toLocaleString("en-IN")}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
 
           {/* ── RIGHT: SUMMARY ── */}
-          <div>
-            <div className="payment-card p-8 rounded-sm sticky top-[140px]">
+          <div className="order-first md:order-none">
+            {/* Mobile: inline summary strip instead of full card */}
+            <div className="md:hidden payment-card p-4 rounded-sm mb-0">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-[10px] tracking-[2px] uppercase text-[#8a8790]">
+                    {selected.label}{plan === "monthly" && months > 1 ? ` · ${months} months` : ""}
+                  </p>
+                  {totalSaving > 0 && (
+                    <p className="text-[10px] mt-0.5" style={{ color: "#d4845a" }}>
+                      You save ₹{totalSaving.toLocaleString("en-IN")}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right">
+                  {regularTotal !== totalPrice && (
+                    <p className="text-xs text-[#555259] line-through">₹{regularTotal.toLocaleString("en-IN")}</p>
+                  )}
+                  <p className="text-2xl text-[#c9a84c]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                    ₹{totalPrice.toLocaleString("en-IN")}
+                  </p>
+                </div>
+              </div>
+              <button
+                disabled={loading}
+                onClick={startPayment}
+                className="mag-cta w-full py-4 bg-[#c9a84c] text-[#0a0a0b] text-[11px] tracking-[3px] uppercase font-semibold disabled:opacity-50 cursor-pointer"
+              >
+                {loading ? "Authenticating..." : `Pay ₹${totalPrice.toLocaleString("en-IN")}`}
+              </button>
+              <div className="flex items-center justify-center gap-4 mt-3">
+                <div className="flex items-center gap-1.5 text-[9px] text-[#555259] uppercase tracking-[1px]">
+                  <Lock size={10} /> Secure
+                </div>
+                <div className="flex items-center gap-1.5 text-[9px] text-[#555259] uppercase tracking-[1px]">
+                  <ShieldCheck size={10} /> Razorpay Verified
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: full sticky order summary card */}
+            <div className="hidden md:block payment-card p-8 rounded-sm sticky top-[140px]">
               <h2
                 className="text-[#f5f0e8] text-lg mb-6 italic border-b border-[rgba(201,168,76,0.06)] pb-4"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}

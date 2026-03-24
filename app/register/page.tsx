@@ -151,7 +151,7 @@ export default function RegisterPage() {
         <div className="grid-overlay fixed inset-0 pointer-events-none z-0 opacity-35" />
 
         {/* ── Main ── */}
-        <div className="relative z-10 flex flex-1 items-center justify-center px-6 pt-[152px] pb-16">
+        <div className="relative z-10 flex flex-1 items-center justify-center px-6 md:pt-[152px] pb-16">
 
           {/* Decorative rings */}
           <div className="ring-fwd pointer-events-none absolute w-[520px] h-[520px] rounded-full border border-[rgba(201,168,76,0.04)]" />

@@ -41,6 +41,38 @@ const F_CINZEL    = { fontFamily: "'Cinzel', serif" } as const;
 const F_JOST      = { fontFamily: "'Jost', sans-serif" } as const;
 
 /* ═══════════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════════ */
+function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2400);
+    return () => clearTimeout(t);
+  }, [onDone]);
+  return (
+    <div
+      className="fixed bottom-6 left-1/2 z-[9999] flex items-center gap-3 px-4 sm:px-5 py-3 uppercase tracking-[2px]"
+      style={{
+        transform: "translateX(-50%)",
+        background: "#1c1c1e",
+        border: "1px solid rgba(201,168,76,0.3)",
+        color: "#c9a84c",
+        fontFamily: "'Cinzel', serif",
+        fontSize: "10px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.7)",
+        animation: "toastIn 0.3s ease both",
+        maxWidth: "calc(100vw - 32px)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      }}
+    >
+      <div className="w-[6px] h-[6px] rotate-45 bg-[#c9a84c] shrink-0" />
+      {msg}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    HERO CAROUSEL
 ═══════════════════════════════════════════════════════════════════ */
 const HeroCarousel = ({ books, loading }: { books: Book[]; loading: boolean }) => {
@@ -91,7 +123,6 @@ const HeroCarousel = ({ books, loading }: { books: Book[]; loading: boolean }) =
             key={book ? `${book.id}-${i}` : `skel-${i}`}
             className="absolute rounded-sm overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-[rgba(201,168,76,0.15)] bg-[#131316] cursor-pointer"
             style={{
-              /* Responsive card width: narrower on mobile */
               width: "clamp(80px, 15vw, 180px)",
               transform: `translateX(${translateX}%) scale(${scale})`,
               zIndex,
@@ -130,6 +161,11 @@ export default function EbooksPage() {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [featuredBook, setFeaturedBook]     = useState<Book | null>(null);
 
+  /* ── Cart / Wishlist state ── */
+  const [cartId,  setCartId]  = useState<number | null>(null);
+  const [wish,    setWish]    = useState<Set<number>>(new Set());
+  const [toast,   setToast]   = useState<string | null>(null);
+
   useEffect(() => {
     setLoading(true);
     fetch(`${API_URL}/api/ag-classics/ebooks/categories`)
@@ -147,6 +183,48 @@ export default function EbooksPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  /* ── Add to cart (ebook only) ── */
+  const addCart = async (e: React.MouseEvent, book: Book) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) { setToast("Please log in to add to cart"); return; }
+    if (cartId === book.id) return;
+    setCartId(book.id);
+    try {
+      const r = await fetch(`${API_URL}/api/ag-classics/cart`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ product_id: book.id, format: "ebook", quantity: 1 }),
+      });
+      if (!r.ok) throw new Error();
+      window.dispatchEvent(new Event("cart-change"));
+      setToast("Added to cart");
+    } catch {
+      setToast("Could not add to cart");
+    } finally {
+      setCartId(null);
+    }
+  };
+
+  /* ── Toggle wishlist ── */
+  const toggleWish = async (e: React.MouseEvent, book: Book) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) { setToast("Please log in to save to wishlist"); return; }
+    const was = wish.has(book.id);
+    try {
+      await fetch(`${API_URL}/api/ag-classics/wishlist`, {
+        method: was ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ product_id: book.id }),
+      });
+      setWish(prev => { const n = new Set(prev); was ? n.delete(book.id) : n.add(book.id); return n; });
+      setToast(was ? "Removed from wishlist" : "Saved to wishlist");
+    } catch {
+      setToast("Could not update wishlist");
+    }
+  };
+
   const activeCat = categories.find(c => c.category_id === activeCategory);
   const allBooks  = categories.flatMap(c => c.books);
 
@@ -157,6 +235,7 @@ export default function EbooksPage() {
 
         @keyframes ep-fadeUp  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
         @keyframes ep-shimmer { from{background-position:-400% 0} to{background-position:400% 0} }
+        @keyframes toastIn    { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
         .anim-fadeUp-0 { animation:ep-fadeUp .9s ease both; }
         .anim-fadeUp-1 { animation:ep-fadeUp .9s ease .12s both; }
@@ -169,7 +248,6 @@ export default function EbooksPage() {
           animation:ep-shimmer 1.6s ease infinite;
         }
 
-        /* webkit/pseudo — no Tailwind equivalent */
         .hero-grid-bg {
           background-image:linear-gradient(rgba(201,168,76,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.03) 1px,transparent 1px);
           background-size:4rem 4rem;
@@ -190,21 +268,23 @@ export default function EbooksPage() {
         .ep-card:hover .ep-card-overlay { opacity:1; }
         .scard-img img, .ep-card-img img { transition:transform .4s ease,filter .4s ease; }
         .scard-overlay, .ep-card-overlay { transition:opacity .3s; }
+
+        /* wish button active state */
+        .wish-btn-active { color:#c9a84c !important; border-color:rgba(201,168,76,0.5) !important; background:rgba(201,168,76,0.1) !important; }
       `}</style>
+
+      {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
 
       <div className="bg-[#080809] min-h-screen text-[#f5f0e8] overflow-x-hidden" style={F_JOST}>
 
         {/* ════════ HERO ════════ */}
         <section className="relative  flex flex-col items-center justify-center text-center overflow-hidden bg-[#080809] pt-[110px] sm:pt-[130px] md:pt-[140px] pb-14 sm:pb-20">
 
-          {/* Background glow */}
           <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] max-w-[1000px] rounded-full bg-[radial-gradient(circle,rgba(201,168,76,0.06)_0%,transparent_60%)] blur-3xl pointer-events-none" />
           <div className="hero-grid-bg absolute inset-0 pointer-events-none" />
 
-          {/* Content */}
           <div className="relative z-10 w-full flex flex-col items-center px-4 sm:px-6 mt-6 sm:mt-10">
 
-            {/* Headline */}
             <h1
               className="anim-fadeUp-1 font-light leading-[1.05] text-[#f5f0e8] max-w-[900px] m-0"
               style={{ ...F_CORMORANT, fontSize: "clamp(32px,6vw,75px)" }}
@@ -214,7 +294,6 @@ export default function EbooksPage() {
               <em className="italic text-[#c9a84c]">Timeless Classics</em>
             </h1>
 
-            {/* Subheadline */}
             <p
               className="anim-fadeUp-2 text-white leading-[1.6] max-w-[600px] mt-3 px-2"
               style={{ ...F_JOST, fontSize: "clamp(12px,1.5vw,17px)" }}
@@ -223,10 +302,8 @@ export default function EbooksPage() {
               favorite device. Access our premium eBooks instantly.
             </p>
 
-            {/* Carousel */}
             <HeroCarousel books={allBooks} loading={loading} />
 
-            {/* CTA */}
             <div className="anim-fadeUp-4 relative mt-2 sm:mt-4 md:mt-8 flex justify-center items-center w-full z-20">
               <button
                 className="text-[11px] sm:text-[13px] tracking-[2px] uppercase font-bold bg-[#c9a84c] text-[#080809]
@@ -264,17 +341,16 @@ export default function EbooksPage() {
               </button>
             </div>
 
-            {/* Horizontal scroll strip — 2 visible on mobile, up to 5 on desktop */}
             <div className="no-scrollbar flex gap-0.5 overflow-x-auto pb-6 px-4 sm:px-8 md:px-[clamp(20px,5vw,80px)]">
               {allBooks.slice(0, 12).map((book, idx) => {
                 const { display, original } = ebookPrice(book);
                 const disc = original > display ? Math.round(((original - display) / original) * 100) : 0;
+                const isWL = wish.has(book.id);
                 return (
                   <div
                     key={book.id}
                     className="scard flex-none bg-[#1a1a1d] cursor-pointer transition-colors duration-200 hover:bg-[#1f1f23]"
                     style={{
-                      /* ~2 cards on 375px, up to 5 on wide screens */
                       width: "clamp(150px, calc((100vw - 32px) / 2.2), calc((100% - 4px) / 5))",
                       animationDelay: `${idx * 0.05}s`,
                     }}
@@ -304,17 +380,42 @@ export default function EbooksPage() {
                           −{disc}%
                         </span>
                       )}
+                      {/* ── Overlay with View + Cart + Wish ── */}
                       <div
-                        className="scard-overlay absolute inset-0 opacity-0 flex items-end p-2.5 sm:p-3"
+                        className="scard-overlay absolute inset-0 opacity-0 flex flex-col items-center justify-end gap-1.5 p-2.5 sm:p-3"
                         style={{ background: "linear-gradient(to top,rgba(8,8,9,.9) 0%,transparent 55%)" }}
                       >
-                        <button
-                          className="w-full text-[8px] tracking-[2px] uppercase font-medium text-[#080809] bg-[#c9a84c] py-[7px] border-none cursor-pointer transition-colors duration-200 hover:bg-[#f5f0e8]"
-                          style={F_JOST}
-                          onClick={e => { e.stopPropagation(); window.location.href = `/product/${book.slug}`; }}
-                        >
-                          View
-                        </button>
+      
+                        <div className="flex gap-1.5 w-full">
+                          {/* Add to Cart */}
+                          <button
+                            className="flex-1 flex items-center justify-center gap-1 text-[7px] tracking-[1.5px] uppercase font-medium text-[#080809] bg-[#c9a84c] py-[6px] border-none cursor-pointer transition-colors duration-200 hover:bg-[#f5f0e8]"
+                            style={F_JOST}
+                            onClick={e => addCart(e, book)}
+                            disabled={cartId === book.id}
+                          >
+                            {cartId === book.id
+                              ? <span className="w-[8px] h-[8px] border border-[rgba(5,4,10,.4)] border-t-[#05040a] rounded-full animate-spin" />
+                              : <>
+                                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                                  </svg>
+                                  Cart
+                                </>
+                            }
+                          </button>
+                          {/* Wishlist */}
+                          <button
+                            className={`w-[28px] flex items-center justify-center border cursor-pointer transition-all duration-200 ${isWL ? "wish-btn-active" : "text-[#8a8a8e] border-[rgba(255,255,255,0.15)] bg-[rgba(0,0,0,0.4)]"}`}
+                            onClick={e => toggleWish(e, book)}
+                            aria-label="Wishlist"
+                          >
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill={isWL ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8">
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 sm:gap-1.5 p-[10px_10px_12px] sm:p-[14px_13px_16px]">
@@ -382,7 +483,7 @@ export default function EbooksPage() {
 
           {!loading && categories.length > 0 && (
             <>
-              {/* Tab bar — horizontally scrollable on mobile */}
+              {/* Tab bar */}
               <div className="no-scrollbar flex overflow-x-auto px-4 sm:px-8 md:px-[clamp(20px,5vw,80px)] border-b border-[rgba(201,168,76,0.10)] mt-6 sm:mt-8 mb-8 sm:mb-12">
                 {categories.map(cat => (
                   <button
@@ -405,7 +506,6 @@ export default function EbooksPage() {
 
               {activeCat && (
                 <div className="px-4 sm:px-8 md:px-[clamp(20px,5vw,80px)]" key={activeCat.category_id}>
-                  {/* 2 cols on mobile, 3 sm, 4 md, 5 lg */}
                   <div className="grid gap-0.5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {activeCat.books.map((book, idx) => {
                       const { display, original } = ebookPrice(book);
@@ -414,6 +514,7 @@ export default function EbooksPage() {
                       const stars = book.avg_rating
                         ? Array.from({ length: 5 }, (_, i) => i < Math.round(book.avg_rating!) ? "★" : "☆").join("")
                         : null;
+                      const isWL = wish.has(book.id);
                       return (
                         <div
                           key={book.id}
@@ -448,17 +549,42 @@ export default function EbooksPage() {
                                 −{disc}%
                               </span>
                             )}
+                            {/* ── Overlay with View Details + Cart + Wish ── */}
                             <div
-                              className="ep-card-overlay absolute inset-0 opacity-0 flex items-end p-2.5 sm:p-3.5"
+                              className="ep-card-overlay absolute inset-0 opacity-0 flex flex-col items-center justify-end gap-1.5 p-2.5 sm:p-3.5"
                               style={{ background: "linear-gradient(to top,rgba(8,8,9,.92) 0%,transparent 55%)" }}
                             >
-                              <button
-                                className="w-full text-[8px] sm:text-[9px] tracking-[2px] uppercase font-medium text-[#080809] bg-[#c9a84c] py-2 sm:py-2.5 border-none cursor-pointer transition-colors duration-200 hover:bg-[#f5f0e8]"
-                                style={F_JOST}
-                                onClick={e => { e.stopPropagation(); window.location.href = `/product/${book.slug}`; }}
-                              >
-                                View Details
-                              </button>
+   
+                              <div className="flex gap-1.5 w-full">
+                                {/* Add to Cart */}
+                                <button
+                                  className="flex-1 flex items-center justify-center gap-1 text-[7px] sm:text-[8px] tracking-[1.5px] uppercase font-medium text-[#080809] bg-[#c9a84c] py-[6px] sm:py-2 border-none cursor-pointer transition-colors duration-200 hover:bg-[#f5f0e8]"
+                                  style={F_JOST}
+                                  onClick={e => addCart(e, book)}
+                                  disabled={cartId === book.id}
+                                >
+                                  {cartId === book.id
+                                    ? <span className="w-[8px] h-[8px] border border-[rgba(5,4,10,.4)] border-t-[#05040a] rounded-full animate-spin" />
+                                    : <>
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                                        </svg>
+                                        Add to Cart
+                                      </>
+                                  }
+                                </button>
+                                {/* Wishlist */}
+                                <button
+                                  className={`w-[30px] sm:w-[34px] flex items-center justify-center border cursor-pointer transition-all duration-200 ${isWL ? "wish-btn-active" : "text-[#8a8a8e] border-[rgba(255,255,255,0.15)] bg-[rgba(0,0,0,0.4)]"}`}
+                                  onClick={e => toggleWish(e, book)}
+                                  aria-label="Wishlist"
+                                >
+                                  <svg width="11" height="11" viewBox="0 0 24 24" fill={isWL ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                  </svg>
+                                </button>
+                              </div>
                             </div>
                           </div>
 
@@ -511,12 +637,8 @@ export default function EbooksPage() {
         </section>
 
         {/* ════════ WHY DIGITAL ════════ */}
-        {/* Stacks to single column on mobile, side-by-side on md+ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0.5 mx-4 sm:mx-8 md:mx-[clamp(20px,5vw,80px)] mt-14 sm:mt-20">
-          {/* Left — gold bg */}
-          <div
-            className="bg-[#c9a84c] flex flex-col justify-center gap-4 p-8 sm:p-12 md:p-[clamp(40px,6vw,72px)_clamp(28px,4vw,56px)]"
-          >
+          <div className="bg-[#c9a84c] flex flex-col justify-center gap-4 p-8 sm:p-12 md:p-[clamp(40px,6vw,72px)_clamp(28px,4vw,56px)]">
             <h3
               className="font-light italic leading-[1.1] text-[#080809]"
               style={{ ...F_CORMORANT, fontSize: "clamp(28px,4vw,52px)" }}
@@ -529,7 +651,6 @@ export default function EbooksPage() {
             </p>
           </div>
 
-          {/* Right — dark bg */}
           <div
             className="bg-[#131316] flex flex-col gap-5 sm:gap-6 border border-l-0 border-[rgba(201,168,76,0.10)]
               p-7 sm:p-10 md:p-[clamp(32px,5vw,64px)_clamp(24px,4vw,52px)]"
@@ -575,7 +696,6 @@ export default function EbooksPage() {
         </div>
 
         {/* ════════ FEATURES GRID ════════ */}
-        {/* 1 col on mobile, 2 on sm, 4 on lg */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0.5 mx-4 sm:mx-8 md:mx-[clamp(20px,5vw,80px)] mt-14 sm:mt-20">
           {[
             { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>, title: "Instant Access", desc: "Available the second payment clears. Start reading immediately." },

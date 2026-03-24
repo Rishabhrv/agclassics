@@ -102,6 +102,7 @@ const PAGE_STYLES = `
   @keyframes agcPulse   { 0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,0)} 50%{box-shadow:0 0 0 10px rgba(201,168,76,0.13)} }
   @keyframes agcSpin    { to{transform:rotate(360deg)} }
   @keyframes agcSk      { from{background-position:-200% 0} to{background-position:200% 0} }
+  @keyframes toastIn    { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
   .agc-page .fu0{animation:agcFadeUp 0.6s ease 0.05s both}
   .agc-page .fu1{animation:agcFadeUp 0.65s ease 0.12s both}
@@ -175,6 +176,38 @@ const PAGE_STYLES = `
   /* share dropdown */
   .agc-share-btn:hover { background: rgba(201,168,76,0.12) !important; }
 `;
+
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2400);
+    return () => clearTimeout(t);
+  }, [onDone]);
+  return (
+    <div
+      className="fixed bottom-6 left-1/2 z-[9999] flex items-center gap-3 px-4 sm:px-5 py-3 uppercase tracking-[2px]"
+      style={{
+        transform: "translateX(-50%)",
+        background: "#1c1c1e",
+        border: "1px solid rgba(201,168,76,0.3)",
+        color: "#c9a84c",
+        fontFamily: "'Cinzel', serif",
+        fontSize: "10px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.7)",
+        animation: "toastIn 0.3s ease both",
+        maxWidth: "calc(100vw - 32px)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      }}
+    >
+      <div className="w-[6px] h-[6px] rotate-45 bg-[#c9a84c] shrink-0" />
+      {msg}
+    </div>
+  );
+}
 
 /* ─────────────────────────────────────────────
    STARS
@@ -486,6 +519,9 @@ export default function ProductPage() {
   const [wishlisted, setWishlisted] = useState(false);
   const [stockWarning, setStockWarning] = useState(false);
 
+  /* toast */
+  const [toast, setToast] = useState<string | null>(null);
+
   /* description / author expansion */
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [expandedAuthors, setExpandedAuthors] = useState<Record<number, boolean>>({});
@@ -515,8 +551,6 @@ export default function ProductPage() {
         if (!data.success) throw new Error(data.message);
         const p: Product = data.product;
 
-        // Fallback: derive flat ebook pricing from ebook_files when backend
-        // does not yet return ebook_price / ebook_sell_price directly.
         if (p.ebook_files && p.ebook_files.length > 0) {
           const validFiles = p.ebook_files.filter(
             (f: any) => f.price != null && f.sell_price != null
@@ -615,7 +649,7 @@ export default function ProductPage() {
 
   const toggleWishlist = async () => {
     const token = localStorage.getItem("token");
-    if (!token) { window.dispatchEvent(new Event("open-account-slider")); return; }
+    if (!token) { setToast("Please log in to save to wishlist"); return; }
     await fetch(`${API_URL}/api/wishlist/${product?.id}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
@@ -625,7 +659,7 @@ export default function ProductPage() {
 
   const addToCart = async () => {
     const token = localStorage.getItem("token");
-    if (!token) { window.dispatchEvent(new Event("open-account-slider")); return; }
+    if (!token) { setToast("Please log in to add to cart"); return; }
     try {
       const res = await fetch(`${API_URL}/api/cart/add`, {
         method: "POST",
@@ -653,7 +687,7 @@ export default function ProductPage() {
     setRvError("");
     setRvSubmitting(true);
     try {
-      await new Promise((r) => setTimeout(r, 800)); // TODO: POST /api/reviews
+      await new Promise((r) => setTimeout(r, 800));
       setRvSubmitted(true);
     } catch {
       setRvError("Could not submit review. Please try again.");
@@ -709,6 +743,9 @@ export default function ProductPage() {
   return (
     <>
       <style>{PAGE_STYLES}</style>
+
+      {/* ── TOAST ── */}
+      {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
 
       {lightboxImg !== null && (
         <Lightbox
@@ -766,7 +803,7 @@ export default function ProductPage() {
             {/* ── LEFT: Gallery ── */}
             <div className="sc">
 
-              {/* Main image (swipeable on mobile, lightbox on desktop) */}
+              {/* Main image */}
               <div
                 className="relative flex justify-center bg-[#111113] border border-[rgba(201,168,76,0.08)] p-6 sm:p-10 select-none cursor-zoom-in"
                 onTouchStart={handleTouchStart}
@@ -908,7 +945,6 @@ export default function ProductPage() {
                     </div>
                   </div>
 
-                  {/* Arrows if more than GALLERY_VISIBLE images */}
                   {allImages.length > GALLERY_VISIBLE && (
                     <div className="flex flex-col gap-1 ml-1">
                       <button
@@ -1170,21 +1206,21 @@ export default function ProductPage() {
                     },
                     {
                       icon: (
-                      <svg 
-                        width="20" 
-                        height="20" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="#c9a84c" 
-                        strokeWidth="1.3" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      >
-                        <path d="M4 5h12" />
-                        <path d="M4 9h12" />
-                        <path d="M6 19l8-6" />
-                        <path d="M6 9c0-2.5 2-4 4.5-4S15 6.5 15 9s-2 4-4.5 4H6" />
-                      </svg>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#c9a84c"
+                          strokeWidth="1.3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M4 5h12" />
+                          <path d="M4 9h12" />
+                          <path d="M6 19l8-6" />
+                          <path d="M6 9c0-2.5 2-4 4.5-4S15 6.5 15 9s-2 4-4.5 4H6" />
+                        </svg>
                       ),
                       title: "Best Price",
                       sub: "Direct from publisher",
@@ -1249,7 +1285,6 @@ export default function ProductPage() {
         {(product.attributes?.length > 0 || product.subjects?.length || product.weight || product.length) && (
           <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-10">
 
-            {/* Attributes */}
             {product.attributes?.length > 0 && (
               <>
                 <div className="flex items-center gap-3 mb-6">
@@ -1274,7 +1309,6 @@ export default function ProductPage() {
               </>
             )}
 
-            {/* Subjects */}
             {product.subjects && product.subjects.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-8">
                 <span className="text-[9px] tracking-[2px] uppercase text-white self-center" style={{ fontFamily: "'Cinzel', serif" }}>Subjects:</span>
@@ -1290,7 +1324,6 @@ export default function ProductPage() {
               </div>
             )}
 
-            {/* Shipping */}
             {(product.weight || product.length) && (
               <>
                 <div className="flex items-center gap-3 mb-5">
@@ -1401,7 +1434,6 @@ export default function ProductPage() {
         <div ref={reviewRef} className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-10 sm:py-14">
           <SectionHeading>Reader Reviews</SectionHeading>
 
-          {/* Rating overview */}
           {product.avg_rating && reviews.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-10 sm:gap-14 mb-14 items-start">
               <div className="text-center py-9 px-5 bg-[#111113] border border-[rgba(201,168,76,0.1)]">
@@ -1438,7 +1470,6 @@ export default function ProductPage() {
             </div>
           )}
 
-          {/* Review cards */}
           {reviews.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-7">
@@ -1500,7 +1531,6 @@ export default function ProductPage() {
                 ))}
               </div>
 
-              {/* Pagination */}
               {totalRvPages > 1 && (
                 <div className="flex justify-center gap-2 mb-12">
                   <button
@@ -1536,8 +1566,6 @@ export default function ProductPage() {
               </p>
             </div>
           )}
-
-
         </div>
 
         {/* ════════ RECOMMENDED ════════ */}
