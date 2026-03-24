@@ -297,14 +297,16 @@ export default function BestSellersPage() {
 
         /* ── Small phones (≤480px) ── */
         @media(max-width:480px){
-          /* Drop thumbnail column entirely */
-          .rr{grid-template-columns:36px 0px 1fr auto!important;}
-          .rr-thumb{display:none!important;}
+          /* Keep thumbnail visible; tighten columns so title has room */
+          .rr{grid-template-columns:32px 40px 1fr auto!important;}
           .rr-author{display:none!important;}
-
+          /* Hide action buttons in ranking rows on very small screens to free space */
+          .rr-btns{display:none!important;}
+        
           /* Smaller vault cells */
           .vault-grid{grid-auto-rows:130px!important;}
         }
+
       `}</style>
 
       {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
@@ -757,7 +759,7 @@ export default function BestSellersPage() {
                         <div className="rr-thumb py-[8px] pl-2 sm:pl-[14px]">
                           <div className="w-9 h-[48px] sm:w-25 sm:h-35 overflow-hidden">
                             {book.main_image
-                              ? <img className="rr-img w-full h-full object-cover" src={`${API_URL}${book.main_image}`} alt={book.title} />
+                              ? <img className="rr-img  object-cover" src={`${API_URL}${book.main_image}`} alt={book.title} />
                               : <div className="w-full h-full bg-[#181520]" />
                             }
                           </div>
@@ -771,7 +773,7 @@ export default function BestSellersPage() {
                               {book.authors[0].name}
                             </p>
                           )}
-                          <h3 className="rr-t font-bold text-[#f0ebe0] leading-[1.25] mb-[5px] truncate text-lg"
+                          <h3 className="rr-t font-bold text-[#f0ebe0] leading-[1.25] mb-[5px] truncate text-xs md:text-lg"
                             style={{ fontFamily: "var(--fs)"}}>
                             {book.title}
                           </h3>

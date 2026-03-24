@@ -78,7 +78,7 @@ export default function LoginPage() {
 
       {/* ── Page wrapper ── */}
       <div
-        className="relative min-h-screen flex flex-col overflow-hidden bg-[#0a0a0b] text-[#e8e0d0] mt-5"
+        className="relative min-h-screen flex flex-col overflow-hidden bg-[#0a0a0b] text-[#e8e0d0] mt-5 "
         style={{ fontFamily: "'Jost', sans-serif" }}
       >
 
@@ -97,7 +97,7 @@ export default function LoginPage() {
         <div className="grid-overlay fixed inset-0 pointer-events-none z-0 opacity-35" />
 
         {/* ── Main centred area ── */}
-        <div className="relative z-10 flex flex-1 items-center justify-center px-6 pt-[152px] pb-16">
+        <div className="relative z-10 flex flex-1 items-center justify-center px-6 pt-10 md:pt-[152px] pb-16">
 
           {/* Decorative rotating rings */}
           <div className="ring-slow pointer-events-none absolute w-[520px] h-[520px] rounded-full border border-[rgba(201,168,76,0.04)]" />
