@@ -183,7 +183,7 @@ export default function SubscriptionsPage() {
       <p className="text-xs text-white m-0 max-w-xs" style={{ fontFamily: "'Jost', sans-serif" }}>
         Subscribe to a reading plan for unlimited ebook access across our catalogue.
       </p>
-      <a href="/subscription">
+      <a href="/subscriptions">
         <button
           className="mt-2 text-[10px] tracking-[2.5px] uppercase px-7 py-3 bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer hover:bg-[#f5f0e8] transition-colors"
           style={{ fontFamily: "'Jost', sans-serif" }}

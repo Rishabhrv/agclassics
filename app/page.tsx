@@ -315,8 +315,8 @@ export default function MainBody() {
               <button
                 style={{
                   flex: 1,
-                  fontFamily: "'Jost', sans-serif", fontSize: 9, letterSpacing: "2px",
-                  textTransform: "uppercase", fontWeight: 500, padding: "8px 10px",
+                  fontFamily: "'Jost', sans-serif", fontSize: 7, letterSpacing: "2px",
+                  textTransform: "uppercase", fontWeight: 500, padding: "5px 8px",
                   border: "none", cursor: isOos ? "not-allowed" : "pointer",
                   background: isOos ? "rgba(221, 221, 221, 0.85)" : "#c9a84c",
                   color: isOos ? "#2f2f2f" : "#0a0a0b",
@@ -398,7 +398,7 @@ export default function MainBody() {
             style={{ fontFamily: "'Cormorant Garamond', serif", color: "#ffffff" }}
           >
             Literature that endures. Stories that shaped worlds.
-            <br className="hidden sm:block" />Collected for those who read with intention.
+            <br className="hidden sm:block" /> Collected for those who read with intention.
           </p>
 
           <div className="relative z-10 flex flex-wrap justify-center gap-3 sm:gap-4 w-full px-4 sm:px-0">
@@ -431,9 +431,9 @@ export default function MainBody() {
         <section id="books">
 
           {/* Section heading */}
-          <div className="text-center px-4 sm:px-12 pt-1 pb-8 sm:pb-12 max-md:pt-[40px] sm:max-md:pt-[60px]">
+          <div className="text-center px-4 sm:px-12 pt-1 pb-8 sm:pb-12 max-md:pt-[10px] sm:max-md:pt-[60px]">
             <p className="text-sm sm:text-ms max-w-[480px] mx-auto leading-[1.8] tracking-[0.3px] text-white"
-              style={{ fontFamily: "'Jost', sans-serif" }}>
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               Every title in the AG Classics series is selected for its lasting significance and the rich worlds it reveals.
             </p>
             <div className="flex items-center justify-center gap-[14px] mt-6 sm:mt-7">

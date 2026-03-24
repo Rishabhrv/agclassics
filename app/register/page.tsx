@@ -134,7 +134,7 @@ export default function RegisterPage() {
 
       {/* ── Page wrapper ── */}
       <div
-        className="relative min-h-screen flex flex-col overflow-hidden bg-[#0a0a0b] text-[#e8e0d0] mt-10"
+        className="relative min-h-screen flex flex-col overflow-hidden bg-[#0a0a0b] text-[#e8e0d0] mt-14"
         style={{ fontFamily: "'Jost', sans-serif" }}
       >
         {/* Radial glow */}

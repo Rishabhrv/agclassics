@@ -331,14 +331,7 @@ export default function EbooksPage() {
               >
                 Fresh to the <em className="italic text-[#c9a84c]">Collection</em>
               </h2>
-              <button
-                className="text-[8px] tracking-[3px] uppercase text-white bg-transparent border border-[rgba(201,168,76,.20)]
-                  px-3 sm:px-5 py-2 sm:py-2.5 cursor-pointer transition-colors duration-200 hover:text-[#c9a84c] hover:border-[#c9a84c] shrink-0 ml-4"
-                style={F_CINZEL}
-                onClick={() => (window.location.href = "/ebooks")}
-              >
-                View All
-              </button>
+
             </div>
 
             <div className="no-scrollbar flex gap-0.5 overflow-x-auto pb-6 px-4 sm:px-8 md:px-[clamp(20px,5vw,80px)]">
@@ -656,7 +649,7 @@ export default function EbooksPage() {
               p-7 sm:p-10 md:p-[clamp(32px,5vw,64px)_clamp(24px,4vw,52px)]"
           >
             {[
-              { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>, title: "Any Device", desc: "Phone, tablet, laptop — your library syncs everywhere." },
+              { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>, title: "Any Device", desc: "Phone, tablet, laptop your library syncs everywhere." },
               { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, title: "Instant Access", desc: "Delivered the moment payment clears. No delays." },
               { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>, title: "Lifetime Ownership", desc: "Pay once. It's yours forever. No renewals." },
               { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, title: "Beautiful Typography", desc: "Professionally typeset for optimal readability." },
@@ -687,11 +680,11 @@ export default function EbooksPage() {
             className="font-light italic leading-[1.45] text-[#f5f0e8] max-w-[720px] mx-auto mb-5 sm:mb-7"
             style={{ ...F_CORMORANT, fontSize: "clamp(18px,3vw,38px)" }}
           >
-            Reading is to the mind what exercise is to the body — and a library
+            Reading is to the mind what exercise is to the body and a library
             that fits in your pocket removes every excuse not to begin.
           </p>
           <span className="test-source flex items-center justify-center gap-3 text-[8px] tracking-[4px] uppercase text-[#c9a84c]" style={F_CINZEL}>
-            AG Classics · Digital Edition
+            AG Classics 
           </span>
         </div>
 

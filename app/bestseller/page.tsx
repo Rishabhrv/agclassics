@@ -360,7 +360,7 @@ export default function BestSellersPage() {
 
             <p className="a4 italic text-[#8a8490] leading-[1.85] max-w-[420px] mb-8 sm:mb-12"
               style={{ fontFamily: "var(--fs)", fontSize: "clamp(13px,1.5vw,19px)" }}>
-              Every volume here has earned its place — chosen by thousands of readers who keep coming back.
+              Every volume here has earned its place chosen by thousands of readers who keep coming back.
             </p>
 
             {/* FIX: xs: → sm: (xs is not a Tailwind default breakpoint) */}
@@ -440,7 +440,7 @@ export default function BestSellersPage() {
                       The Books
                     </h2>
                     <p className="italic text-white mt-2 text-lg" style={{ fontFamily: "var(--fs)" }}>
-                      Top picks auto-scrolling
+                      Top picks 
                     </p>
                   </div>
 
@@ -637,15 +637,23 @@ export default function BestSellersPage() {
                   The CSS media query overrides grid-template-rows on mobile
                   and switches to grid-auto-rows:160px so cells have height.
                 */}
-                <div
-                  className="vault-grid gap-[5px] sm:gap-[6px]"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(5,1fr)",
-                    gridTemplateRows: "280px 200px 240px",
-                    gridAutoRows: "160px",
-                  }}
-                >
+<div
+  className="vault-grid gap-[5px] sm:gap-[6px]"
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(5,1fr)",
+    gridTemplateRows: "280px 200px 240px",
+    gridAutoRows: "160px",
+  }}
+>
+                    <style>{`
+    @media (max-width: 639px) {
+      .vault-grid {
+        grid-template-rows: 220px 160px 190px !important;
+        grid-auto-rows: 290px !important;
+      }
+    }
+  `}</style>
                   {books.slice(0, 10).map((book, i) => {
                     const spans = [
                       { cs: 2, rs: 2 }, { cs: 1, rs: 1 }, { cs: 1, rs: 1 },
@@ -863,10 +871,6 @@ export default function BestSellersPage() {
             </div>
 
             <div className="max-w-[1680px] mx-auto mt-8 sm:mt-12 flex items-center justify-between border-t border-[rgba(212,170,78,.08)] pt-5 flex-wrap gap-3">
-              <span className="uppercase tracking-[2px] text-white/60 text-[7px]"
-                style={{ fontFamily: "var(--fm)" }}>
-                AG Classics · Best Sellers · Updated Live
-              </span>
               <div className="flex gap-[5px]">
                 {[.07, .16, .32, .55, .32, .16, .07].map((o, i) => (
                   <div key={i} className="w-1 h-1 rotate-45"

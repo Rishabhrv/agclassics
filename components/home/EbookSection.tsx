@@ -148,7 +148,7 @@ function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
   }, [onDone]);
   return (
     <div
-      className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 px-4 sm:px-5 py-3 text-[10px] sm:text-[11px] tracking-[2px] uppercase mx-4"
+      className="fixed bottom-6 left-20 md:left-1/2 z-50 flex items-center gap-3 px-4 sm:px-5 py-3 text-[10px] sm:text-[11px] tracking-[2px] uppercase mx-4"
       style={{
         transform: "translateX(-50%)",
         background: "#1c1c1e",
@@ -363,16 +363,12 @@ export default function EbookSection() {
           </div>
 
           {/* Right: stats + CTA */}
-          <div className={`flex flex-col items-start md:items-end gap-5 shrink-0 ${visible ? "ebook-reveal-2" : "opacity-0"}`}>
+          <div className={` flex flex-col items-center md:items-end gap-5 shrink-0 ${visible ? "ebook-reveal-2" : "opacity-0"}`}>
             <div className="flex gap-5 sm:gap-8 ebook-stats">
               {[
                 {
                   num:   loading ? "—" : `${total}+`,
                   label: "E-Book Titles",
-                },
-                {
-                  num:   loading ? "—" : totalReviews > 0 ? `${totalReviews.toLocaleString()}+` : "Many",
-                  label: "Happy Readers",
                 },
                 {
                   num:   "Instant",
@@ -603,7 +599,7 @@ export default function EbookSection() {
                     Discover our complete digital library
                   </p>
                   <p className="text-[10px] sm:text-[11px] text-white mt-[3px]" style={{ fontFamily: "'Jost', sans-serif" }}>
-                    {total}+ titles · Instant download · All formats included
+                    {total}+ titles · All formats included
                   </p>
                 </div>
               </div>
