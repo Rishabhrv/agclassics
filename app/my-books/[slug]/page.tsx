@@ -56,6 +56,10 @@ export default function EpubReaderPage() {
   const [bookReady, setBookReady] = useState(false);
   const [isBlurred, setIsBlurred] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number | null>(null);
+  const [totalPages, setTotalPages] = useState<number | null>(null);
+  const trueTotalRef = useRef<number>(0);
+const prevLocTotalRef = useRef<number | null>(null);
 
   /* ================= DETECT MOBILE ================= */
   useEffect(() => {
@@ -164,6 +168,22 @@ export default function EpubReaderPage() {
         const cfi = e.detail.cfi;
         if (!cfi) return;
         setCurrentCfi(cfi);
+        // ADD this:
+        const loc = e.detail.location;
+        if (loc) {
+          const cur = loc.current ?? null;
+          const tot = loc.total ?? null;
+          if (cur !== null) {
+            setCurrentPage(cur);
+            if (prevLocTotalRef.current !== tot) {
+              prevLocTotalRef.current = tot;
+              trueTotalRef.current = cur + 1;
+            } else {
+              trueTotalRef.current = Math.max(trueTotalRef.current, cur + 1);
+            }
+            setTotalPages(trueTotalRef.current);
+          }
+        }
         const token = localStorage.getItem("token");
         try {
           await fetch(`${API_URL}/api/ag-classics/my-books/${slug}/progress`, {
@@ -786,6 +806,18 @@ export default function EpubReaderPage() {
                     transition: "filter 0.2s ease",
                   }}
                 />
+{currentPage !== null && totalPages !== null && (
+  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+    <span className="text-[11px] text-gray-500 font-mono tracking-wider bg-black/10 px-2.5 py-1 rounded-full">
+      {pageMode === "double" && !isMobile
+        ? currentPage + 2 <= totalPages
+          ? `${currentPage + 1}–${currentPage + 2} / ${totalPages}`
+          : `${currentPage + 1} / ${totalPages}`
+        : `${currentPage + 1} / ${totalPages}`
+      }
+    </span>
+  </div>
+)}
               </div>
             </div>
 

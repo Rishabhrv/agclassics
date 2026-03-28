@@ -291,7 +291,7 @@ export default function LibraryFavoriteBook() {
     <>
       <style>{styles}</style>
 
-      <div className="fav-scroll flex-1" style={{ background: "#0f0f10", minHeight: "60vh" }}>
+      <div className="fav-scroll flex-1" style={{ background: "#0f0f10", minHeight: "100vh" }}>
 
         {/* ── PAGE HEADER ── */}
         <div className="fav-header">

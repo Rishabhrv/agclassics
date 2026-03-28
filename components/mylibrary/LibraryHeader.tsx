@@ -2,47 +2,26 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { Library, Search, X } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-type User = {
-  id: number;
-  name: string;
-  email: string;
-};
+type User = { id: number; name: string; email: string };
+type SearchResult = { id: number; title: string; slug: string; main_image: string };
 
-type SearchResult = {
-  id: number;
-  title: string;
-  slug: string;
-  main_image: string;
-};
+/* Only keep things Tailwind genuinely can't do */
+const minimalStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
 
-const headerStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
-
-  .lib-header {
-    background: #0f0f10;
-    border-bottom: 1px solid rgba(201,168,76,0.12);
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    backdrop-filter: blur(12px);
+  @keyframes libFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
+  .lib-dropdown-anim { animation: libFadeIn 0.2s ease both; }
 
-  .lib-logo-text {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #c9a84c;
-    transition: color 0.3s;
-  }
-  .lib-logo-text:hover { color: #f5f0e8; }
-
-  .lib-search-input {
+    .lib-search-input {
     width: 100%;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(201,168,76,0.18);
@@ -60,79 +39,16 @@ const headerStyles = `
     background: rgba(255,255,255,0.06);
   }
 
-  .lib-dropdown {
-    position: absolute;
-    left: 0; right: 0;
-    top: calc(100% + 8px);
-    background: #1a1a1c;
-    border: 1px solid rgba(201,168,76,0.15);
-    border-radius: 2px;
-    z-index: 50;
-    padding: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  }
-
+  .lib-search-book img { transition: transform 0.4s ease, filter 0.4s ease; }
   .lib-search-book:hover img {
     transform: scale(1.04);
     filter: brightness(0.75) saturate(0.7);
   }
-  .lib-search-book img {
-    transition: transform 0.4s ease, filter 0.4s ease;
-  }
 
-  .lib-user-badge {
-    font-family: 'Jost', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #6b6b70;
-    white-space: nowrap;
-  }
-  .lib-user-name {
-    color: #c9a84c;
-    font-weight: 500;
-  }
-
-  /* Blocked overlay */
-  .lib-overlay-cta {
-    position: relative;
-    overflow: hidden;
-    font-family: 'Jost', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 12px 28px;
-    background: #c9a84c;
-    color: #0a0a0b;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  .lib-overlay-cta:hover { background: #f5f0e8; }
-
-  .lib-overlay-cancel {
-    font-family: 'Jost', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    padding: 12px 28px;
-    background: transparent;
-    color: #6b6b70;
-    border: 1px solid rgba(201,168,76,0.2);
-    cursor: pointer;
-    transition: border-color 0.3s, color 0.3s;
-  }
-  .lib-overlay-cancel:hover {
-    border-color: #c9a84c;
-    color: #c9a84c;
-  }
-
-  @keyframes libFadeIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .lib-dropdown { animation: libFadeIn 0.2s ease both; }
+  .lib-corner-tl { border-top: 1px solid #c9a84c; border-left: 1px solid #c9a84c; }
+  .lib-corner-tr { border-top: 1px solid #c9a84c; border-right: 1px solid #c9a84c; }
+  .lib-corner-bl { border-bottom: 1px solid #c9a84c; border-left: 1px solid #c9a84c; }
+  .lib-corner-br { border-bottom: 1px solid #c9a84c; border-right: 1px solid #c9a84c; }
 `;
 
 export default function LibraryHeader() {
@@ -147,23 +63,24 @@ export default function LibraryHeader() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+
 
   /* FETCH USER */
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { window.location.href = "/login"; return; }
-    fetch(`${API_URL}/api/mylibrary/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((r) => r.json()).then(setUser).catch(() => {});
+    fetch(`${API_URL}/api/mylibrary/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json()).then(setUser).catch(() => {});
   }, []);
 
   /* CHECK SUBSCRIPTION */
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { window.location.href = "/login"; return; }
-    fetch(`${API_URL}/api/mylibrary/check-access`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((r) => r.json()).then((d) => { if (!d.access) setBlocked(true); });
+    fetch(`${API_URL}/api/mylibrary/check-access`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json()).then((d) => { if (!d.access) setBlocked(true); });
   }, []);
 
   /* COUNTDOWN */
@@ -201,183 +118,168 @@ export default function LibraryHeader() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  const clearSearch = () => { setQuery(""); setResults([]); setShowDropdown(false); };
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "My Library - AG Classics",
+    "description": "A personalized digital library for readers to manage their book collections.",
+  };
+
   return (
     <>
-      <style>{headerStyles}</style>
+    <Head>
+        <title>My Library | AG Classics</title>
+        <meta name="description" content="Access your personal collection of classic literature and curated reading lists." />
+        <meta name="robots" content="noindex, follow" />
+        {/* Inject Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </Head>
+      <style>{minimalStyles}</style>
 
       {/* ── HEADER ── */}
-      <header className="lib-header">
-        <div
-          className="max-w-7xl mx-auto px-6 flex items-center gap-6 justify-between"
-          style={{ height: 64 }}
-        >
-          {/* LOGO */}
-          <Link href="/library/MyLibrary" className="flex items-center gap-3 shrink-0">
-            <Library size={18} color="#c9a84c" strokeWidth={1.5} />
-            <span className="lib-logo-text">My Library</span>
-          </Link>
+      <header className="bg-[#0f0f10] border-b border-[rgba(201,168,76,0.12)] sticky top-0 z-40 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-          {/* SEARCH */}
-          <div
-            ref={wrapperRef}
-            className="relative flex-1 max-w-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Search
-              size={15}
-              className="absolute left-[14px] top-1/2 -translate-y-1/2"
-              style={{ color: "#6b6b70" }}
-            />
-            <input
-              type="text"
-              placeholder="Search books…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => results.length && setShowDropdown(true)}
-              className="lib-search-input"
-            />
-            {query && (
-              <button
-                onClick={() => { setQuery(""); setResults([]); setShowDropdown(false); }}
-                className="absolute right-[14px] top-1/2 -translate-y-1/2"
-                style={{ color: "#6b6b70", background: "none", border: "none", cursor: "pointer" }}
+          {/* Main row */}
+          <div className="flex items-center justify-between gap-3 sm:gap-6 h-16">
+
+            {/* LOGO */}
+            <Link
+              href="/library/MyLibrary"
+              className="flex items-center gap-2 sm:gap-3 shrink-0 transition-colors duration-300 group"
+            >
+              <Library size={18} color="#c9a84c" strokeWidth={1.5} />
+              <span
+                className="text-[13px] tracking-[3px] uppercase text-[#c9a84c] group-hover:text-[#f5f0e8] transition-colors duration-300  xs:block"
+                style={{ fontFamily: "'Cinzel', serif" }}
               >
-                <X size={14} />
-              </button>
-            )}
+                My Library
+              </span>
+            </Link>
 
-            {/* DROPDOWN */}
-            {showDropdown && (
-              <div className="lib-dropdown">
-                {/* Header row */}
-                <div
-                  className="flex items-center justify-between mb-4 pb-3"
-                  style={{ borderBottom: "1px solid rgba(201,168,76,0.1)" }}
+            {/* SEARCH — desktop (always visible sm+) */}
+            <div
+              ref={wrapperRef}
+              className="relative flex-1 max-w-lg hidden sm:block"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Search
+                size={15}
+                className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#6b6b70]"
+              />
+              <input
+                type="text"
+                placeholder="Search books…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => results.length && setShowDropdown(true)}
+                className="lib-search-input w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(201,168,76,0.18)] rounded-[2px] py-[9px] pl-10 pr-10 text-[13px] text-[#e8e0d0] outline-none transition-all duration-300 focus:border-[rgba(201,168,76,0.5)] focus:bg-[rgba(255,255,255,0.06)]"
+                style={{ fontFamily: "'Jost', sans-serif" }}
+              />
+              {query && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#6b6b70] bg-transparent border-none cursor-pointer"
                 >
-                  <span
-                    style={{
-                      fontFamily: "'Cinzel', serif",
-                      fontSize: "9px",
-                      letterSpacing: "4px",
-                      textTransform: "uppercase",
-                      color: "#c9a84c",
-                    }}
-                  >
-                    Results
-                  </span>
-                  {!loadingSearch && (
-                    <span style={{ fontFamily: "'Jost', sans-serif", fontSize: "11px", color: "#6b6b70" }}>
-                      {results.length} found
-                    </span>
-                  )}
+                  <X size={14} />
+                </button>
+              )}
+
+              {/* DROPDOWN */}
+              {showDropdown && (
+                <div className="lib-dropdown-anim absolute left-0 right-0 top-[calc(100%+8px)] bg-[#1a1a1c] border border-[rgba(201,168,76,0.15)] rounded-[2px] z-50 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+                  <SearchDropdownContent
+                    loading={loadingSearch}
+                    results={results}
+                    onSelect={() => { setShowDropdown(false); setQuery(""); }}
+                  />
                 </div>
+              )}
+            </div>
 
-                {loadingSearch && (
-                  <p style={{ fontFamily: "'Jost', sans-serif", fontSize: "13px", color: "#6b6b70" }}>
-                    Searching…
-                  </p>
-                )}
+            {/* Right side */}
+            <div className="flex items-center gap-3 ml-auto sm:ml-0">
+              {/* Mobile search toggle */}
+              <button
+                className="sm:hidden text-[#6b6b70] hover:text-[#c9a84c] transition-colors"
+                onClick={() => setMobileSearchOpen((v) => !v)}
+                aria-label="Toggle search"
+              >
+                {mobileSearchOpen ? <X size={18} /> : <Search size={18} />}
+              </button>
 
-                {!loadingSearch && results.length === 0 && (
-                  <p style={{ fontFamily: "'Jost', sans-serif", fontSize: "13px", color: "#6b6b70" }}>
-                    No results found
-                  </p>
-                )}
-
-                {!loadingSearch && results.length > 0 && (
-                  <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
-                    {results.slice(0, 6).map((book) => (
-                      <Link
-                        key={book.id}
-                        href={`/my-books/${book.slug}`}
-                        onClick={() => { setShowDropdown(false); setQuery(""); }}
-                        className="lib-search-book group text-center"
-                        style={{ textDecoration: "none" }}
-                      >
-                        <div className="relative overflow-hidden" style={{ borderRadius: "1px" }}>
-                          <img
-                            src={book.main_image ? `${API_URL}${book.main_image}` : "/images/placeholder-book.png"}
-                            alt={book.title}
-                            className="w-full object-cover"
-                            style={{ height: 200, display: "block" }}
-                          />
-                          {/* Read badge */}
-                          <span
-                            className="absolute bottom-2 right-2"
-                            style={{
-                              fontFamily: "'Jost', sans-serif",
-                              fontSize: "9px",
-                              letterSpacing: "2px",
-                              textTransform: "uppercase",
-                              background: "#c9a84c",
-                              color: "#0a0a0b",
-                              padding: "4px 8px",
-                              fontWeight: 500,
-                            }}
-                          >
-                            Read
-                          </span>
-                        </div>
-                        <p
-                          className="mt-2 line-clamp-2"
-                          style={{
-                            fontFamily: "'Cormorant Garamond', serif",
-                            fontSize: "13px",
-                            color: "#e8e0d0",
-                            lineHeight: 1.4,
-                          }}
-                        >
-                          {book.title}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+              {/* USER */}
+              {user && (
+                <span
+                  className="text-[11px] tracking-[2px] uppercase text-[#6b6b70] whitespace-nowrap hidden sm:block"
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                >
+                  Hi, <span className="text-[#c9a84c] font-medium">{user.name}</span>
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* USER */}
-          {user && (
-            <span className="lib-user-badge">
-              Hi, <span className="lib-user-name">{user.name}</span>
-            </span>
+          {/* Mobile search row (slides down when open) */}
+          {mobileSearchOpen && (
+            <div
+              ref={wrapperRef}
+              className="sm:hidden pb-3 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative">
+                <Search
+                  size={15}
+                  className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#6b6b70]"
+                />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Search books…"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onFocus={() => results.length && setShowDropdown(true)}
+                  className="lib-search-input w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(201,168,76,0.18)] rounded-[2px] py-[9px] pl-10 pr-10 text-[13px] text-[#e8e0d0] outline-none transition-all duration-300 focus:border-[rgba(201,168,76,0.5)] focus:bg-[rgba(255,255,255,0.06)]"
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                />
+                {query && (
+                  <button
+                    onClick={clearSearch}
+                    className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#6b6b70]"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {showDropdown && (
+                <div className="lib-dropdown-anim absolute left-0 right-0 top-[calc(100%-4px)] bg-[#1a1a1c] border border-[rgba(201,168,76,0.15)] rounded-[2px] z-50 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+                  <SearchDropdownContent
+                    loading={loadingSearch}
+                    results={results}
+                    onSelect={() => { setShowDropdown(false); setQuery(""); setMobileSearchOpen(false); }}
+                    columns={2}
+                  />
+                </div>
+              )}
+            </div>
           )}
         </div>
       </header>
 
       {/* ── BLOCKED OVERLAY ── */}
       {blocked && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}
-        >
-          {/* Decorative border box */}
-          <div
-            style={{
-              background: "#0f0f10",
-              border: "1px solid rgba(201,168,76,0.2)",
-              padding: "48px 40px",
-              maxWidth: 440,
-              width: "100%",
-              textAlign: "center",
-              position: "relative",
-            }}
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.85)] backdrop-blur-[8px] px-4">
+          <div className="relative bg-[#0f0f10] border border-[rgba(201,168,76,0.2)] p-8 sm:p-12 max-w-[440px] w-full text-center">
             {/* Corner accents */}
-            {["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"].map((pos, i) => (
-              <div
-                key={i}
-                className={`absolute ${pos}`}
-                style={{
-                  width: 20, height: 20,
-                  borderTop: i < 2 ? "1px solid #c9a84c" : "none",
-                  borderBottom: i >= 2 ? "1px solid #c9a84c" : "none",
-                  borderLeft: i % 2 === 0 ? "1px solid #c9a84c" : "none",
-                  borderRight: i % 2 === 1 ? "1px solid #c9a84c" : "none",
-                }}
-              />
-            ))}
+            <div className="absolute top-0 left-0 w-5 h-5 lib-corner-tl" />
+            <div className="absolute top-0 right-0 w-5 h-5 lib-corner-tr" />
+            <div className="absolute bottom-0 left-0 w-5 h-5 lib-corner-bl" />
+            <div className="absolute bottom-0 right-0 w-5 h-5 lib-corner-br" />
 
             {/* Icon */}
             <div className="flex justify-center mb-5">
@@ -385,67 +287,144 @@ export default function LibraryHeader() {
             </div>
 
             <h2
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 30,
-                fontWeight: 300,
-                color: "#f5f0e8",
-                marginBottom: 12,
-                lineHeight: 1.2,
-              }}
+              className="text-[30px] font-light text-[#f5f0e8] mb-3 leading-tight"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
               Activate Your Subscription
             </h2>
 
             <p
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 13,
-                color: "#6b6b70",
-                lineHeight: 1.7,
-                marginBottom: 8,
-              }}
+              className="text-[13px] text-[#6b6b70] leading-[1.7] mb-2"
+              style={{ fontFamily: "'Jost', sans-serif" }}
             >
               You need an active subscription to access{" "}
-              <span style={{ color: "#e8e0d0" }}>My Library</span>.
+              <span className="text-[#e8e0d0]">My Library</span>.
             </p>
 
             <p
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 12,
-                color: "#6b6b70",
-                marginBottom: 28,
-              }}
+              className="text-[12px] text-[#6b6b70] mb-7"
+              style={{ fontFamily: "'Jost', sans-serif" }}
             >
               Redirecting in{" "}
-              <span style={{ color: "#c9a84c", fontWeight: 600 }}>{countdown}</span> seconds…
+              <span className="text-[#c9a84c] font-semibold">{countdown}</span> seconds…
             </p>
 
             {/* Divider */}
-            <div
-              className="flex items-center gap-4 justify-center mb-6"
-            >
-              <div style={{ flex: 1, height: 1, background: "rgba(201,168,76,0.15)" }} />
-              <div style={{ width: 5, height: 5, transform: "rotate(45deg)", background: "#8a6f2e" }} />
-              <div style={{ flex: 1, height: 1, background: "rgba(201,168,76,0.15)" }} />
+            <div className="flex items-center gap-4 justify-center mb-6">
+              <div className="flex-1 h-px bg-[rgba(201,168,76,0.15)]" />
+              <div className="w-[5px] h-[5px] rotate-45 bg-[#8a6f2e]" />
+              <div className="flex-1 h-px bg-[rgba(201,168,76,0.15)]" />
             </div>
 
-            <div className="flex gap-3 justify-center">
+            <div className="flex flex-col xs:flex-row gap-3 justify-center">
               <button
                 onClick={() => (window.location.href = "/subscriptions")}
-                className="lib-overlay-cta"
+                className="text-[11px] tracking-[3px] uppercase font-medium px-7 py-3 bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer hover:bg-[#f5f0e8] transition-colors duration-300"
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 Choose Plan Now
               </button>
               <button
                 onClick={() => router.push("/")}
-                className="lib-overlay-cancel"
+                className="text-[11px] tracking-[3px] uppercase px-7 py-3 bg-transparent text-[#6b6b70] border border-[rgba(201,168,76,0.2)] cursor-pointer hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all duration-300"
+                style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 Cancel
               </button>
             </div>
           </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ── SEARCH DROPDOWN CONTENT ── */
+function SearchDropdownContent({
+  loading,
+  results,
+  onSelect,
+  columns = 3,
+}: {
+  loading: boolean;
+  results: SearchResult[];
+  onSelect: () => void;
+  columns?: number;
+}) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
+  return (
+    <>
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(201,168,76,0.1)]">
+        <span
+          className="text-[9px] tracking-[4px] uppercase text-[#c9a84c]"
+          style={{ fontFamily: "'Cinzel', serif" }}
+        >
+          Results
+        </span>
+        {!loading && (
+          <span
+            className="text-[11px] text-[#6b6b70]"
+            style={{ fontFamily: "'Jost', sans-serif" }}
+          >
+            {results.length} found
+          </span>
+        )}
+      </div>
+
+      {loading && (
+        <p
+          className="text-[13px] text-[#6b6b70]"
+          style={{ fontFamily: "'Jost', sans-serif" }}
+        >
+          Searching…
+        </p>
+      )}
+
+      {!loading && results.length === 0 && (
+        <p
+          className="text-[13px] text-[#6b6b70]"
+          style={{ fontFamily: "'Jost', sans-serif" }}
+        >
+          No results found
+        </p>
+      )}
+
+      {!loading && results.length > 0 && (
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+        >
+          {results.slice(0, columns === 2 ? 4 : 6).map((book) => (
+            <Link
+              key={book.id}
+              href={`/my-books/${book.slug}`}
+              onClick={onSelect}
+              className="lib-search-book group text-center"
+              style={{ textDecoration: "none" }}
+            >
+              <div className="relative overflow-hidden rounded-[1px]">
+                <img
+                  src={book.main_image ? `${API_URL}${book.main_image}` : "/images/placeholder-book.png"}
+                  alt={book.title}
+                  className="w-full object-cover block"
+                />
+                <span
+                  className="absolute bottom-2 right-2 text-[9px] tracking-[2px] uppercase bg-[#c9a84c] text-[#0a0a0b] px-2 py-1 font-medium"
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                >
+                  Read
+                </span>
+              </div>
+              <p
+                className="mt-2 line-clamp-2 text-[13px] text-[#e8e0d0] leading-[1.4]"
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              >
+                {book.title}
+              </p>
+            </Link>
+          ))}
         </div>
       )}
     </>

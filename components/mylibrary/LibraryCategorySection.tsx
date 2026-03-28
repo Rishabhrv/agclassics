@@ -4,116 +4,13 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import LibraryBookCard from "./LibraryBookCard";
 
-type Book = {
-  id: number;
-  title: string;
-  slug: string;
-  main_image: string;
-};
-
-type Props = {
-  title: string;
-  categorySlug: string;
-  visibleCount?: number;
-};
+type Book = { id: number; title: string; slug: string; main_image: string };
+type Props = { title: string; categorySlug: string; visibleCount?: number };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-const sectionStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
-
-  .lib-cat-section { padding: 40px 32px 0; }
-
-  .lib-cat-eyebrow {
-    font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: #8a6f2e;
-    display: block;
-    margin-bottom: 4px;
-  }
-  .lib-cat-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(22px, 3vw, 30px);
-    font-weight: 300;
-    font-style: italic;
-    color: #f5f0e8;
-    line-height: 1.1;
-  }
-
-  .lib-cat-see-all {
-    font-family: 'Jost', sans-serif;
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #6b6b70;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: color 0.3s;
-    padding: 6px 0;
-    white-space: nowrap;
-  }
-  .lib-cat-see-all:hover { color: #c9a84c; }
-  .lib-cat-see-all::after {
-    content: '';
-    display: block;
-    width: 18px;
-    height: 1px;
-    background: currentColor;
-    transition: width 0.3s;
-  }
-  .lib-cat-see-all:hover::after { width: 30px; }
-
-  /* Slider arrows */
-  .lib-slider-btn {
-    position: absolute;
-    top: 50%; transform: translateY(-50%);
-    width: 32px; height: 32px;
-    background: rgba(10,10,11,0.85);
-    border: 1px solid rgba(201,168,76,0.2);
-    color: #c9a84c;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    transition: background 0.3s, border-color 0.3s;
-  }
-  .lib-slider-btn:hover { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.5); }
-  .lib-slider-btn-prev { left: -14px; }
-  .lib-slider-btn-next { right: -14px; }
-
-  /* Dot indicators */
-  .lib-dot {
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: rgba(201,168,76,0.2);
-    cursor: pointer;
-    border: none;
-    padding: 0;
-    transition: background 0.3s, transform 0.3s;
-  }
-  .lib-dot.active { background: #c9a84c; transform: scale(1.3); }
-
-  /* Edge fades */
-  .lib-slider-fade-left, .lib-slider-fade-right {
-    position: absolute; top: 0; bottom: 0; width: 40px;
-    pointer-events: none; z-index: 5;
-  }
-  .lib-slider-fade-left  { left: 0;  background: linear-gradient(to right, #0f0f10, transparent); }
-  .lib-slider-fade-right { right: 0; background: linear-gradient(to left,  #0f0f10, transparent); }
-
-  /* Bottom divider */
-  .lib-section-divider {
-    display: flex; align-items: center; gap: 14px;
-    margin-top: 32px; padding: 0 4px;
-  }
-  .lib-section-divider-line { flex: 1; height: 1px; background: rgba(201,168,76,0.08); }
-  .lib-section-divider-diamond {
-    width: 4px; height: 4px; transform: rotate(45deg);
-    background: #8a6f2e; opacity: 0.4; flex-shrink: 0;
-  }
+const minimalStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Cinzel:wght@400&family=Jost:wght@300;400;500&display=swap');
 
   @keyframes libSkeletonShimmer {
     from { background-position: -200% 0; }
@@ -125,9 +22,29 @@ const sectionStyles = `
     animation: libSkeletonShimmer 1.8s infinite;
     border-radius: 1px;
   }
+
+  /* Mobile horizontal scroll: hide scrollbar */
+  .lib-mobile-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+  }
+  .lib-mobile-scroll::-webkit-scrollbar { display: none; }
+  .lib-mobile-scroll > * { scroll-snap-align: start; }
+
+  /* See All hover arrow extend */
+  .lib-see-all::after {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.3s;
+  }
+  .lib-see-all:hover::after { width: 30px; }
 `;
 
-// Card width in pixels — gives comfortably large covers at any screen size
 const CARD_WIDTH = 180;
 const CARD_GAP = 3;
 
@@ -141,7 +58,6 @@ export default function LibraryCategorySection({
   const [loading, setLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
 
   const maxStart = Math.max(0, books.length - visibleCount);
 
@@ -157,6 +73,7 @@ export default function LibraryCategorySection({
       .finally(() => setLoading(false));
   }, [categorySlug]);
 
+  /* Auto-scroll on desktop */
   useEffect(() => {
     if (books.length <= visibleCount || isPaused) return;
     intervalRef.current = setInterval(() => {
@@ -165,116 +82,154 @@ export default function LibraryCategorySection({
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [books, visibleCount, maxStart, isPaused]);
 
-  const prev = () => { setStart((p) => Math.max(0, p - 1)); };
-  const next = () => { setStart((p) => Math.min(maxStart, p + 1)); };
+  const prev = () => setStart((p) => Math.max(0, p - 1));
+  const next = () => setStart((p) => Math.min(maxStart, p + 1));
 
-  // Pixel offset per step
   const stepPx = CARD_WIDTH + CARD_GAP;
 
   if (!loading && !books.length) return null;
 
   return (
     <>
-      <style>{sectionStyles}</style>
+      <style>{minimalStyles}</style>
 
       <section
-        className="lib-cat-section"
+        className="px-4 sm:px-8 pt-8 sm:pt-10"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
         {/* ── HEADER ── */}
-        <div className="flex items-end justify-between mb-6">
+        <div className="flex items-end justify-between mb-5 sm:mb-6">
           <div>
-            <span className="lib-cat-eyebrow">Collection</span>
-            <h2 className="lib-cat-title">{title}</h2>
+            <h2
+              className="text-[clamp(20px,3vw,30px)] font-light italic text-[#f5f0e8] leading-[1.1]"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              {title}
+            </h2>
           </div>
-          <Link href={`/library/category/${categorySlug}`} className="lib-cat-see-all">
+
+          <Link
+            href={`/library/category/${categorySlug}`}
+            className="lib-see-all text-[9px] tracking-[3px] uppercase text-[#6b6b70] no-underline flex items-center gap-1.5 hover:text-[#c9a84c] transition-colors duration-300 pb-1.5 whitespace-nowrap"
+            style={{ fontFamily: "'Jost', sans-serif" }}
+          >
             See All
           </Link>
         </div>
 
         {/* ── SKELETON ── */}
         {loading && (
-          <div style={{ display: "flex", gap: CARD_GAP }}>
+          <div className="flex gap-[3px]">
             {[...Array(visibleCount)].map((_, i) => (
               <div
                 key={i}
-                className="lib-skeleton"
-                style={{ width: CARD_WIDTH, flexShrink: 0, aspectRatio: "2/3" }}
+                className="lib-skeleton shrink-0"
+                style={{ width: CARD_WIDTH, aspectRatio: "2/3" }}
               />
             ))}
           </div>
         )}
 
-        {/* ── SLIDER ── */}
+        {/* ── MOBILE: native horizontal scroll ── */}
         {!loading && (
-          <div className="relative" style={{ paddingBottom: 4 }}>
-            {/* Edge fades */}
-            {start > 0      && <div className="lib-slider-fade-left" />}
-            {start < maxStart && <div className="lib-slider-fade-right" />}
-
-            {/* Prev */}
-            {start > 0 && (
-              <button className="lib-slider-btn lib-slider-btn-prev" onClick={prev} aria-label="Previous">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-              </button>
-            )}
-
-            {/* Track */}
-            <div style={{ overflow: "hidden" }}>
-              <div
-                ref={trackRef}
-                style={{
-                  display: "flex",
-                  gap: CARD_GAP,
-                  transform: `translateX(-${start * stepPx}px)`,
-                  transition: "transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                }}
-              >
+          <>
+            {/* Mobile scroll (below md) */}
+            <div className="md:hidden lib-mobile-scroll -mx-4 px-4">
+              <div className="flex gap-[3px]" style={{ width: "max-content" }}>
                 {books.map((book) => (
-                  <div
-                    key={book.id}
-                    style={{ width: CARD_WIDTH, flexShrink: 0 }}
-                  >
-                    {/* LibraryBookCard fills 100% of this 180px wrapper */}
+                  <div key={book.id} style={{ width: CARD_WIDTH, flexShrink: 0 }}>
                     <LibraryBookCard book={book} />
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Next */}
-            {start < maxStart && (
-              <button className="lib-slider-btn lib-slider-btn-next" onClick={next} aria-label="Next">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            )}
+            {/* Desktop: controlled slider (md+) */}
+            <div className="hidden md:block">
+              <div
+                className="relative"
+                style={{ paddingBottom: 4 }}
+              >
+                {/* Edge fades */}
+                {start > 0 && (
+                  <div className="absolute top-0 bottom-0 left-0 w-10 bg-gradient-to-r from-[#0f0f10] to-transparent pointer-events-none z-[5]" />
+                )}
+                {start < maxStart && (
+                  <div className="absolute top-0 bottom-0 right-0 w-10 bg-gradient-to-l from-[#0f0f10] to-transparent pointer-events-none z-[5]" />
+                )}
 
-            {/* Dots */}
-            {books.length > visibleCount && (
-              <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16 }}>
-                {[...Array(maxStart + 1)].map((_, i) => (
+                {/* Prev */}
+                {start > 0 && (
                   <button
-                    key={i}
-                    className={`lib-dot ${i === start ? "active" : ""}`}
-                    onClick={() => setStart(i)}
-                    aria-label={`Go to slide ${i + 1}`}
-                  />
-                ))}
+                    className="absolute left-[-14px] top-1/2 -translate-y-1/2 w-8 h-8 bg-[rgba(10,10,11,0.85)] border border-[rgba(201,168,76,0.2)] text-[#c9a84c] flex items-center justify-center cursor-pointer z-10 hover:bg-[rgba(201,168,76,0.12)] hover:border-[rgba(201,168,76,0.5)] transition-all duration-300"
+                    onClick={prev}
+                    aria-label="Previous"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Track */}
+                <div className="overflow-hidden">
+                  <div
+                    className="flex"
+                    style={{
+                      gap: CARD_GAP,
+                      transform: `translateX(-${start * stepPx}px)`,
+                      transition: "transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                    }}
+                  >
+                    {books.map((book) => (
+                      <div key={book.id} style={{ width: CARD_WIDTH, flexShrink: 0 }}>
+                        <LibraryBookCard book={book} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Next */}
+                {start < maxStart && (
+                  <button
+                    className="absolute right-[-14px] top-1/2 -translate-y-1/2 w-8 h-8 bg-[rgba(10,10,11,0.85)] border border-[rgba(201,168,76,0.2)] text-[#c9a84c] flex items-center justify-center cursor-pointer z-10 hover:bg-[rgba(201,168,76,0.12)] hover:border-[rgba(201,168,76,0.5)] transition-all duration-300"
+                    onClick={next}
+                    aria-label="Next"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Dots */}
+                {books.length > visibleCount && (
+                  <div className="flex justify-center gap-2 mt-4">
+                    {[...Array(maxStart + 1)].map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setStart(i)}
+                        aria-label={`Go to slide ${i + 1}`}
+                        className={`w-1 h-1 rounded-full border-none p-0 cursor-pointer transition-all duration-300 ${
+                          i === start
+                            ? "bg-[#c9a84c] scale-[1.3]"
+                            : "bg-[rgba(201,168,76,0.2)]"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          </>
         )}
 
         {/* ── SECTION DIVIDER ── */}
-        <div className="lib-section-divider">
-          <div className="lib-section-divider-line" />
-          <div className="lib-section-divider-diamond" />
-          <div className="lib-section-divider-line" />
+        <div className="flex items-center gap-3.5 mt-8 px-1">
+          <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
+          <div className="w-1 h-1 rotate-45 bg-[#8a6f2e] opacity-40 shrink-0" />
+          <div className="flex-1 h-px bg-[rgba(201,168,76,0.08)]" />
         </div>
       </section>
     </>

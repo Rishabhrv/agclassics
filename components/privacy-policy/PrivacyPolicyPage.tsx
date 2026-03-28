@@ -103,7 +103,6 @@ const sections = [
     title: "How We Use Your Information",
     content: "Your data helps us deliver a seamless reading experience and run AG Classics effectively.",
     list: [
-      "Process your eBook purchases and deliver download links promptly.",
       "Manage your account and respond to your queries.",
       "Improve our catalog, platform performance, and recommendations.",
       "Send newsletters or curated reading suggestions — only with your explicit consent.",
@@ -273,7 +272,7 @@ export default function PrivacyPolicyPage() {
               >
                 We care about your privacy and want to be fully transparent about how
                 we handle your data at{" "}
-                <span style={{ color: "#8a8790" }}>agclassics.com</span>.
+                <span style={{ color: "#8a8790" }}>agclassics.agkit.in</span>.
               </p>
             </div>
           </div>
