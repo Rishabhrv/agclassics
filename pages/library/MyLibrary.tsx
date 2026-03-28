@@ -9,24 +9,13 @@ import "../../app/globals.css";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-type Category = {
-  id: number;
-  name: string;
-  slug: string;
-};
+type Category = { id: number; name: string; slug: string };
 
-const pageStyles = `
+const minimalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Cinzel:wght@400&family=Jost:wght@300;400&display=swap');
 
-  .lib-page-bg {
-    background: #0f0f10;
-    min-height: 100vh;
-  }
-  .lib-main-content {
-    background: #0f0f10;
-    position: relative;
-  }
-  .lib-main-content::before {
+  /* Noise texture overlay */
+  .lib-noise::before {
     content: '';
     position: fixed;
     inset: 0;
@@ -36,16 +25,11 @@ const pageStyles = `
     opacity: 0.4;
   }
 
-  .lib-welcome-banner {
-    position: relative;
-    padding: 36px 32px 0;
-    overflow: hidden;
-  }
-  .lib-welcome-banner::after {
+  /* Decorative quote mark on welcome banner */
+  .lib-welcome-quote::after {
     content: '\u201C';
     position: absolute;
-    right: 20px;
-    top: -30px;
+    right: 20px; top: -30px;
     font-family: 'Cormorant Garamond', serif;
     font-size: 200px;
     color: rgba(201,168,76,0.03);
@@ -53,51 +37,19 @@ const pageStyles = `
     pointer-events: none;
     user-select: none;
   }
-  .lib-welcome-eyebrow {
-    font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: #8a6f2e;
-    display: block;
-    margin-bottom: 6px;
+
+  /* Shimmer skeleton */
+  @keyframes libCatShimmer {
+    from { background-position: -200% 0; }
+    to   { background-position:  200% 0; }
   }
-  .lib-welcome-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(28px, 4vw, 42px);
-    font-weight: 300;
-    font-style: italic;
-    color: #f5f0e8;
-    line-height: 1.15;
-    margin-bottom: 10px;
-  }
-  .lib-welcome-subtitle {
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    color: #6b6b70;
-    letter-spacing: 0.3px;
-    line-height: 1.6;
-    max-width: 420px;
-  }
-  .lib-welcome-divider {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-top: 24px;
-  }
-  .lib-welcome-divider-line {
-    flex: 1;
-    height: 1px;
-    background: rgba(201,168,76,0.1);
-  }
-  .lib-welcome-divider-text {
-    font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: rgba(201,168,76,0.3);
+  .lib-skel {
+    background: linear-gradient(90deg, #1c1c1e 0%, #2a2a2d 50%, #1c1c1e 100%);
+    background-size: 200% 100%;
+    animation: libCatShimmer 1.8s infinite;
   }
 
+  /* Thin scrollbar */
   .lib-scroll-area {
     overflow-y: auto;
     scrollbar-width: thin;
@@ -108,74 +60,16 @@ const pageStyles = `
     background: rgba(201,168,76,0.12);
     border-radius: 2px;
   }
-
-  /* Skeleton shimmer for category rows */
-  @keyframes libCatShimmer {
-    from { background-position: -200% 0; }
-    to   { background-position:  200% 0; }
-  }
-  .lib-skel-row { padding: 40px 32px 0; }
-  .lib-skel-title {
-    height: 12px;
-    width: 140px;
-    margin-bottom: 8px;
-    background: linear-gradient(90deg, #1c1c1e 0%, #2a2a2d 50%, #1c1c1e 100%);
-    background-size: 200% 100%;
-    animation: libCatShimmer 1.8s infinite;
-  }
-  .lib-skel-subtitle {
-    height: 28px;
-    width: 220px;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg, #1c1c1e 0%, #2a2a2d 50%, #1c1c1e 100%);
-    background-size: 200% 100%;
-    animation: libCatShimmer 1.8s infinite;
-  }
-  .lib-skel-cards {
-    display: flex;
-    gap: 3px;
-  }
-  .lib-skel-card {
-    flex: 1;
-    aspect-ratio: 2/3;
-    background: linear-gradient(90deg, #1c1c1e 0%, #2a2a2d 50%, #1c1c1e 100%);
-    background-size: 200% 100%;
-    animation: libCatShimmer 1.8s infinite;
-  }
-
-  /* Empty state */
-  .lib-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 80px 20px;
-    text-align: center;
-  }
-  .lib-empty-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 24px;
-    font-weight: 300;
-    font-style: italic;
-    color: #f5f0e8;
-  }
-  .lib-empty-sub {
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    color: #6b6b70;
-    max-width: 280px;
-    line-height: 1.7;
-  }
 `;
 
-const MyLibrary = () => {
+export default function MyLibrary() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCats, setLoadingCats] = useState(true);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
     fetch(`${API_URL}/api/mylibrary/categories`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -187,28 +81,49 @@ const MyLibrary = () => {
 
   return (
     <>
-      <style>{pageStyles}</style>
+      <style>{minimalStyles}</style>
 
-      <div className="lib-page-bg flex">
+      <div className="lib-noise bg-[#0f0f10] min-h-screen flex">
         <LibrarySidebar />
 
-        <div className="lib-main-content flex flex-1 flex-col" style={{ position: "relative", zIndex: 1 }}>
+        {/* Main content — full width on mobile, offset by sidebar on desktop */}
+        <div className="relative z-[1] flex flex-1 flex-col min-w-0">
           <LibraryHeader />
 
           <div className="lib-scroll-area flex-1">
 
             {/* ── WELCOME BANNER ── */}
-            <div className="lib-welcome-banner">
-              <span className="lib-welcome-eyebrow">Your Reading Space</span>
-              <h1 className="lib-welcome-title">Welcome to My Library</h1>
-              <p className="lib-welcome-subtitle">
+            <div className="lib-welcome-quote relative px-4 sm:px-8 pt-8 sm:pt-9 overflow-hidden">
+              <span
+                className="text-[8px] tracking-[5px] uppercase text-[#ecab13] block mb-1.5"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                Your Reading Space
+              </span>
+              <h1
+                className="text-[clamp(26px,4vw,42px)] font-light italic text-[#f5f0e8] leading-[1.15] mb-2.5"
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              >
+                Welcome to My Library
+              </h1>
+              <p
+                className="text-[12px] text-white tracking-[0.3px] leading-[1.6] max-w-[420px]"
+                style={{ fontFamily: "'Jost', sans-serif" }}
+              >
                 Explore curated collections, pick up where you left off, and
                 discover new titles chosen for those who read with intention.
               </p>
-              <div className="lib-welcome-divider">
-                <div className="lib-welcome-divider-line" />
-                <span className="lib-welcome-divider-text">Collections</span>
-                <div className="lib-welcome-divider-line" />
+
+              {/* Divider */}
+              <div className="flex items-center gap-3.5 mt-6">
+                <div className="flex-1 h-px bg-[rgba(201,168,76,0.1)]" />
+                <span
+                  className="text-ms tracking-[4px] uppercase text-[#ecab13]"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  Collections
+                </span>
+                <div className="flex-1 h-px bg-[rgba(201,168,76,0.1)]" />
               </div>
             </div>
 
@@ -216,15 +131,24 @@ const MyLibrary = () => {
             {loadingCats && (
               <>
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="lib-skel-row">
-                    <div className="lib-skel-title" style={{ animationDelay: `${i * 0.1}s` }} />
-                    <div className="lib-skel-subtitle" style={{ animationDelay: `${i * 0.1 + 0.05}s` }} />
-                    <div className="lib-skel-cards">
+                  <div key={i} className="px-4 sm:px-8 pt-8 sm:pt-10">
+                    <div
+                      className="lib-skel h-3 w-36 mb-2 rounded-[1px]"
+                      style={{ animationDelay: `${i * 0.1}s` }}
+                    />
+                    <div
+                      className="lib-skel h-7 w-56 mb-5 rounded-[1px]"
+                      style={{ animationDelay: `${i * 0.1 + 0.05}s` }}
+                    />
+                    <div className="flex gap-[3px]">
                       {[...Array(6)].map((_, j) => (
                         <div
                           key={j}
-                          className="lib-skel-card"
-                          style={{ animationDelay: `${j * 0.06}s` }}
+                          className="lib-skel flex-1 rounded-[1px]"
+                          style={{
+                            aspectRatio: "2/3",
+                            animationDelay: `${j * 0.06}s`,
+                          }}
                         />
                       ))}
                     </div>
@@ -234,30 +158,48 @@ const MyLibrary = () => {
             )}
 
             {/* ── DYNAMIC CATEGORY SECTIONS ── */}
-            {!loadingCats && categories.map((cat) => (
-              <LibraryCategorySection
-                key={cat.slug}
-                title={cat.name}
-                categorySlug={cat.slug}
-                visibleCount={6}
-              />
-            ))}
+            {!loadingCats &&
+              categories.map((cat) => (
+                <LibraryCategorySection
+                  key={cat.slug}
+                  title={cat.name}
+                  categorySlug={cat.slug}
+                  visibleCount={6}
+                />
+              ))}
 
             {/* ── EMPTY STATE ── */}
             {!loadingCats && categories.length === 0 && (
-              <div className="lib-empty">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1" opacity={0.4}>
+              <div className="flex flex-col items-center gap-3.5 py-20 px-5 text-center">
+                <svg
+                  width="36"
+                  height="36"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8a6f2e"
+                  strokeWidth="1"
+                  opacity={0.4}
+                >
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                 </svg>
-                <p className="lib-empty-title">No collections yet</p>
-                <p className="lib-empty-sub">
+                <p
+                  className="text-[24px] font-light italic text-[#f5f0e8]"
+                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                >
+                  No collections yet
+                </p>
+                <p
+                  className="text-[12px] text-[#6b6b70] max-w-[280px] leading-[1.7]"
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                >
                   Collections will appear here once categories are added to the library.
                 </p>
               </div>
             )}
 
-            <div style={{ height: 40 }} />
+            {/* Extra bottom padding — accounts for mobile bottom nav */}
+            <div className="h-10 md:h-10 pb-16 md:pb-0" />
           </div>
 
           <LibraryFooter />
@@ -265,6 +207,4 @@ const MyLibrary = () => {
       </div>
     </>
   );
-};
-
-export default MyLibrary;
+}

@@ -1,57 +1,35 @@
-const footerStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400&family=Jost:wght@300;400&display=swap');
+"use client";
 
-  .lib-footer {
-    background: #0a0a0b;
-    border-top: 1px solid rgba(201,168,76,0.1);
-  }
-`;
+const fontImport = `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400&family=Jost:wght@300;400&display=swap');`;
 
 export default function LibraryFooter() {
   return (
     <>
-      <style>{footerStyles}</style>
+      <style>{fontImport}</style>
 
-      <footer className="lib-footer">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <footer className="bg-[#0a0a0b] border-t border-[rgba(201,168,76,0.1)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-2">
 
           {/* Left — copyright */}
           <span
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 11,
-              letterSpacing: "0.5px",
-              color: "#6b6b70",
-            }}
+            className="text-[11px] tracking-[0.5px] text-[#6b6b70] shrink-0"
+            style={{ fontFamily: "'Jost', sans-serif" }}
           >
             © {new Date().getFullYear()}{" "}
-            <span style={{ color: "#8a6f2e" }}>My Library</span>
+            <span className="text-[#8a6f2e]">My Library</span>
           </span>
 
-          {/* Centre — ornament */}
-          <div className="flex items-center gap-3">
-            <div style={{ width: 30, height: 1, background: "rgba(201,168,76,0.15)" }} />
-            <div
-              style={{
-                width: 4,
-                height: 4,
-                transform: "rotate(45deg)",
-                background: "#8a6f2e",
-                opacity: 0.6,
-              }}
-            />
-            <div style={{ width: 30, height: 1, background: "rgba(201,168,76,0.15)" }} />
+          {/* Centre — ornament (hidden on very small screens) */}
+          <div className="hidden sm:flex items-center gap-3">
+            <div className="w-[30px] h-px bg-[rgba(201,168,76,0.15)]" />
+            <div className="w-1 h-1 rotate-45 bg-[#8a6f2e] opacity-60" />
+            <div className="w-[30px] h-px bg-[rgba(201,168,76,0.15)]" />
           </div>
 
           {/* Right — tagline */}
           <span
-            style={{
-              fontFamily: "'Cinzel', serif",
-              fontSize: 9,
-              letterSpacing: "3px",
-              textTransform: "uppercase",
-              color: "#6b6b70",
-            }}
+            className="text-[9px] tracking-[3px] uppercase text-[#6b6b70] shrink-0"
+            style={{ fontFamily: "'Cinzel', serif" }}
           >
             Happy Reading
           </span>

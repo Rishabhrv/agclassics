@@ -95,7 +95,7 @@ const sections = [
     number: "01",
     title: "Acceptance of Terms",
     content:
-      "By accessing or using AG Classics, you confirm that you are at least 18 years old, or have the legal capacity to enter into this agreement. If you are using the platform on behalf of an organization, you represent that you are authorized to bind that organization to these Terms. Continued use of agclassics.com constitutes your acceptance of these Terms in full.",
+      "By accessing or using AG Classics, you confirm that you are at least 18 years old, or have the legal capacity to enter into this agreement. If you are using the platform on behalf of an organization, you represent that you are authorized to bind that organization to these Terms. Continued use of agclassics.agkit.in constitutes your acceptance of these Terms in full.",
   },
   {
     id: "services",
@@ -106,7 +106,7 @@ const sections = [
       "AG Classics is a digital platform offering curated eBooks spanning all genres — from classic literature and philosophy to business, finance, and self-development. Our catalog is built around public domain works and licensed titles, thoughtfully selected for readers who value enduring ideas.",
     list: [
       "Browse and purchase eBooks across all genres",
-      "Instant digital download upon successful payment",
+      "Instant digital access upon successful payment",
       "Access to curated public domain collections",
       "Subscription-based or one-time purchase options (where available)",
       "Reading recommendations and genre-based discovery",
@@ -135,7 +135,7 @@ const sections = [
     subsections: [
       {
         label: "Delivery",
-        text: "Upon successful payment, your eBook will be available for immediate download. You will also receive a confirmation email with a download link. If you experience issues, please contact our support team.",
+        text: "Upon successful payment, your eBook will be available for immediate access. You will also receive a confirmation email with a access link. If you experience issues, please contact our support team.",
       },
       {
         label: "Format & Compatibility",
@@ -160,7 +160,7 @@ const sections = [
     subsections: [
       {
         label: "Platform Content",
-        text: "All content on agclassics.com — including the website design, logos, typography, original cover art, editorial selections, and software — is owned by or licensed to AG Classics. You may not reproduce, modify, distribute, or commercially use our content without prior written consent.",
+        text: "All content on agclassics.agkit.in — including the website design, logos, typography, original cover art, editorial selections, and software — is owned by or licensed to AG Classics. You may not reproduce, modify, distribute, or commercially use our content without prior written consent.",
       },
       {
         label: "Third-Party Rights",
@@ -192,7 +192,7 @@ const sections = [
     subsections: [
       {
         label: "Digital Products",
-        text: "Due to the instant-delivery nature of digital content, all eBook sales are final and non-refundable once the download link has been accessed or the file has been downloaded.",
+        text: "Due to the instant-delivery nature of digital content, all eBook sales are final and non-refundable once the access link has been accessed or the file has been access.",
       },
       {
         label: "Exceptions",
@@ -213,7 +213,6 @@ const sections = [
       "We reserve the right to suspend or terminate your access to AG Classics at our sole discretion, without prior notice, if you violate these Terms or engage in conduct that is harmful to the platform, its users, or any third party. Upon termination:",
     list: [
       "Your access to the platform will cease immediately.",
-      "Previously downloaded eBooks may remain accessible on your device, but no new downloads will be permitted.",
       "Any outstanding payment obligations remain due.",
       "Clauses relating to intellectual property, liability, and indemnification shall survive termination.",
     ],
@@ -351,7 +350,7 @@ export default function TermsAndConditionsPage() {
                 style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
               >
                 These Terms govern your use of{" "}
-                <span style={{ color: "#8a8790" }}>agclassics.com</span> and all
+                <span style={{ color: "#8a8790" }}>agclassics.agkit.in</span> and all
                 services provided by AG Classics. Please read them carefully before
                 exploring our collection.
               </p>

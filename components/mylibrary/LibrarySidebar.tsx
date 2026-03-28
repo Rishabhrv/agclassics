@@ -4,114 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import {
-  BookOpen,
-  Clock,
-  Heart,
-  Bookmark,
-} from "lucide-react";
+import { BookOpen, Clock, Heart, Bookmark } from "lucide-react";
 
-type Category = {
-  id: number;
-  name: string;
-  slug: string;
-};
+type Category = { id: number; name: string; slug: string };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-const sidebarStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
+const minimalStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
 
-  .lib-sidebar {
-    background: #0f0f10;
-    border-right: 1px solid rgba(201,168,76,0.1);
-    min-height: 100vh;
-    width: 224px;
-  }
-
-  .lib-nav-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 12px;
-    font-family: 'Jost', sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.4px;
-    color: #c8c4bc;                          /* ✅ light warm white — always readable */
-    text-decoration: none;
-    border-radius: 1px;
-    transition: color 0.2s, background 0.2s;
-    position: relative;
-  }
-  .lib-nav-link:hover {
-    color: #f5f0e8;                          /* ✅ brightest white on hover */
-    background: rgba(201,168,76,0.06);
-  }
-  .lib-nav-link.active {
-    color: #c9a84c;                          /* gold for active */
-    background: rgba(201,168,76,0.08);
-  }
-  .lib-nav-link.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 20%;
-    height: 60%;
-    width: 2px;
-    background: #c9a84c;
-  }
-
-  .lib-cat-link {
-    display: flex;
-    align-items: center;
-    padding: 7px 12px 7px 14px;
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0.3px;
-    color: #b8b4ac;                          /* ✅ readable light grey-white */
-    text-decoration: none;
-    border-radius: 1px;
-    transition: color 0.2s, background 0.2s;
-    position: relative;
-  }
-  .lib-cat-link::before {
-    content: '';
-    display: block;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: #c9a84c;
-    margin-right: 10px;
-    flex-shrink: 0;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .lib-cat-link:hover {
-    color: #f5f0e8;                          /* ✅ bright white on hover */
-    background: rgba(201,168,76,0.05);
-  }
-  .lib-cat-link:hover::before { opacity: 1; }
-  .lib-cat-link.active {
-    color: #c9a84c;
-    background: rgba(201,168,76,0.08);
-  }
-  .lib-cat-link.active::before {
-    background: #c9a84c;
-    opacity: 1;
-  }
-
-  .lib-section-label {
-    font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: #c9a84c;                          /* ✅ gold section labels — more visible */
-    padding: 0 12px;
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  /* Subtle scroll in sidebar */
+  /* Thin scrollbar for sidebar */
   .lib-sidebar-scroll {
     overflow-y: auto;
     scrollbar-width: thin;
@@ -122,12 +24,40 @@ const sidebarStyles = `
     background: rgba(201,168,76,0.15);
     border-radius: 2px;
   }
+
+  /* Active left accent bar */
+  .lib-nav-link-active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 20%; height: 60%;
+    width: 2px;
+    background: #c9a84c;
+  }
+
+  /* Mobile nav active dot */
+  .lib-mobile-nav-active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; left: 50%;
+    transform: translateX(-50%);
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: #c9a84c;
+  }
 `;
+
+const NAV_ITEMS = [
+  { icon: <BookOpen size={14} strokeWidth={1.5} />, label: "All Books",         href: "/library/MyLibrary" },
+  { icon: <Clock    size={14} strokeWidth={1.5} />, label: "Continue Reading",   href: "/library/ContinueReadingPage" },
+  { icon: <Bookmark size={14} strokeWidth={1.5} />, label: "Bookmarks",          href: "/library/BookmarksPage" },
+  { icon: <Heart    size={14} strokeWidth={1.5} />, label: "Favorites",          href: "/library/FavoritesPage" },
+];
 
 export default function LibrarySidebar() {
   const [categories, setCategories] = useState<Category[]>([]);
   const pathname = usePathname() ?? "";
   const [loaded, setLoaded] = useState(false);
+  
 
   useEffect(() => {
     if (loaded) return;
@@ -142,15 +72,15 @@ export default function LibrarySidebar() {
 
   return (
     <>
-      <style>{sidebarStyles}</style>
+      <style>{minimalStyles}</style>
 
-      <aside className="lib-sidebar hidden md:flex flex-col">
-
-        {/* LOGO */}
-        <div
-          className="flex items-center justify-center shrink-0"
-          style={{ height: 64, borderBottom: "1px solid rgba(201,168,76,0.1)" }}
-        >
+      {/* ── DESKTOP SIDEBAR ── */}
+      <aside
+        className="hidden md:flex flex-col bg-[#0f0f10] border-r border-[rgba(201,168,76,0.1)] min-h-screen"
+        style={{ width: 224 }}
+      >
+        {/* Logo */}
+        <div className="flex items-center justify-center shrink-0 h-16 border-b border-[rgba(201,168,76,0.1)]">
           <Link href="/">
             <Image
               src="/images/logo/AGClassicLogo.png"
@@ -163,51 +93,46 @@ export default function LibrarySidebar() {
           </Link>
         </div>
 
-        {/* SCROLLABLE NAV */}
+        {/* Scrollable nav */}
         <div className="lib-sidebar-scroll flex-1 py-5 space-y-5">
 
           {/* MAIN LINKS */}
           <div>
-            <span className="lib-section-label">Navigate</span>
+            <span
+              className="text-[8px] tracking-[4px] uppercase text-[#c9a84c] px-3 mb-1.5 block"
+              style={{ fontFamily: "'Cinzel', serif" }}
+            >
+              Navigate
+            </span>
             <nav className="space-y-[2px] px-2">
-              <SidebarLink
-                icon={<BookOpen size={14} strokeWidth={1.5} />}
-                label="All Books"
-                href="/library/MyLibrary"
-                active={pathname === "/library/MyLibrary"}
-              />
-              <SidebarLink
-                icon={<Clock size={14} strokeWidth={1.5} />}
-                label="Continue Reading"
-                href="/library/ContinueReadingPage"
-                active={pathname === "/library/ContinueReadingPage"}
-              />
-              <SidebarLink
-                icon={<Bookmark size={14} strokeWidth={1.5} />}
-                label="Bookmarks"
-                href="/library/BookmarksPage"
-                active={pathname === "/library/BookmarksPage"}
-              />
-              <SidebarLink
-                icon={<Heart size={14} strokeWidth={1.5} />}
-                label="Favorites"
-                href="/library/FavoritesPage"
-                active={pathname === "/library/FavoritesPage"}
-              />
+              {NAV_ITEMS.map((item) => (
+                <SidebarLink
+                  key={item.href}
+                  icon={item.icon}
+                  label={item.label}
+                  href={item.href}
+                  active={pathname === item.href}
+                />
+              ))}
             </nav>
           </div>
 
-          {/* DIVIDER with diamond */}
+          {/* Divider */}
           <div className="flex items-center gap-3 px-4">
-            <div style={{ flex: 1, height: 1, background: "rgba(201,168,76,0.15)" }} />
-            <div style={{ width: 4, height: 4, transform: "rotate(45deg)", background: "#c9a84c", opacity: 0.5 }} />
-            <div style={{ flex: 1, height: 1, background: "rgba(201,168,76,0.15)" }} />
+            <div className="flex-1 h-px bg-[rgba(201,168,76,0.15)]" />
+            <div className="w-1 h-1 rotate-45 bg-[#c9a84c] opacity-50" />
+            <div className="flex-1 h-px bg-[rgba(201,168,76,0.15)]" />
           </div>
 
           {/* CATEGORIES */}
           {categories.length > 0 && (
             <div>
-              <span className="lib-section-label">Genres</span>
+              <span
+                className="text-[8px] tracking-[4px] uppercase text-[#c9a84c] px-3 mb-1.5 block"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                Genres
+              </span>
               <nav className="space-y-[2px] px-2">
                 {categories.map((cat) => (
                   <CategoryLink
@@ -222,25 +147,48 @@ export default function LibrarySidebar() {
           )}
         </div>
 
-        {/* BOTTOM FOOTER STRIP */}
-        <div
-          className="shrink-0 px-5 py-4"
-          style={{ borderTop: "1px solid rgba(201,168,76,0.08)" }}
-        >
+        {/* Footer strip */}
+        <div className="shrink-0 px-5 py-4 border-t border-[rgba(201,168,76,0.08)]">
           <p
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontStyle: "italic",
-              fontSize: 12,
-              color: "#9a968e",              /* ✅ slightly warmer & more legible */
-              lineHeight: 1.5,
-              textAlign: "center",
-            }}
+            className="text-[12px] text-[#9a968e] text-center leading-[1.5] italic"
+            style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
             Read with intention.
           </p>
         </div>
       </aside>
+
+      {/* ── MOBILE BOTTOM NAV ── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0f0f10] border-t border-[rgba(201,168,76,0.12)] flex">
+        {NAV_ITEMS.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`relative flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-colors duration-200 ${
+                isActive ? "lib-mobile-nav-active" : ""
+              }`}
+            >
+              <span
+                className={`transition-colors duration-200 ${
+                  isActive ? "text-[#c9a84c]" : "text-[#6b6b70]"
+                }`}
+              >
+                {item.icon}
+              </span>
+              <span
+                className={`text-[9px] tracking-[0.5px] transition-colors duration-200 ${
+                  isActive ? "text-[#c9a84c]" : "text-[#6b6b70]"
+                }`}
+                style={{ fontFamily: "'Jost', sans-serif" }}
+              >
+                {item.label.split(" ")[0]}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
     </>
   );
 }
@@ -258,8 +206,19 @@ function SidebarLink({
   active?: boolean;
 }) {
   return (
-    <Link href={href} className={`lib-nav-link ${active ? "active" : ""}`}>
-      <span style={{ color: active ? "#c9a84c" : "#c9a84c", opacity: active ? 1 : 0.6 }}>
+    <Link
+      href={href}
+      className={`relative flex items-center gap-2.5 px-3 py-[9px] rounded-[1px] text-[13px] tracking-[0.4px] transition-colors duration-200 no-underline
+        ${active
+          ? "text-[#c9a84c] bg-[rgba(201,168,76,0.08)] lib-nav-link-active"
+          : "text-[#c8c4bc] hover:text-[#f5f0e8] hover:bg-[rgba(201,168,76,0.06)]"
+        }`}
+      style={{ fontFamily: "'Jost', sans-serif" }}
+    >
+      <span
+        className="transition-opacity duration-200"
+        style={{ color: "#c9a84c", opacity: active ? 1 : 0.6 }}
+      >
         {icon}
       </span>
       <span>{label}</span>
@@ -278,7 +237,16 @@ function CategoryLink({
   active?: boolean;
 }) {
   return (
-    <Link href={href} className={`lib-cat-link ${active ? "active" : ""}`}>
+    <Link
+      href={href}
+      className={`relative flex items-center px-3 py-[7px] rounded-[1px] text-[12px] tracking-[0.3px] transition-colors duration-200 no-underline
+        before:content-[''] before:block before:w-[3px] before:h-[3px] before:rounded-full before:bg-[#c9a84c] before:mr-2.5 before:shrink-0 before:transition-opacity
+        ${active
+          ? "text-[#c9a84c] bg-[rgba(201,168,76,0.08)] before:opacity-100"
+          : "text-[#b8b4ac] hover:text-[#f5f0e8] hover:bg-[rgba(201,168,76,0.05)] before:opacity-50 hover:before:opacity-100"
+        }`}
+      style={{ fontFamily: "'Jost', sans-serif" }}
+    >
       {label}
     </Link>
   );
