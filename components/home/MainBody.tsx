@@ -2,22 +2,44 @@
 
 import { useEffect, useState, useRef } from "react";
 import ProductSlider from "@/components/home/Productslider";
-import { RevealText } from "@/components/motion/Motionutils";
 import EbookSection from "@/components/home/EbookSection";
-
+import BookCard from "../book/BookCard";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
+import  HeroSlider  from "./HeroSlider";
+const F_CORMORANT = { fontFamily: "'Cormorant Garamond', serif" } as const;
+const F_CINZEL    = { fontFamily: "'Cinzel', serif" } as const;
+const F_JOST      = { fontFamily: "'Jost', sans-serif" } as const;
+import BookHeroSection from "./BookHeroSection";
+import TopBannerAd from "../ads/TopBannerAd";
+import BottomBannerAd from "../ads/BottomBannerAd";
+import PopupAd from "../ads/PopupAd";
 interface Book {
-  id:         number;
-  title:      string;
-  slug:       string;
-  price:      number;
-  sell_price: number;
-  main_image: string;
-  stock:      number;
-  created_at: string;
+  id:             number;
+  title:          string;
+  slug:           string;
+  price:          number;
+  sell_price:     number;
+  main_image:     string;
+  stock:          number;
+  created_at:     string;
+  product_type?:  "ebook" | "physical" | "both";
+  ebook_price?:   number;
+  ebook_sell_price?: number;
+  badge?:         string;
+  category?:      string;
+  author?:        string;
 }
 
+const LEGENDS = [
+  { name: "Marcus Aurelius",   years: "121 – 180 AD",  quote: "You have power over your mind, not outside events." },
+  { name: "Sun Tzu",           years: "544 – 496 BC",  quote: "Know yourself and you will win all battles." },
+  { name: "Jane Austen",       years: "1775 – 1817",   quote: "The person who has not felt the power of love." },
+  { name: "George Orwell",     years: "1903 – 1950",   quote: "In a time of deceit, telling the truth is revolution." },
+  { name: "Napoleon Hill",     years: "1883 – 1970",   quote: "Whatever the mind can conceive, it can achieve." },
+  { name: "Dale Carnegie",     years: "1888 – 1955",   quote: "Any fool can criticise. It takes character to forgive." },
+  { name: "Fyodor Dostoevsky", years: "1821 – 1881",   quote: "Pain and suffering are always inevitable for great souls." },
+  { name: "Adam Smith",        years: "1723 – 1790",   quote: "The real price of everything is the toil to acquire it." },
+];
 /* ─────────────────────────────────────────────
    GLOBAL STYLES  (only things Tailwind can't do)
 ───────────────────────────────────────────────── */
@@ -124,6 +146,32 @@ export default function MainBody() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState<string | null>(null);
   const [toast, setToast]     = useState<string | null>(null);
+    const [activeLegend, setActiveLegend]   = useState(0);
+    const [featuredIdx, setFeaturedIdx] = useState(0);
+const featuredTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  
+    /* Rotate legend every 3.5 s */
+    useEffect(() => {
+      timerRef.current = setInterval(() => {
+        setActiveLegend((p) => (p + 1) % LEGENDS.length);
+      }, 5500);
+      return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, []);
+    const legend = LEGENDS[activeLegend];
+
+    useEffect(() => {
+  if (!books.length) return;
+  featuredTimerRef.current = setInterval(() => {
+    setFeaturedIdx((prev) => (prev + 1) % books.length);
+  }, 5000);
+  return () => {
+    if (featuredTimerRef.current) clearInterval(featuredTimerRef.current);
+  };
+}, [books]);
+
+const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
 
   useEffect(() => {
     (async () => {
@@ -193,113 +241,12 @@ export default function MainBody() {
   const row2       = books.slice(half);
   const row2Padded = row2.length > 0 ? row2 : row1;
 
-  /* ── Book Card ── */
-  const BookCard = ({ book }: { book: Book }) => {
-    const disc  = calcDiscount(book.price, book.sell_price);
-    const isOos = book.stock === 0;
 
-    return (
-      /* article gives Google/screen readers a meaningful landmark per book */
-      <article
-        className="book-card book-card-responsive relative overflow-hidden cursor-pointer"
-        style={{ width: 250, height: 350, background: "#1c1c1e", borderRadius: 2 }}
-        onClick={() => (window.location.href = `/product/${book.slug}`)}
-        aria-label={`${book.title}${isOos ? " — Out of Stock" : ""}`}
-      >
-        {/* Badge */}
-        {isOos ? (
-          <span
-            aria-label="Out of Stock"
-            style={{ position:"absolute", top:10, left:10, zIndex:10, fontFamily:"'Jost',sans-serif", fontSize:8, letterSpacing:"2px", textTransform:"uppercase", fontWeight:500, padding:"4px 8px", background:"rgba(255,255,255,0.66)", color:"#111111", backdropFilter:"blur(8px)" }}
-          >
-            Out of Stock
-          </span>
-        ) : disc > 5 ? (
-          <span
-            aria-label={`${disc}% discount`}
-            style={{ position:"absolute", top:10, left:10, zIndex:10, fontFamily:"'Jost',sans-serif", fontSize:8, letterSpacing:"2px", textTransform:"uppercase", fontWeight:500, padding:"4px 8px", background:"#8b3a3a", color:"#f5f0e8" }}
-          >
-            {disc}% Off
-          </span>
-        ) : null}
-
-        {/* Cover — using <img> intentionally for the marquee (fill + lazy is fine here) */}
-        {book.main_image ? (
-          <img
-            src={`${API_URL}${book.main_image}`}
-            alt={`${book.title} book cover`}
-            className="book-img"
-            style={{ width:"100%", height:"100%", objectFit:"cover", display:"block", transition:"transform 600ms ease, filter 600ms ease", filter:"brightness(0.88) saturate(0.85)" }}
-            loading="lazy"
-            onError={(e) => (e.currentTarget.style.display = "none")}
-          />
-        ) : (
-          <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(135deg,#222226,#1c1c1e)" }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1" opacity={0.4} aria-hidden="true">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
-          </div>
-        )}
-
-        {/* Overlay */}
-        <div
-          className="book-overlay"
-          style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"0 14px 16px", background:"linear-gradient(to top,rgba(10,10,11,.97) 0%,rgba(10,10,11,.55) 45%,transparent 75%)", transition:"background 400ms" }}
-        >
-          <div className="book-info" style={{ transform:"translateY(6px)", transition:"transform 400ms ease" }}>
-            <h3 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:15, fontWeight:600, lineHeight:1.25, marginBottom:5, color:"#f0ece4" }}>
-              {book.title}
-            </h3>
-
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10, flexWrap:"wrap" }}>
-              <span style={{ fontFamily:"'Jost',sans-serif", fontSize:14, fontWeight:500, color:"#c9a84c" }}>
-                ₹{parseFloat(String(book.sell_price)).toFixed(0)}
-              </span>
-              {disc > 0 && (
-                <span style={{ fontFamily:"'Jost',sans-serif", fontSize:11, textDecoration:"line-through", color:"#555259" }}>
-                  ₹{parseFloat(String(book.price)).toFixed(0)}
-                </span>
-              )}
-            </div>
-
-            <div className="book-actions" style={{ display:"flex", gap:6, opacity:0, transform:"translateY(8px)", transition:"opacity 400ms ease, transform 400ms ease" }}>
-              <button
-                style={{ flex:1, fontFamily:"'Jost',sans-serif", fontSize:7, letterSpacing:"2px", textTransform:"uppercase", fontWeight:500, padding:"5px 8px", border:"none", cursor:isOos?"not-allowed":"pointer", background:isOos?"rgba(221,221,221,.85)":"#c9a84c", color:isOos?"#2f2f2f":"#0a0a0b", transition:"background 300ms" }}
-                disabled={isOos}
-                aria-label={isOos ? "Out of stock" : `Add ${book.title} to cart`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isOos) {
-                    const token = localStorage.getItem("token");
-                    if (!token) { setToast("Please log in to add to cart"); return; }
-                    window.location.href = `/product/${book.slug}`;
-                  }
-                }}
-              >
-                {isOos ? "Out of Stock" : "Add to Cart"}
-              </button>
-              <button
-                style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:"8px 10px", cursor:"pointer", color:"#8a8790", background:"rgba(255,255,255,.07)", border:"1px solid rgba(255,255,255,.08)", transition:"color 300ms, border-color 300ms" }}
-                aria-label={`Add ${book.title} to wishlist`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const token = localStorage.getItem("token");
-                  if (!token) { setToast("Please log in to save to wishlist"); return; }
-                  window.location.href = `/product/${book.slug}`;
-                }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </article>
-    );
-  };
-
+  const toCardBook = (b: Book) => ({
+    ...b,
+    image:        `${API_URL}${b.main_image}`,
+    product_type: b.product_type ?? "physical" as const,
+  });
   /* ─────────────────────────────────────────────
      RENDER
   ───────────────────────────────────────────────── */
@@ -313,195 +260,176 @@ export default function MainBody() {
         style={{ fontFamily: "'Jost', sans-serif" }}
       >
 
-        {/* ════════════════════════════
-            HERO
-        ════════════════════════════ */}
-        {/*
-          <section> is the correct semantic landmark here.
-          aria-labelledby links the section to the h1 for screen readers.
-        */}
-        <section
-          aria-labelledby="hero-heading"
-          className="relative flex flex-col items-center justify-center overflow-hidden text-center px-4 sm:px-6 pb-20 sm:pb-28 pt-6 sm:pt-[30px]"
-        >
-          <div
-            className="pointer-events-none absolute inset-0 -z-10"
-            style={{ background: "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,168,76,0.07) 0%, transparent 70%)" }}
-            aria-hidden="true"
-          />
-
-          <p
-            className="hero-eyebrow anim-fade-0 flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5 text-[9px] sm:text-[10px] tracking-[4px] sm:tracking-[6px] uppercase text-[#c9a84c]"
-            style={{ fontFamily: "'Jost', sans-serif" }}
-            aria-hidden="true" 
-          >
-            Curated · Timeless · Rare
-          </p>
-
-          {/* h1 — only one per page, lives here */}
-          <h1
-            id="hero-heading"
-            className="font-light leading-none tracking-[-1px] mb-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(40px, 9vw, 110px)", color: "#f5f0e8" }}
-          >
-            <RevealText text="The" delay={0.3} />
-            {" "}
-            <em className="italic text-[#c9a84c]">
-              <RevealText text="AG Classics" delay={0.42} />
-            </em>
-            <br />
-            <RevealText text="Collection" delay={0.65} />
-          </h1>
-
-          <p
-            className="anim-fade-2 italic mt-4 sm:mt-[18px] mb-8 sm:mb-11 max-w-[540px] leading-relaxed text-xl sm:text-2xl px-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", color: "#ffffff" }}
-          >
-            Literature that endures. Stories that shaped worlds.
-            <br className="hidden sm:block" /> Collected for those who read with intention.
-          </p>
-
-          <div className="relative z-10 flex flex-wrap justify-center gap-3 sm:gap-4 w-full px-4 sm:px-0">
-            <button
-              className="mag-cta text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase font-medium px-6 sm:px-9 py-3 sm:py-[14px] bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer transition-colors duration-300 hover:bg-[#f5f0e8] w-full sm:w-auto"
-              style={{ fontFamily: "'Jost', sans-serif" }}
-              aria-label="Scroll to explore the AG Classics book collection"
-              onClick={() => document.getElementById("books")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Explore Collection
-            </button>
-            <button
-              className="mag-cta text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase font-[300] px-6 sm:px-9 py-3 sm:py-[14px] bg-transparent border border-[rgba(201,168,76,0.25)] text-white cursor-pointer transition-[border-color,color] duration-300 hover:border-[#c9a84c] hover:text-[#c9a84c] w-full sm:w-auto"
-              style={{ fontFamily: "'Jost', sans-serif" }}
-              aria-label="Browse AG Classics e-books"
-              onClick={() => { window.location.href = "/ebooks"; }}
-            >
-              Browse E-Books
-            </button>
-          </div>
-
-          <div className="anim-fade-5 absolute bottom-0.5 z-10 flex flex-col items-center gap-2" aria-hidden="true">
-            <span className="text-[9px] tracking-[3px] uppercase text-white" style={{ fontFamily: "'Jost', sans-serif" }}>Scroll</span>
-            <div className="anim-scroll w-px h-10" style={{ background: "linear-gradient(to bottom, #8a6f2e, transparent)" }} />
-          </div>
-        </section>
+        <HeroSlider books={books} loading={loading} />
 
 
-        {/* ════════════════════════════
-            BOOKS — 2-row infinite scroll
-        ════════════════════════════ */}
-        <section id="books" aria-label="AG Classics book collection">
+        <BookHeroSection slug={featuredSlug} />
+            <TopBannerAd pageType="home" />
+            <PopupAd pageType="home" />
 
-          {/* Section intro */}
-          <div className="text-center px-4 sm:px-12 pt-1 pb-8 sm:pb-12 max-md:pt-[10px] sm:max-md:pt-[60px]">
-            <p
-              className="text-sm sm:text-base max-w-[480px] mx-auto leading-[1.8] tracking-[0.3px] text-white"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
-            >
-              Every title in the AG Classics series is selected for its lasting significance and the rich worlds it reveals.
-            </p>
-            <div className="flex items-center justify-center gap-[14px] mt-6 sm:mt-7" aria-hidden="true">
-              <div className="w-[40px] sm:w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
-              <div className="w-[6px] h-[6px] rotate-45 bg-[#8a6f2e]" />
-              <div className="w-[40px] sm:w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
-            </div>
-          </div>
 
-          {/* Loading skeleton */}
-          {loading && (
-            <div className="space-y-3 overflow-hidden px-0" aria-busy="true" aria-label="Loading books">
-              {[0, 1].map((row) => (
-                <div key={row} className="flex gap-3 px-3">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="relative overflow-hidden flex-shrink-0 rounded-sm" style={{ width: 220, height: 300, background: "#1c1c1e" }}>
-                      <div className="anim-shimmer absolute inset-0" style={{ background: "linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.05) 50%, transparent 100%)" }} />
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
+<section id="books" aria-label="AG Classics book collection">
 
-          {/* Error */}
-          {error && (
-            <div className="flex flex-col items-center gap-4 text-center px-4 sm:px-6 py-16 sm:py-24" role="alert">
-              <h2 className="text-[24px] sm:text-[28px] font-light italic text-[#f5f0e8]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                Could not load collection
-              </h2>
-              <p className="text-[12px] sm:text-[13px] max-w-[320px] leading-[1.7] text-[#8a8790]" style={{ fontFamily: "'Jost', sans-serif" }}>
-                {error}
-              </p>
-              <button
-                className="mag-cta mt-2 text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 sm:px-9 py-[12px] sm:py-[14px] bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer"
-                style={{ fontFamily: "'Jost', sans-serif" }}
-                onClick={() => window.location.reload()}
-              >
-                Try Again
-              </button>
-            </div>
-          )}
+  {/* Section intro */}
+  <div className="text-center px-4 sm:px-12 pt-1 pb-4 sm:pb-7">
+    <h1
+      className="anim-fadeUp-1 font-light text-center leading-[1.05] text-[#f5f0e8] m-0"
+      style={{ ...F_CORMORANT, fontSize: "clamp(28px,6vw,75px)" }}
+    >
+      Continuing the Legacy of{" "}
+      <br className="hidden sm:block" />
+      <em className="italic text-[#c9a84c]">Timeless Literature</em>
+    </h1>
 
-          {/* Empty */}
-          {!loading && !error && books.length === 0 && (
-            <div className="flex flex-col items-center gap-4 text-center px-6 py-24">
-              <h2 className="text-[28px] font-light italic text-[#f5f0e8]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                The shelves await
-              </h2>
-              <p className="text-[13px] max-w-[320px] leading-[1.7] text-[#8a8790]" style={{ fontFamily: "'Jost', sans-serif" }}>
-                No books yet. Check back soon.
-              </p>
-            </div>
-          )}
+    <p
+      className="text-[13px] sm:text-base max-w-[340px] sm:max-w-[480px] mx-auto mt-3 sm:mt-4 leading-[1.8] tracking-[0.3px] text-white"
+      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+    >
+      Sun Tzu. Jane Austen. Napoleon Hill.
+      Their words have outlived empires —
+      now they live in your pocket.
+    </p>
 
-          {/* 2-row marquee */}
-          {!loading && !error && books.length > 0 && (
+    <div className="flex items-center justify-center gap-[14px] mt-5 sm:mt-7" aria-hidden="true">
+      <div className="w-[32px] sm:w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
+      <div className="w-[6px] h-[6px] rotate-45 bg-[#8a6f2e]" />
+      <div className="w-[32px] sm:w-[60px] h-px bg-[rgba(201,168,76,0.3)]" />
+    </div>
+  </div>
+
+  {/* Loading skeleton */}
+  {loading && (
+    <div className="space-y-3 overflow-hidden px-0" aria-busy="true" aria-label="Loading books">
+      {[0, 1].map((row) => (
+        <div key={row} className="flex gap-2 sm:gap-3 px-3">
+          {[...Array(4)].map((_, i) => (
             <div
-              className="books-marquee overflow-hidden"
-              style={{ paddingBottom: 4 }}
-              /* Pause-on-hover is handled via CSS; aria-label describes the region */
-              aria-label="Scrolling preview of AG Classics books — click any book to view details"
+              key={i}
+              className="relative overflow-hidden flex-shrink-0 rounded-sm"
+              style={{
+                width: "clamp(140px, 38vw, 220px)",
+                height: "clamp(190px, 52vw, 300px)",
+                background: "#1c1c1e",
+              }}
             >
-              {/* Row 1 — scrolls left */}
-              <div className="flex gap-2 sm:gap-3 mb-2 sm:mb-3" style={{ width: "max-content" }}>
-                <div className="row-scroll-right flex gap-2 sm:gap-3">
-                  {[...row1, ...row1].map((book, i) => (
-                    <BookCard key={`r1-${i}`} book={book} />
-                  ))}
-                </div>
-              </div>
-
-              {/* Row 2 — scrolls right */}
-              <div className="flex gap-2 sm:gap-3" style={{ width: "max-content" }}>
-                <div className="row-scroll-left flex gap-2 sm:gap-3">
-                  {[...row2Padded, ...row2Padded].map((book, i) => (
-                    <BookCard key={`r2-${i}`} book={book} />
-                  ))}
-                </div>
-              </div>
+              <div
+                className="anim-shimmer absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.05) 50%, transparent 100%)",
+                }}
+              />
             </div>
-          )}
+          ))}
+        </div>
+      ))}
+    </div>
+  )}
 
-          {/* View all CTA */}
-          {books.length > 0 && !loading && !error && (
-            <div className="text-center mt-8 sm:mt-10 px-4 sm:px-0">
-              <a
-                href="/category/business-professional-skills"
-                className="mag-cta inline-block text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 sm:px-9 py-[11px] sm:py-[13px] border border-[rgba(201,168,76,0.3)] text-[#c9a84c] transition-[background,color] duration-300 hover:bg-[#c9a84c] hover:text-[#0a0a0b]"
-                style={{ fontFamily: "'Jost', sans-serif" }}
-                aria-label="View the full AG Classics book collection"
-              >
-                View Full Collection
-              </a>
-            </div>
-          )}
-        </section>
+  {/* Error */}
+  {error && (
+    <div
+      className="flex flex-col items-center gap-4 text-center px-4 sm:px-6 py-12 sm:py-24"
+      role="alert"
+    >
+      <h2
+        className="text-[22px] sm:text-[28px] font-light italic text-[#f5f0e8]"
+        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+      >
+        Could not load collection
+      </h2>
+      <p
+        className="text-[12px] sm:text-[13px] max-w-[280px] sm:max-w-[320px] leading-[1.7] text-[#8a8790]"
+        style={{ fontFamily: "'Jost', sans-serif" }}
+      >
+        {error}
+      </p>
+      <button
+        className="mag-cta mt-2 w-full max-w-[240px] sm:w-auto text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 sm:px-9 py-[13px] sm:py-[14px] bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer"
+        style={{ fontFamily: "'Jost', sans-serif" }}
+        onClick={() => window.location.reload()}
+      >
+        Try Again
+      </button>
+    </div>
+  )}
+
+  {/* Empty */}
+  {!loading && !error && books.length === 0 && (
+    <div className="flex flex-col items-center gap-4 text-center px-6 py-16 sm:py-24">
+      <h2
+        className="text-[24px] sm:text-[28px] font-light italic text-[#f5f0e8]"
+        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+      >
+        The shelves await
+      </h2>
+      <p
+        className="text-[12px] sm:text-[13px] max-w-[280px] sm:max-w-[320px] leading-[1.7] text-[#8a8790]"
+        style={{ fontFamily: "'Jost', sans-serif" }}
+      >
+        No books yet. Check back soon.
+      </p>
+    </div>
+  )}
+
+  {/* ════════════════════════════
+      BOOKS — 2-row infinite scroll
+  ════════════════════════════ */}
+  {!loading && !error && books.length > 0 && (
+    <div
+      className="books-marquee overflow-hidden"
+      style={{ paddingBottom: 4 }}
+      aria-label="Scrolling preview of AG Classics books — click any book to view details"
+    >
+      {/* Row 1 — scrolls right */}
+      <div className="row-scroll-right flex gap-1.5 sm:gap-2">
+        {[...row1, ...row1].map((book, i) => (
+          <div
+            key={`r1-${i}`}
+            className="flex-shrink-0"
+            style={{ width: "clamp(160px, 42vw, 300px)" }}
+          >
+            <BookCard book={toCardBook(book)} visibleCount={1} />
+          </div>
+        ))}
+      </div>
+
+      {/* Row 2 — scrolls left */}
+      <div className="row-scroll-left flex gap-1.5 sm:gap-2 mt-1.5 sm:mt-2">
+        {[...row2Padded, ...row2Padded].map((book, i) => (
+          <div
+            key={`r2-${i}`}
+            className="flex-shrink-0"
+            style={{ width: "clamp(160px, 42vw, 300px)" }}
+          >
+            <BookCard book={toCardBook(book)} visibleCount={1} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {/* View all CTA */}
+  {books.length > 0 && !loading && !error && (
+    <div className="text-center mt-7 sm:mt-10 px-6 sm:px-0">
+      <a
+        href="/category/business-professional-skills"
+        className="mag-cta inline-block w-full sm:w-auto text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 sm:px-9 py-[13px] sm:py-[14px] border border-[rgba(201,168,76,0.3)] text-[#c9a84c] transition-[background,color] duration-300 hover:bg-[#c9a84c] hover:text-[#0a0a0b]"
+        style={{ fontFamily: "'Jost', sans-serif" }}
+        aria-label="View the full AG Classics book collection"
+      >
+        View Full Collection
+      </a>
+    </div>
+  )}
+</section>
 
 
         {/* ════════════════════════════
             QUOTE BANNER
         ════════════════════════════ */}
         <section
-          className="quote-banner relative text-center overflow-hidden mt-12 sm:mt-16 px-4 sm:px-12 py-16 sm:py-28 max-md:px-6 max-md:py-20"
+          className="quote-banner relative text-center overflow-hidden mt-12 sm:mt-16 px-4 sm:px-12 py-16 sm:pt-28 max-md:px-6 max-md:py-15"
           style={{ background: "#141416", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
           aria-label="Featured reading quote"
         >
@@ -511,16 +439,16 @@ export default function MainBody() {
             aria-hidden="true"
           />
           <blockquote
-            className="relative font-light italic max-w-[780px] mx-auto mb-5 leading-[1.5] text-[#f5f0e8]"
+            className="relative font-light italic max-w-[780px] mx-auto  leading-[1.5] text-[#f5f0e8]"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(18px, 3.5vw, 38px)" }}
           >
-            <p>"A reader lives a thousand lives before he dies. The man who never reads lives only one."</p>
+            <p>"Every book read is a step ahead in the art of understanding life."</p>
             <footer>
               <cite
                 className="text-[10px] sm:text-[11px] tracking-[3px] uppercase not-italic text-[#c9a84c]"
                 style={{ fontFamily: "'Jost', sans-serif" }}
               >
-                — George R.R. Martin
+                — Sun Tzu
               </cite>
             </footer>
           </blockquote>
@@ -531,11 +459,11 @@ export default function MainBody() {
             GENRE SLIDERS
         ════════════════════════════ */}
         <section aria-label="Browse books by genre">
-          <ProductSlider categorySlug="business-professional-skills" eyebrow="Genre" title="Business & Professional Skills" visibleCount={5} />
-          <ProductSlider categorySlug="finance-wealth"               eyebrow="Genre" title="Finance & Wealth"               visibleCount={5} />
-          <ProductSlider categorySlug="self-development"             eyebrow="Genre" title="Self Development"               visibleCount={5} />
-          <ProductSlider categorySlug="strategy-philosophy"          eyebrow="Genre" title="Strategy & Philosophy"          visibleCount={5} />
-          <ProductSlider categorySlug="classic-literature"           eyebrow="Genre" title="Classic Literature"            visibleCount={5} />
+          <ProductSlider categorySlug="business-professional-skills" eyebrow="Genre" title="Business & Professional Skills" visibleCount={4} />
+          <ProductSlider categorySlug="finance-wealth"               eyebrow="Genre" title="Finance & Wealth"               visibleCount={4} />
+          <ProductSlider categorySlug="self-development"             eyebrow="Genre" title="Self Development"               visibleCount={4} />
+          <ProductSlider categorySlug="strategy-philosophy"          eyebrow="Genre" title="Strategy & Philosophy"          visibleCount={4} />
+          <ProductSlider categorySlug="classic-literature"           eyebrow="Genre" title="Classic Literature"            visibleCount={4} />
         </section>
 
         <EbookSection />
@@ -546,7 +474,7 @@ export default function MainBody() {
         ════════════════════════════ */}
         <section
           aria-label="Why shop at AG Classics"
-          className="grid gap-px mx-4 sm:mx-12 mt-10 grid-cols-1 xs:grid-cols-2 md:grid-cols-4 max-md:mt-[60px] max-sm:mt-10"
+          className="grid gap-px mx-4 sm:mx-12 mt-10 mb-5 grid-cols-1 xs:grid-cols-2 md:grid-cols-4 max-md:mt-[60px] max-sm:mt-10"
           style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.05)" }}
         >
           {[
@@ -598,6 +526,7 @@ export default function MainBody() {
             </div>
           ))}
         </section>
+         <BottomBannerAd pageType="home" />
 
       </div>
     </>

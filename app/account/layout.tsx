@@ -213,7 +213,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           {/* Hamburger for full menu */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="shrink-0 w-9 h-9 flex items-center justify-center border border-[rgba(201,168,76,0.2)] text-[#c9a84c] bg-transparent"
+            className="shrink-0 cursor-pointer w-9 h-9 flex items-center justify-center border border-[rgba(201,168,76,0.2)] text-[#c9a84c] bg-transparent"
             aria-label="Open menu"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

@@ -304,7 +304,7 @@ export default function OrderDetailsPage() {
                       <div className="mt-2.5 flex flex-wrap gap-2">
                         {shippingStatus === "delivered" && item.format === "paperback" && (
                           <button
-                            className="review-btn"
+                            className="review-btn cursor-pointer"
                             onClick={() => setReviewItem({ product_id: item.product_id, title: item.title })}
                           >
                             Write a review
@@ -312,7 +312,7 @@ export default function OrderDetailsPage() {
                         )}
                         {item.format === "ebook" && (
                           <button
-                            className="review-btn"
+                            className="review-btn cursor-pointer"
                             onClick={() => setReviewItem({ product_id: item.product_id, title: item.title })}
                           >
                             Write a review

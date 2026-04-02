@@ -183,7 +183,7 @@ export default function ReviewSection({ productId, productTitle }: Props) {
           </p>
           <button
             onClick={() => setSubmitted(false)}
-            className="mt-6 text-[11px] uppercase tracking-[2px] transition-colors"
+            className="mt-6 text-[11px] uppercase tracking-[2px] transition-colors cursor-pointer"
             style={{ fontFamily: "'Jost', sans-serif", color: "#555259", textDecoration: "underline" }}
             onMouseEnter={e => (e.currentTarget.style.color = "#c9a84c")}
             onMouseLeave={e => (e.currentTarget.style.color = "#555259")}
@@ -216,7 +216,7 @@ export default function ReviewSection({ productId, productTitle }: Props) {
                 onClick={() => setRating(n)}
                 onMouseEnter={() => setHover(n)}
                 onMouseLeave={() => setHover(0)}
-                className="p-0.5 transition-transform hover:scale-110 active:scale-95"
+                className="p-0.5 transition-transform hover:scale-110 active:scale-95 cursor-pointer"
                 style={{ background: "none", border: "none", cursor: "pointer" }}
               >
                 <Star
@@ -282,7 +282,7 @@ export default function ReviewSection({ productId, productTitle }: Props) {
                 style={{ width: 64, height: 64 }}
               >
                 <img src={p} alt="" className="w-full h-full object-cover" />
-                <button className="remove-btn" onClick={() => removeImage(i)}>
+                <button className="remove-btn cursor-pointer" onClick={() => removeImage(i)}>
                   <X size={10} style={{ color: "#fff" }} />
                 </button>
               </div>
@@ -307,7 +307,7 @@ export default function ReviewSection({ productId, productTitle }: Props) {
 
         {/* ── Submit ── */}
         <button
-          className="submit-btn"
+          className="submit-btn cursor-pointer"
           onClick={submitReview}
           disabled={submitting}
         >

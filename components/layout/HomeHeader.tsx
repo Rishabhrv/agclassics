@@ -415,11 +415,11 @@ export default function HomeHeader() {
             <Image
               src="/images/logo/AGClassicLogo.png"
               alt="AGPH Store Logo"
-              width={150}
+              width={130}
               height={60}
               quality={100}
               priority
-              className="h-auto w-[70%] md:w-[90%]"
+              className="h-auto w-[60%] md:w-[80%]"
             />
           </Link>
 

@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
+import BookCard from "../book/BookCard";
+import PopupAd from "../ads/PopupAd";
+import TopBannerAd from "../ads/TopBannerAd";
+import SidebarAd from "../ads/SidebarAd";
+import BottomBannerAd from "../ads/BottomBannerAd";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -172,7 +177,9 @@ function ProductCard({
 
   return (
     <>
+    
       <ToastList toasts={toasts} />
+
       <div
         className="group relative bg-[#1c1c1e] cursor-pointer overflow-hidden
           transition-[transform,box-shadow] duration-[350ms] ease-out
@@ -330,6 +337,12 @@ function ProductCard({
   );
 }
 
+const toCardBook = (p: Product) => ({
+  ...p,
+  image: `${API_URL}${p.main_image}`,
+  product_type: p.product_type ?? "physical" as const,
+});
+
 /* ══════════════════════
    MAIN PAGE
 ══════════════════════ */
@@ -353,34 +366,10 @@ export default function CategoryPage() {
   const [categories, setCategories]     = useState<Category[]>([]);
   const [categoryName, setCategoryName] = useState("");
   const [sidebarOpen, setSidebarOpen]   = useState(false);
-  const [cartProductIds, setCartProductIds] = useState<Set<number>>(new Set());
 
   const totalPages = Math.ceil(total / LIMIT);
 
-  const fetchCartIds = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    try {
-      const res = await fetch(`${API_URL}/api/ag-classics/cart`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      if (data.success && Array.isArray(data.cart)) {
-        setCartProductIds(new Set(data.cart.map((item: { product_id: number }) => item.product_id)));
-      }
-    } catch { /* silent */ }
-  }, []);
 
-  useEffect(() => {
-    fetchCartIds();
-    window.addEventListener("cart-change", fetchCartIds);
-    return () => window.removeEventListener("cart-change", fetchCartIds);
-  }, [fetchCartIds]);
-
-  const handleCartAdded = (productId: number) => {
-    setCartProductIds((prev) => new Set([...prev, productId]));
-  };
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
@@ -449,6 +438,8 @@ export default function CategoryPage() {
       <style>{globalStyles}</style>
 
       <div className="min-h-screen bg-[#0a0a0b] pt-[120px] sm:pt-[130px] md:pt-[140px]">
+              <PopupAd pageType="category" />
+      <TopBannerAd pageType="category" />
 
         {/* ── Hero Banner ── */}
         <div className="relative px-4 sm:px-8 md:px-16 pt-8 sm:pt-10 md:pt-12 pb-7 sm:pb-9 md:pb-10
@@ -606,12 +597,9 @@ export default function CategoryPage() {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
                 {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    inCart={cartProductIds.has(product.id)}
-                    onCartAdded={handleCartAdded}
-                  />
+                  <div key={product.id} style={{ width: "100%" }}>
+                    <BookCard book={toCardBook(product)} visibleCount={1} />
+                  </div>
                 ))}
               </div>
             )}
@@ -651,6 +639,7 @@ export default function CategoryPage() {
             )}
           </main>
         </div>
+        <BottomBannerAd pageType="category" />
 
         {/* Mobile sidebar overlay */}
         {sidebarOpen && (
@@ -873,6 +862,7 @@ function SidebarContent({
           })}
         </div>
       )}
+      <SidebarAd pageType="category"/>
 
       {/* Ornament */}
       <div className="flex items-center gap-2 mt-2">
