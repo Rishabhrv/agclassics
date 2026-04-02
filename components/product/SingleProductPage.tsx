@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MagneticBtn } from "@/components/motion/Motionutils";
 import Link from "next/link";
+import BottomBannerAd from "../ads/BottomBannerAd";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -1646,6 +1647,8 @@ export default function ProductPage({ product }: { product: Product }) {
             </div>
           </>
         )}
+
+        <BottomBannerAd pageType="product" />
 
         {/* ════════ ORNAMENT ════════ */}
         <div
