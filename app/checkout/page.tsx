@@ -923,7 +923,6 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
         {hasEbook && (
           <GoldBtn onClick={() => (window.location.href = "/my-books")}>Go to My Books</GoldBtn>
         )}
-        <GoldBtn onClick={() => (window.location.href = "/orders")}>Track Order</GoldBtn>
         <button
           className="px-8 py-[13px] text-[10px] tracking-[3px] uppercase transition-colors duration-200"
           style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "transparent",
