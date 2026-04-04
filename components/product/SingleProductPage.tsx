@@ -1227,7 +1227,7 @@ export default function ProductPage({ product }: { product: Product }) {
                   ].map((item, i) => (
                     <div key={i} className="flex flex-col items-center text-center gap-1.5 py-3">
                       <div className="opacity-80">{item.icon}</div>
-                      <p className="text-xs tracking-[1px] uppercase text-[#8a8a8e] leading-tight" style={{ fontFamily: "'Cinzel', serif" }}>
+                      <p className="text-xs tracking-[1px] uppercase text-[#fafafa] leading-tight" style={{ fontFamily: "'Cinzel', serif" }}>
                         {item.title}
                       </p>
                       <p className="text-xs text-white hidden sm:block" style={{ fontFamily: "'Jost', sans-serif" }}>
@@ -1405,7 +1405,7 @@ export default function ProductPage({ product }: { product: Product }) {
                         <span className="text-[7px] tracking-[3px] uppercase text-[#8a6f2e]" style={{ fontFamily: "'Cinzel', serif" }}>Author</span>
                       </div>
                       {a.bio && (
-                        <p className="text-[16px] italic text-[#7a7a7e] leading-[1.8] break-words" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                        <p className="text-[16px] italic text-[#d8d8d8] leading-[1.8] break-words" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                           {expandedAuthors[a.id]
                             ? a.bio
                             : getShortBio(a.bio) + (a.bio.split(" ").length > 60 ? "..." : "")}
@@ -1581,7 +1581,7 @@ export default function ProductPage({ product }: { product: Product }) {
                       <div
                         key={rec.id}
                         className="agc-rec bg-[#111113] border border-[rgba(255,255,255,0.05)] overflow-hidden cursor-pointer transition-all duration-300 hover:border-[rgba(201,168,76,0.25)] hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
-                        onClick={() => router.push(`/ag-classics/${rec.slug}`)}
+                        onClick={() => router.push(`/product/${rec.slug}`)}
                       >
                         <div className="aspect-[3/4] overflow-hidden relative">
                           {rec.main_image ? (

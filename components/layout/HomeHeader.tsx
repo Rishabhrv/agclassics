@@ -413,13 +413,13 @@ export default function HomeHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <Image
-              src="/images/logo/AGClassicLogo.png"
+              src="/images/logo/AGClaasiclogo2.png"
               alt="AGPH Store Logo"
               width={130}
               height={60}
               quality={100}
               priority
-              className="h-auto w-[60%] md:w-[80%]"
+              className="h-auto w-[45%] md:w-[40%]"
             />
           </Link>
 

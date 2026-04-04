@@ -133,13 +133,13 @@ const initials = (name: string) =>
 const MegaTitle = ({ title }: { title: string }) => {
   const words = title.split(" ");
   return (
-    <h1 className="bh-mega-title" aria-label={title}>
+    <h2 className="bh-mega-title" aria-label={title}>
       {words.map((word, i) => (
         <span key={i} className={i % 2 === 1 ? "outlined" : ""}>
           {word}{i < words.length - 1 ? " " : ""}
         </span>
       ))}
-    </h1>
+    </h2>
   );
 };
 
@@ -230,7 +230,7 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
                     <img
                       src={`${API_URL}${author.profile_image}`}
                       alt={author.name}
-                      className="w-[44px] h-[44px] rounded-full object-cover block"
+                      className="w-[44px] h-[44px] rounded-full object-cover object-top block"
                       onError={(e) => { e.currentTarget.style.display = "none"; }}
                     />
                   ) : (
@@ -285,7 +285,7 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
                   About This Book
                 </p>
                 <p
-                  className="line-clamp-3 font-['Cormorant_Garamond'] text-[14px] leading-[1.80] text-[rgba(245,240,232,0.62)] m-0"
+                  className="line-clamp-3 font-['Cormorant_Garamond'] text-[15px] leading-[1.80] text-[rgba(255, 255, 255, 0.89)] m-0"
                   dangerouslySetInnerHTML={{
                     __html: product.description.replace(/<[^>]*>/g, "").slice(0, 280) + "…",
                   }}
@@ -408,7 +408,7 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
                         <img
                           src={`${API_URL}${author.profile_image}`}
                           alt={author.name}
-                          className="w-[56px] h-[56px] rounded-full object-cover block"
+                          className="w-[56px] h-[56px] rounded-full object-cover object-top block"
                           onError={(e) => { e.currentTarget.style.display = "none"; }}
                         />
                       ) : (
@@ -423,7 +423,7 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
                     </div>
                   </div>
                   {author.bio && (
-                    <p className="line-clamp-2 font-['Cormorant_Garamond'] text-[14px] italic leading-[1.75] text-[rgba(245,240,232,0.60)] m-0">
+                    <p className="line-clamp-2 font-['Cormorant_Garamond'] text-[14px] italic leading-[1.75] text-[rgba(255, 255, 255, 0.9)] m-0">
                       {author.bio}
                     </p>
                   )}
@@ -437,7 +437,7 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
                 <div>
                   <p className="font-['Jost'] text-[9px] tracking-[4px] uppercase text-[rgba(201,168,76,0.45)] mt-0 mb-2">About This Book</p>
                   <p
-                    className="line-clamp-3 font-['Cormorant_Garamond'] text-[14px] leading-[1.80] text-[rgba(245,240,232,0.62)] m-0"
+                    className="line-clamp-3 font-['Cormorant_Garamond'] text-[15px] leading-[1.80] text-[rgba(255, 255, 255, 0.89)] m-0"
                     dangerouslySetInnerHTML={{
                       __html: product.description.replace(/<[^>]*>/g, "").slice(0, 280) + "…",
                     }}
@@ -511,7 +511,7 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
                         <img
                           src={`${API_URL}${author.profile_image}`}
                           alt={author.name}
-                          className="w-[72px] h-[72px] rounded-full object-cover block"
+                          className="w-[72px] h-[72px] rounded-full object-cover object-top block"
                           onError={(e) => { e.currentTarget.style.display = "none"; }}
                         />
                       ) : (
@@ -526,7 +526,7 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
                     </div>
                   </div>
                   {author.bio && (
-                    <p className="line-clamp-4 font-['Cormorant_Garamond'] text-[15px] italic leading-[1.75] text-[rgba(245,240,232,0.60)] m-0">
+                    <p className="line-clamp-4 font-['Cormorant_Garamond'] text-[15px] italic leading-[1.75] text-[rgba(255, 255, 255, 0.8)] m-0">
                       {author.bio}
                     </p>
                   )}
@@ -580,14 +580,13 @@ export default function BookHeroSection({ slug }: BookHeroSectionProps) {
             </div>
 
             {/* RIGHT — Product Details */}
-            <div className="w-[32%] pl-9 pr-10 py-2 flex flex-col gap-3">
-              <div className="bh-vertical-text self-end mb-2" aria-hidden="true">Product Details</div>
+            <div className="w-[32%] pl-9 pr-10 py-4 flex flex-col gap-3">
 
               {product.description && (
                 <div>
                   <p className="font-['Jost'] text-[9px] tracking-[4px] uppercase text-[rgba(201,168,76,0.45)] mt-0 mb-3">About This Book</p>
                   <p
-                    className="line-clamp-4 font-['Cormorant_Garamond'] text-[15px] leading-[1.80] text-[rgba(245,240,232,0.62)] m-0"
+                    className="line-clamp-4 font-['Cormorant_Garamond'] text-[15px] leading-[1.80] text-[rgba(255, 255, 255, 0.89)] m-0"
                     dangerouslySetInnerHTML={{
                       __html: product.description.replace(/<[^>]*>/g, "").slice(0, 280) + "…",
                     }}
