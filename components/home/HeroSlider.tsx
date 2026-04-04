@@ -104,27 +104,39 @@ const initials = (name: string) =>
 const VALUE_ITEMS = [
   {
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.4" strokeLinecap="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5" strokeLinecap="round">
+        {/* Book / Library */}
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2z"/>
       </svg>
     ),
-    stat: "500+", label: "Rare Titles",
+    stat: "Curated",
+    label: "Timeless Classics Only",
   },
+
+{
+  icon: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5" strokeLinecap="round">
+      {/* Pillar / Classical */}
+      <path d="M4 22h16"/>
+      <path d="M6 18h12"/>
+      <path d="M8 6h8"/>
+      <path d="M10 6v12"/>
+      <path d="M14 6v12"/>
+    </svg>
+  ),
+  stat: "Legacy",
+  label: "Built on Timeless Thought",
+},
   {
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.4" strokeLinecap="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5" strokeLinecap="round">
+        {/* Infinity / Lifetime */}
+        <path d="M18 8c-1.5-2-5-2-6.5 0L10 10l-1.5-2C7 6 3.5 6 2 8s0 5 2 6 5 0 6.5-2L12 10l1.5 2c1.5 2 5 2 6.5 0s0-5-2-6z"/>
       </svg>
     ),
-    stat: "DRM‑Free", label: "Own It Forever",
-  },
-  {
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.4" strokeLinecap="round">
-        <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/>
-      </svg>
-    ),
-    stat: "ePub", label: "Read Anywhere",
+    stat: "Lifetime",
+    label: "Access Without Limits",
   },
 ];
 
@@ -175,7 +187,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
           aria-hidden="true"
           className="hidden lg:flex absolute pointer-events-none items-center gap-2"
           style={{
-            top: "8%", left: "1.5%",
+            top: "14%", left: "1.5%",
             transform: "rotate(-90deg) translateX(-50%)",
             transformOrigin: "left center",
           }}
@@ -190,74 +202,16 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
           <div className="w-5 h-px bg-[rgba(201,168,76,0.3)]" />
         </div>
 
-        {/* ── Circular stamp — mid-right (xl+) ── */}
-        <div
-          aria-hidden="true"
-          className="hidden xl:flex absolute pointer-events-none flex-col items-center justify-center gap-[3px] rounded-full"
-          style={{
-            top: "38%", right: "15%",
-            transform: "rotate(8deg)",
-            width: 62, height: 62,
-            border: "1px solid rgba(253,190,16,0.91)",
-          }}
-        >
-          <div className="w-[30px] h-px bg-[rgba(230,177,33,0.91)]" />
-          <span
-            className="text-center text-[7px] tracking-[2px] uppercase leading-[1.6] text-[rgba(228,170,8,0.85)]"
-            style={{ fontFamily: "'Cinzel', serif" }}
-          >
-            Read<br />Anywhere
-          </span>
-          <div className="w-[30px] h-px bg-[rgba(232,180,36,0.86)]" />
-        </div>
-
-        {/* ── Corner-bracket stamp — bottom-left (lg+) ── */}
-        <div
-          aria-hidden="true"
-          className="hidden lg:block absolute pointer-events-none p-[8px_10px]"
-          style={{ bottom: "20%", left: "12%", transform: "rotate(-3.5deg)" }}
-        >
-          {/* Corner brackets */}
-          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[rgba(243,182,15,0.88)]" />
-          <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[rgba(243,182,15,0.88)]" />
-          <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[rgba(243,182,15,0.88)]" />
-          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[rgba(243,182,15,0.88)]" />
-          <span
-            className="block px-1.5 py-0.5 whitespace-nowrap italic text-[11px] text-[rgba(218,178,114,0.95)]"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
-          >
-            Yours Forever
-          </span>
-        </div>
-
-        {/* ── Dashed underline stamp — bottom-right (lg+) ── */}
-        <div
-          aria-hidden="true"
-          className="hidden lg:flex absolute pointer-events-none flex-col items-center gap-1"
-          style={{ bottom: "7%", right: "12.5%", transform: "rotate(12.5deg)" }}
-        >
-          <span
-            className="whitespace-nowrap text-[8px] tracking-[3.5px] uppercase text-[rgba(229,172,15,0.89)]"
-            style={{ fontFamily: "'Jost', sans-serif" }}
-          >
-            Rare · Classics · ePub
-          </span>
-          <div
-            className="w-full h-px"
-            style={{
-              background: "repeating-linear-gradient(90deg, rgba(243,182,15,0.88) 0px, rgba(243,182,15,0.88) 4px, transparent 4px, transparent 8px)",
-            }}
-          />
-        </div>
+       
 
         {/* ── Eyebrow stamp ── */}
-        <div className="anim-fadeUp-1 flex items-center gap-3 mt-8 sm:mt-0 mb-5 sm:mb-6 opacity-90">
+        <div className="anim-fadeUp-1 flex items-center gap-3 mt-8 sm:mt-1 mb-5 sm:mb-6 opacity-90">
           <div
-            className="w-10 h-px"
+            className="w-10 h-px "
             style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6))" }}
           />
           <div
-            className="flex items-center gap-2 border border-[rgba(201,168,76,0.2)] px-3.5 py-[5px] rounded-sm bg-[rgba(201,168,76,0.04)]"
+            className="flex items-center gap-2 border border-[rgba(201,168,76,0.2)] px-3.5 py-[10px]  rounded-sm bg-[rgba(201,168,76,0.04)]"
           >
             <div className="w-[5px] h-[5px] bg-[#c9a84c] rotate-45 flex-shrink-0 opacity-70" />
             <span
@@ -436,7 +390,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
         </div>
 
         {/* ══ VALUE STRIP ══ */}
-        <div className="anim-fadeUp-2 w-full flex items-stretch justify-center mt-3 mb-6 sm:mb-8 max-w-[580px]">
+        <div className="anim-fadeUp-2 w-full flex items-stretch justify-center mt-3 mb-6 sm:mb-8 ">
           {VALUE_ITEMS.map((item, i) => (
             <div
               key={i}

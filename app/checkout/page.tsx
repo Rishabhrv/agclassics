@@ -162,7 +162,7 @@ export default function CheckoutPage() {
     };
 
   /* ── Validation ──
-     For ebook-only: only email required.
+     For ebook-only: email + phone required.
      For paperback: full address required.                         ── */
   const validate = (): boolean => {
     const e: Partial<Address> = {};
@@ -170,11 +170,13 @@ export default function CheckoutPage() {
     // Email always required
     if (!addr.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = "Valid email required";
 
+    // Phone always required (ebook delivery confirmation + paperback)
+    if (!addr.phone.match(/^\d{10}$/)) e.phone = "10-digit number required";
+
     // Address fields only needed for paperback orders
     if (hasPaperback) {
       if (!addr.first_name.trim()) e.first_name = "Required";
       if (!addr.last_name.trim())  e.last_name  = "Required";
-      if (!addr.phone.match(/^\d{10}$/)) e.phone = "10-digit number required";
       if (!addr.address.trim()) e.address = "Required";
       if (!addr.city.trim())    e.city    = "Required";
       if (!addr.state.trim())   e.state   = "Required";
@@ -364,8 +366,7 @@ export default function CheckoutPage() {
         <div className="flex flex-col gap-0.5">
 
           {/* ─────────────────────────────────────────────────────
-              EBOOK-ONLY: show a minimal email-only form
-              + instant delivery notice instead of full address form
+              EBOOK-ONLY: email + phone form + instant delivery notice
           ───────────────────────────────────────────────────────── */}
           {ebookOnly ? (
             <Section title="Your Details" step="01">
@@ -388,16 +389,27 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Only email needed for ebook-only orders */}
-              <Field
-                id="field-email"
-                label="Email Address"
-                value={addr.email}
-                onChange={set("email")}
-                error={errors.email}
-                type="email"
-                placeholder="Confirmation will be sent here"
-              />
+              {/* Email + Phone — both required for ebook-only orders */}
+              <div className="grid grid-cols-2 gap-0.5">
+                <Field
+                  id="field-email"
+                  label="Email Address"
+                  value={addr.email}
+                  onChange={set("email")}
+                  error={errors.email}
+                  type="email"
+                  placeholder="Confirmation will be sent here"
+                />
+                <Field
+                  id="field-phone"
+                  label="Phone Number"
+                  value={addr.phone}
+                  onChange={set("phone")}
+                  error={errors.phone}
+                  type="tel"
+                  placeholder="10-digit mobile"
+                />
+              </div>
             </Section>
 
           ) : (
@@ -873,7 +885,6 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
         A confirmation has been sent to your email.
       </p>
 
-      {/* eBook instant access notice on success screen */}
       {hasEbook && (
         <div className="w-full flex items-start gap-3 p-4"
           style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
@@ -886,7 +897,7 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
             <p className="text-[11px] leading-[1.8]"
               style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
               Head to <strong style={{ color: "#f5f0e8" }}>My Books</strong> to access your
-              eBook{/* plural handled by parent */} instantly — no waiting required.
+              eBook instantly — no waiting required.
             </p>
           </div>
         </div>
@@ -912,9 +923,7 @@ function SuccessScreen({ orderId, total, hasEbook }: { orderId: string; total: n
         {hasEbook && (
           <GoldBtn onClick={() => (window.location.href = "/my-books")}>Go to My Books</GoldBtn>
         )}
-        <GoldBtn onClick={() => (window.location.href = "/orders")}>
-          {hasEbook ? "Track Order" : "Track Order"}
-        </GoldBtn>
+        <GoldBtn onClick={() => (window.location.href = "/orders")}>Track Order</GoldBtn>
         <button
           className="px-8 py-[13px] text-[10px] tracking-[3px] uppercase transition-colors duration-200"
           style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "transparent",
