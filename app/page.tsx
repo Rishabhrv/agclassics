@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | AG Classics",
   },
   description:
-    "Discover the AG Classics collection — a curated selection of timeless literature, business, philosophy, and self-development books and e-books, chosen for those who read with intention.",
+    "Discover AG Classics — a curated collection of timeless literature, business, philosophy, and self-development books for intentional readers.",
   keywords: [
     "AG Classics",
     "classic literature books",

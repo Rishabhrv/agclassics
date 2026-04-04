@@ -267,19 +267,223 @@ const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
             <TopBannerAd pageType="home" />
             <PopupAd pageType="home" />
 
+            {/* ════════════════════════════
+    EBOOK PROMO SECTION
+════════════════════════════ */}
+<section
+  aria-label="eBooks available"
+  className="relative overflow-hidden mx-4 sm:mx-12 my-10 sm:my-16"
+  style={{ background: "#0f0f11", border: "1px solid rgba(201,168,76,0.15)" }}
+>
+  {/* Decorative glow */}
+  <div
+    className="pointer-events-none absolute top-0 right-0 w-[400px] h-[400px]"
+    style={{
+      background: "radial-gradient(circle at top right, rgba(201,168,76,0.08) 0%, transparent 65%)",
+    }}
+  />
+  <div
+    className="pointer-events-none absolute bottom-0 left-0 w-[300px] h-[300px]"
+    style={{
+      background: "radial-gradient(circle at bottom left, rgba(201,168,76,0.05) 0%, transparent 65%)",
+    }}
+  />
+
+  <div className="relative grid grid-cols-1 md:grid-cols-2 gap-0">
+
+    {/* LEFT — text */}
+    <div className="flex flex-col justify-center px-7 sm:px-12 py-12 sm:py-16">
+
+      {/* Eyebrow */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-6 h-px bg-[#c9a84c]" />
+        <span
+          className="text-[10px] tracking-[3.5px] uppercase text-[#c9a84c]"
+          style={F_JOST}
+        >
+          Digital Library
+        </span>
+      </div>
+
+      <h2
+        className="font-light leading-[1.1] text-[#f5f0e8] mb-4"
+        style={{ ...F_CORMORANT, fontSize: "clamp(28px, 4.5vw, 54px)" }}
+      >
+        Read Anywhere,{" "}
+        <br />
+        <em className="italic text-[#c9a84c]">Anytime.</em>
+      </h2>
+
+      <p
+        className="text-sm leading-[1.9] text-[#8a8790] max-w-sm mb-8"
+        style={F_JOST}
+      >
+        Our entire collection is available as eBooks compatible with every device. 
+        No shipping. No waiting. Just reading.
+      </p>
+
+      {/* Feature pills */}
+      <ul className="flex flex-wrap gap-2 mb-9">
+        {[ "Friendly Reader", "All Devices", "Lifetime Access"].map((pill) => (
+          <li
+            key={pill}
+            className="text-[10px] tracking-[1.5px] uppercase px-3 py-1.5"
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              color: "#c9a84c",
+              border: "1px solid rgba(201,168,76,0.25)",
+              background: "rgba(201,168,76,0.05)",
+            }}
+          >
+            {pill}
+          </li>
+        ))}
+      </ul>
+
+      <a
+        href="/ebooks"
+        className="mag-cta inline-flex items-center gap-3 w-fit text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 py-[13px] bg-[#c9a84c] text-[#0a0a0b] transition-opacity hover:opacity-90"
+        style={F_JOST}
+      >
+        Browse eBooks
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    {/* RIGHT — visual */}
+    <div
+      className="relative flex items-center justify-center py-12 px-8"
+      style={{ background: "rgba(201,168,76,0.03)", borderLeft: "1px solid rgba(201,168,76,0.1)" }}
+    >
+
+      {/* Stacked mock device */}
+      <div className="relative w-[220px] sm:w-[260px]">
+
+        {/* Tablet frame */}
+        <div
+          className="relative w-full rounded-xl overflow-hidden shadow-2xl"
+          style={{
+            background: "#1a1a1c",
+            border: "2px solid rgba(201,168,76,0.2)",
+            aspectRatio: "3/4",
+          }}
+        >
+          {/* Screen glare */}
+          <div
+            className="absolute inset-0 pointer-events-none z-10"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%)",
+            }}
+          />
+
+{/* Auto-scrolling 2x2 book covers */}
+<div className="absolute inset-3 overflow-hidden">
+  <style>{`
+    @keyframes scrollUp {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-50%); }
+    }
+    .books-scroll-up {
+      animation: scrollUp 15s linear infinite;
+    }
+    .books-scroll-up:hover {
+      animation-play-state: paused;
+    }
+  `}</style>
+
+  <div className="books-scroll-up grid grid-cols-2 gap-1.5">
+    {[
+      ...(books.length > 0 ? books : new Array(8).fill({} as Book)),
+      ...(books.length > 0 ? books : new Array(8).fill({} as Book)),
+    ].map((book, i) => (
+      <div
+        key={i}
+        className="rounded-sm overflow-hidden flex-shrink-0"
+        style={{  background: "#1a1a1c" }}
+      >
+        {(book as Book).main_image ? (
+          <img
+            src={`${API_URL}${(book as Book).main_image}`}
+            alt={(book as Book).title}
+            className=" m-1 object-cover rounded-sm"
+          />
+        ) : (
+          <div
+            className="w-full h-full"
+            style={{ background: "linear-gradient(145deg, #2a2318, #1a1610)" }}
+          />
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+          {/* Bottom bar */}
+          <div
+            className="absolute bottom-0 left-0 right-0 px-4 py-2 flex items-center justify-between"
+            style={{ background: "rgba(10,10,11,0.85)", backdropFilter: "blur(8px)" }}
+          >
+            <span className="text-[9px] tracking-[2px] uppercase text-[#c9a84c]" style={F_JOST}>
+  {books.length > 0 ? `${books.length}+ books` : "eBooks"}
+</span>
+            <div className="flex gap-1">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="w-1 h-1 rounded-full bg-[#c9a84c]" style={{ opacity: i === 0 ? 1 : 0.35 }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Floating badge */}
+        <div
+          className="absolute -top-4 -right-4 flex flex-col items-center justify-center w-[72px] h-[72px] rounded-full text-center"
+          style={{
+            background: "#c9a84c",
+            color: "#0a0a0b",
+            boxShadow: "0 8px 30px rgba(201,168,76,0.35)",
+          }}
+        >
+          <span className="text-[9px] font-bold tracking-[1px] uppercase leading-tight" style={F_JOST}>
+            Instant
+          </span>
+          <span className="text-[9px] font-bold tracking-[1px] uppercase leading-tight" style={F_JOST}>
+            Access
+          </span>
+        </div>
+
+        {/* Floating format pill */}
+        <div
+          className="absolute -bottom-4 -left-4 px-3 py-1.5 text-[9px] tracking-[2px] uppercase"
+          style={{
+            background: "#1c1c1f",
+            border: "1px solid rgba(201,168,76,0.3)",
+            color: "#c9a84c",
+            fontFamily: "'Jost', sans-serif",
+          }}
+        >
+          Buy Now
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 <section id="books" aria-label="AG Classics book collection">
 
   {/* Section intro */}
   <div className="text-center px-4 sm:px-12 pt-1 pb-4 sm:pb-7">
-    <h1
+    <h2
       className="anim-fadeUp-1 font-light text-center leading-[1.05] text-[#f5f0e8] m-0"
       style={{ ...F_CORMORANT, fontSize: "clamp(28px,6vw,75px)" }}
     >
       Continuing the Legacy of{" "}
       <br className="hidden sm:block" />
       <em className="italic text-[#c9a84c]">Timeless Literature</em>
-    </h1>
+    </h2>
 
     <p
       className="text-[13px] sm:text-base max-w-[340px] sm:max-w-[480px] mx-auto mt-3 sm:mt-4 leading-[1.8] tracking-[0.3px] text-white"
@@ -468,6 +672,8 @@ const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
 
         <EbookSection />
 
+        
+
 
         {/* ════════════════════════════
             FEATURES GRID
@@ -526,6 +732,7 @@ const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
             </div>
           ))}
         </section>
+        
          <BottomBannerAd pageType="home" />
 
       </div>
