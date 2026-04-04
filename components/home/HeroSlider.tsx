@@ -261,7 +261,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
           >
             <div className="w-[5px] h-[5px] bg-[#c9a84c] rotate-45 flex-shrink-0 opacity-70" />
             <span
-              className="text-[9px] tracking-[4px] uppercase text-[rgba(201,168,76,0.8)]"
+              className="text-[7px] sm:text-[10px] tracking-[4px] uppercase text-[rgba(201,168,76,0.8)]"
               style={{ fontFamily: "'Cinzel', serif" }}
             >
               AG Classics · A Digital Library
@@ -313,7 +313,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
 
         {/* ══ CAROUSEL ══ */}
         <div
-          className="relative w-full overflow-hidden py-16 sm:py-25 md:py-40 mb-4 sm:mb-6 flex justify-center items-center z-10"
+          className="relative w-full overflow-hidden py-26 sm:py-25 md:py-40 mb-4 sm:mb-6 flex justify-center items-center z-10"
           style={{ perspective: "1000px" }}
           onMouseEnter={() => (isPausedRef.current = true)}
           onMouseLeave={() => (isPausedRef.current = false)}
@@ -328,7 +328,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
 
             // Fewer visible books + tighter spread on mobile to stay within viewport
             const isMobile   = typeof window !== "undefined" && window.innerWidth < 640;
-            const visibleRange = isMobile ? 4.2 : 3.7;
+            const visibleRange = isMobile ? 3.0 : 3.7;
             const spread       = isMobile ? 65  : 80;
 
             const opacity = Math.max(0, Math.min(1, visibleRange - absD));
@@ -346,7 +346,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
                 key={book ? `${book.id}-${i}` : `skel-${i}`}
                 className="absolute rounded-sm overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-[rgba(201,168,76,0.15)] bg-[#131316] cursor-pointer"
                 style={{
-                  width: "clamp(68px, 13vw, 220px)",
+                  width: "clamp(120px, 13vw, 220px)",
                   transform: `translateX(${translateX}%) scale(${scale})`,
                   zIndex,
                   opacity,
