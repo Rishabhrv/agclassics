@@ -341,8 +341,9 @@ export default function EbookSection() {
               className={`font-light leading-[1.05] text-[#f5f0e8] ${visible ? "ebook-reveal-1" : "opacity-0"}`}
               style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 5vw, 58px)" }}
             >
-              Read Anywhere.{" "}
-              <em className="italic text-[#c9a84c]">Instantly.</em>
+             
+              Explore Our {" "} 
+              <em className="italic text-[#c9a84c]">Digital Library.</em>
             </h2>
 
             <p
