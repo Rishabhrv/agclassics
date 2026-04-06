@@ -41,7 +41,7 @@ export default function HomeFooter() {
           {/* Desktop: 4-col grid | Mobile: stacked */}
           <div className="hidden md:grid gap-[60px]"
             style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr" }}>
-            <BrandBlock />
+            <BrandBlock isMobile={false} />
             <FooterCol title="Explore"  links={exploreLinks} />
             <FooterCol title="Account"  links={accountLinks} />
             <FooterCol title="Help"     links={helpLinks} />
@@ -51,7 +51,7 @@ export default function HomeFooter() {
           <div className="md:hidden flex flex-col gap-0">
             {/* Brand */}
             <div className="pb-8 border-b border-[rgba(255,255,255,0.05)]">
-              <BrandBlock />
+              <BrandBlock isMobile={true} />
             </div>
 
             {/* Accordion link groups */}
@@ -64,13 +64,17 @@ export default function HomeFooter() {
         {/* ─── Bottom Bar ─── */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-5 py-6 sm:py-7 pb-4">
           <p
-            className="text-[11px] tracking-[1px] text-center sm:text-left"
-            style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
-          >
-            © 2026 AG Classics. All rights reserved.{" "}
-            <span style={{ color: "#8a6f2e" }}>·</span>{" "}
-            Crafted with care in India
-          </p>
+    className="text-[11px] tracking-[1px] text-center sm:text-left"
+    style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
+  >
+    {/* This checks the screen size using Tailwind classes to show different text */}
+    <span className="hidden sm:inline">
+      © 2026 AG Classics. All rights reserved. <span style={{ color: "#8a6f2e" }}>·</span> Crafted with care in India
+    </span>
+    <span className="inline sm:hidden">
+      © 2026 AG Classics <span style={{ color: "#8a6f2e" }}>·</span> Crafted in India
+    </span>
+  </p>
 
           <div className="flex justify-center sm:justify-end gap-4 sm:gap-6 flex-wrap">
             {[
@@ -103,9 +107,9 @@ export default function HomeFooter() {
 
 /* ── Link data ── */
 const exploreLinks = [
-  { href: "/",            label: "AG Classics" },
-  { href: "/ebooks",      label: "E-Books" },
-  { href: "/bestseller",  label: "Bestsellers" },
+  { href: "/", label: "Our Collection" },
+  { href: "/ebooks", label: "Digital Library" }, 
+  { href: "/bestseller", label: "Top Rated Titles" },
 ];
 const accountLinks = [
   { href: "/login",          label: "Sign In" },
@@ -115,12 +119,13 @@ const accountLinks = [
   { href: "/subscriptions",  label: "Subscriptions" },
 ];
 const helpLinks = [
-  { href: "https://agphbooks.com/contact-us/", label: "Contact Us" },
-  { href: "/account/orders",                   label: "Track Order" },
+  { href: "https://agphbooks.com/contact-us/", label: "Customer Support" },
+  { href: "/account/orders", label: "Order Tracking" },
 ];
 
 /* ── Brand block (shared between desktop and mobile) ── */
-function BrandBlock() {
+/* ── Brand block (shared between desktop and mobile) ── */
+function BrandBlock({ isMobile }: { isMobile?: boolean }) {
   return (
     <div>
       <span
@@ -131,13 +136,19 @@ function BrandBlock() {
       </span>
 
       <p
-        className="italic leading-[1.8] max-w-[340px] mb-6 sm:mb-7 text-base sm:text-lg"
+        className="italic leading-[1.8] max-w-[340px] mb-6 sm:mb-7 text-sm sm:text-base"
         style={{ fontFamily: "'Cormorant Garamond', serif", color: "white" }}
       >
-        Every book is a doorway. We curate the finest literary works from timeless classics to contemporary masterpieces.
+        {isMobile ? (
+          /* THIS SHOWS ON MOBILE */
+          "Curating history’s finest literary works for the modern reader."
+        ) : (
+          /* THIS SHOWS ON DESKTOP */
+          "Every book is a doorway. We curate the finest literary works from timeless classics to modern masterpieces."
+        )}
       </p>
 
-      {/* Social links */}
+      {/* Social links stay exactly the same */}
       <div className="flex gap-[12px] sm:gap-[14px]">
         {[
           { label: "Instagram", icon: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></> },
@@ -151,16 +162,6 @@ function BrandBlock() {
             aria-label={label}
             className="w-9 h-9 flex items-center justify-center transition-all duration-300 no-underline"
             style={{ border: "1px solid rgba(201,168,76,0.2)", color: "white" }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "#c9a84c";
-              e.currentTarget.style.color = "#c9a84c";
-              e.currentTarget.style.background = "rgba(201,168,76,0.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(201,168,76,0.2)";
-              e.currentTarget.style.color = "white";
-              e.currentTarget.style.background = "transparent";
-            }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               {icon}

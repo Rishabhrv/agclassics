@@ -205,7 +205,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
        
 
         {/* ── Eyebrow stamp ── */}
-        <div className="anim-fadeUp-1 flex items-center gap-3 mt-8 sm:mt-1 mb-5 sm:mb-6 opacity-90">
+        <div className="anim-fadeUp-1 flex items-center gap-3 mt-8 sm:mt-2 mb-5 sm:mb-6 opacity-90">
           <div
             className="w-10 h-px "
             style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6))" }}
@@ -261,9 +261,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
             fontSize: "clamp(13px, 1.7vw, 20px)",
           }}
         >
-          We continue the legacy of literary works by authors of the past, ensuring their voices remain
-          relevant and their contributions continue to inspire future generations.
-        </p>
+          The world's greatest digital library, dedicated to preserving the works of history’s most influential authors for future generations.        </p>
 
         {/* ══ CAROUSEL ══ */}
         <div
