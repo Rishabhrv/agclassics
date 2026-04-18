@@ -406,15 +406,19 @@ export default function CategoryPage() {
       .then((r) => r.json())
       .then((data) => {
         setCategories(data);
-        const currentCat = data.find((c: Category) => c.slug === slug);
-        setCategoryName(currentCat
-          ? currentCat.name
-          : slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
-        );
+        if (slug === "all") {
+          setCategoryName("All Books");
+        } else {
+          const currentCat = data.find((c: Category) => c.slug === slug);
+          setCategoryName(currentCat
+            ? currentCat.name
+            : slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
+          );
+        }
       })
       .catch(() => {
         setCategories([]);
-        setCategoryName(slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()));
+        setCategoryName(slug === "all" ? "All Books" : slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()));
       });
   }, [slug]);
 
@@ -710,7 +714,7 @@ function SidebarContent({
   selectedAuthor: string; setSelectedAuthor: (v: string) => void;
   activeFilters: boolean; clearFilters: () => void;
 }) {
-  const parents    = categories.filter((c) => c.parent_id === null);
+const parents    = categories.filter((c) => c.parent_id === null);
   const childrenOf = (id: number) => categories.filter((c) => c.parent_id === id);
   const currentCat = categories.find((c) => c.slug === currentSlug);
   const sectionCls = "border-b border-[rgba(201,168,76,.08)] pb-5 mb-5";
@@ -723,6 +727,22 @@ function SidebarContent({
         <div className={sectionCls}>
           <span className={labelCls} style={{ fontFamily: "'Jost', sans-serif" }}>Genre</span>
           <div className="flex flex-col">
+            
+            {/* 🆕 ADDED "ALL BOOKS" LINK HERE */}
+            <div>
+              <a href="/category/all"
+                className={["flex items-center justify-between py-[6px] sm:py-[7px] px-2 no-underline border-l-2 transition-all duration-200",
+                  currentSlug === 'all' ? "bg-[rgba(201,168,76,.08)] border-[#c9a84c]" : "border-transparent hover:bg-[rgba(201,168,76,.04)]",
+                ].join(" ")}>
+                <span className={["text-[13px] sm:text-sm tracking-[.5px]",
+                  currentSlug === 'all' ? "font-medium text-[#c9a84c]" : "font-normal text-[#b0a898]",
+                ].join(" ")} style={{ fontFamily: "'Jost', sans-serif" }}>
+                  All Books
+                </span>
+              </a>
+            </div>
+
+            {/* Existing parents map block */}
             {parents.map((parent) => {
               const children         = childrenOf(parent.id);
               const isParentActive   = parent.slug === currentSlug;

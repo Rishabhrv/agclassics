@@ -77,11 +77,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
+
   const cat  = await fetchCategoryMeta(slug);
-  const name = cat?.name ?? toTitleCase(slug);
+  
+  // 🆕 If slug is all, set name to "All Books"
+  const name = slug === "all" ? "All Books" : (cat?.name ?? toTitleCase(slug));
   const count = cat?.product_count ?? 0;
 
-  const title = `${name} Books | Buy Classic ${name} Online | AG Classics`;
+  const title = `${name} | Buy Classic Books Online | AG Classics`;
+
   const description =
     cat?.description ??
     `Explore our curated collection of ${count > 0 ? `${count} ` : ""}classic ${name} books at AG Classics. ` +
@@ -162,7 +166,7 @@ function buildSchemas(
   cat: CategoryMeta | null,
   products: ProductMeta[]
 ) {
-  const name    = cat?.name ?? toTitleCase(slug);
+const name    = slug === "all" ? "All Books" : (cat?.name ?? toTitleCase(slug));
   const pageUrl = `${SITE_URL}/category/${slug}`;
 
   /* 1 ── CollectionPage */
