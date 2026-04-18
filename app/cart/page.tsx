@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { guestCart, GuestCartItem } from "@/lib/guestStorage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -22,45 +23,50 @@ interface CartItem {
 
 const fmt = (n: number) => `₹${parseFloat(String(n)).toFixed(0)}`;
 
-/* ─── Price resolution ───────────────────────────────────
-   "ebook"     → ebook_price / ebook_sell_price
-   "paperback" → product price / sell_price
-───────────────────────────────────────────────────────── */
 function resolveCartPrice(item: CartItem): {
-  displayPrice:  number;
+  displayPrice: number;
   originalPrice: number | null;
-  discount:      number;
+  discount: number;
 } {
-  const price  = Number(item.price);
-  const sell   = Number(item.sell_price);
-  const ePr    = item.ebook_price      !== null ? Number(item.ebook_price)      : null;
-  const eSell  = item.ebook_sell_price !== null ? Number(item.ebook_sell_price) : null;
-  const disc   = (o: number, s: number) => o > s ? Math.round(((o - s) / o) * 100) : 0;
-
+  const price = Number(item.price);
+  const sell  = Number(item.sell_price);
+  const ePr   = item.ebook_price      !== null ? Number(item.ebook_price)      : null;
+  const eSell = item.ebook_sell_price !== null ? Number(item.ebook_sell_price) : null;
+  const disc  = (o: number, s: number) => o > s ? Math.round(((o - s) / o) * 100) : 0;
   if (item.format === "ebook") {
-    const s = eSell ?? sell;
-    const o = ePr   ?? price;
+    const s = eSell ?? sell, o = ePr ?? price;
     return { displayPrice: s, originalPrice: o > s ? o : null, discount: disc(o, s) };
   }
   return { displayPrice: sell, originalPrice: price > sell ? price : null, discount: disc(price, sell) };
 }
 
-/** OOS only applies to paperback */
 const isOutOfStock = (item: CartItem) => item.format === "paperback" && item.stock === 0;
 
 export default function CartPage() {
-  const [items, setItems]           = useState<CartItem[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState<string | null>(null);
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [removingId, setRemovingId] = useState<number | null>(null);
+  const [items, setItems]             = useState<CartItem[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState<string | null>(null);
+  const [updatingId, setUpdatingId]   = useState<number | null>(null);
+  const [removingId, setRemovingId]   = useState<number | null>(null);
   const [removingOos, setRemovingOos] = useState(false);
+  const [isGuest, setIsGuest]         = useState(false);
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token   = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 
   const fetchCart = useCallback(async () => {
     setLoading(true);
+
+    /* ── GUEST: read from localStorage ── */
+    if (!token) {
+      setIsGuest(true);
+      setItems(guestCart.get() as CartItem[]);
+      setLoading(false);
+      return;
+    }
+
+    /* ── LOGGED IN: fetch from API ── */
+    setIsGuest(false);
     try {
       const res  = await fetch(`${API_URL}/api/ag-classics/cart`, { headers });
       const data = await res.json();
@@ -72,62 +78,96 @@ export default function CartPage() {
 
   useEffect(() => { fetchCart(); }, [fetchCart]);
 
-  /* ── update quantity (paperback only) ── */
-  const updateQty = async (item: CartItem, delta: number) => {
-    if (item.format === "ebook") return;             // ebooks are single-license
-    const newQty = item.quantity + delta;
-    if (newQty < 1) return removeItem(item.id);
-    if (newQty > item.stock) return;                 // cap at stock
+  /* ── listen to cart-change events (e.g. from BookCard) ── */
+  useEffect(() => {
+    const handler = () => {
+      if (!localStorage.getItem("token")) {
+        setItems(guestCart.get() as CartItem[]);
+      }
+    };
+    window.addEventListener("cart-change", handler);
+    return () => window.removeEventListener("cart-change", handler);
+  }, []);
 
+  /* ── update quantity ── */
+  const updateQty = async (item: CartItem, delta: number) => {
+    if (item.format === "ebook") return;
+    const newQty = item.quantity + delta;
+
+    if (isGuest) {
+      if (newQty < 1) {
+        guestCart.remove(item.product_id, item.format);
+        setItems(guestCart.get() as CartItem[]);
+      } else {
+        guestCart.updateQty(item.product_id, item.format, newQty);
+        setItems(guestCart.get() as CartItem[]);
+      }
+      return;
+    }
+
+    if (newQty < 1) return removeItem(item.id);
+    if (newQty > item.stock) return;
     setUpdatingId(item.id);
     try {
       await fetch(`${API_URL}/api/ag-classics/cart/${item.id}`, {
-        method: "PATCH", headers,
-        body: JSON.stringify({ quantity: newQty }),
+        method: "PATCH", headers, body: JSON.stringify({ quantity: newQty }),
       });
-      setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, quantity: newQty } : i));
+      setItems(prev => prev.map(i => i.id === item.id ? { ...i, quantity: newQty } : i));
     } finally { setUpdatingId(null); }
   };
 
   /* ── remove single item ── */
   const removeItem = async (id: number) => {
     setRemovingId(id);
+    if (isGuest) {
+      guestCart.removeById(id);
+      setTimeout(() => {
+        setItems(guestCart.get() as CartItem[]);
+        setRemovingId(null);
+      }, 300);
+      return;
+    }
     try {
       await fetch(`${API_URL}/api/ag-classics/cart/${id}`, { method: "DELETE", headers });
-      setItems((prev) => prev.filter((i) => i.id !== id));
+      setItems(prev => prev.filter(i => i.id !== id));
     } finally { setRemovingId(null); }
   };
 
-  /* ── remove ALL out-of-stock items at once ── */
+  /* ── remove all OOS ── */
   const removeOosItems = async () => {
     setRemovingOos(true);
     const oosItems = items.filter(isOutOfStock);
+    if (isGuest) {
+      oosItems.forEach(i => guestCart.remove(i.product_id, i.format));
+      setItems(guestCart.get() as CartItem[]);
+      setRemovingOos(false);
+      return;
+    }
     try {
       await Promise.all(
-        oosItems.map((i) =>
-          fetch(`${API_URL}/api/ag-classics/cart/${i.id}`, { method: "DELETE", headers })
-        )
+        oosItems.map(i => fetch(`${API_URL}/api/ag-classics/cart/${i.id}`, { method: "DELETE", headers }))
       );
-      setItems((prev) => prev.filter((i) => !isOutOfStock(i)));
+      setItems(prev => prev.filter(i => !isOutOfStock(i)));
     } finally { setRemovingOos(false); }
   };
 
   const clearCart = async () => {
+    if (isGuest) { guestCart.clear(); setItems([]); return; }
     await fetch(`${API_URL}/api/ag-classics/cart`, { method: "DELETE", headers });
     setItems([]);
   };
 
   /* ── totals ── */
-  const subtotal  = items.reduce((s, i) => s + resolveCartPrice(i).displayPrice * i.quantity, 0);
-  const savings   = items.reduce((s, i) => {
+  const subtotal = items.reduce((s, i) => s + resolveCartPrice(i).displayPrice * i.quantity, 0);
+  const savings  = items.reduce((s, i) => {
     const { displayPrice, originalPrice } = resolveCartPrice(i);
     return s + ((originalPrice ?? displayPrice) - displayPrice) * i.quantity;
   }, 0);
-  const total     = subtotal;
+  const total    = subtotal;
 
-  const oosItems     = items.filter(isOutOfStock);
-  const hasOos       = oosItems.length > 0;
-  const canCheckout  = !hasOos && items.length > 0;
+  const oosItems    = items.filter(isOutOfStock);
+  const hasOos      = oosItems.length > 0;
+  const canCheckout = !hasOos && items.length > 0;
 
   /* ── skeleton ── */
   if (loading) return (
@@ -140,7 +180,6 @@ export default function CartPage() {
             <div className="flex-1 space-y-3 pt-1">
               <div className="h-4 w-3/4" style={{ background: "#2a2a2d" }} />
               <div className="h-3 w-1/3" style={{ background: "#2a2a2d" }} />
-              <div className="h-3 w-1/4 mt-6" style={{ background: "#2a2a2d" }} />
             </div>
           </div>
         ))}
@@ -190,29 +229,41 @@ export default function CartPage() {
         .removing { animation: slideOut 0.3s ease forwards; overflow:hidden; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
         .fade-in { animation: fadeIn 0.35s ease both; }
-        @keyframes oosShake {
-          0%,100%{ transform:translateX(0); }
-          20%    { transform:translateX(-4px); }
-          40%    { transform:translateX(4px); }
-          60%    { transform:translateX(-3px); }
-          80%    { transform:translateX(3px); }
-        }
-        .oos-shake { animation: oosShake 0.45s ease; }
       `}</style>
 
       <Header count={items.length} onClear={clearCart} />
 
-      {/* ── OOS warning banner ── */}
+      {/* ── Guest notice banner ── */}
+      {isGuest && (
+        <div className="flex items-center justify-between gap-4 mb-4 px-5 py-4 flex-wrap"
+          style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
+          <div className="flex items-center gap-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5">
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+            <p className="text-[11px] leading-[1.6]"
+              style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
+              You're browsing as a guest. <strong style={{ color: "#c9a84c" }}>Sign in</strong> to save your cart across devices.
+            </p>
+          </div>
+          <button
+            className="shrink-0 px-4 py-2 text-[9px] tracking-[2px] uppercase transition-all duration-200"
+            style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c",
+                     background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#c9a84c"; e.currentTarget.style.color = "#0a0a0b"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(201,168,76,0.08)"; e.currentTarget.style.color = "#c9a84c"; }}
+            onClick={() => window.location.href = "/login"}
+          >
+            Sign In
+          </button>
+        </div>
+      )}
+
+      {/* ── OOS warning ── */}
       {hasOos && (
-        <div
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 px-5 py-4"
-          style={{
-            background: "rgba(139,58,58,0.10)",
-            border: "1px solid rgba(139,58,58,0.35)",
-          }}
-        >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 px-5 py-4"
+          style={{ background: "rgba(139,58,58,0.10)", border: "1px solid rgba(139,58,58,0.35)" }}>
           <div className="flex items-start gap-3">
-            {/* Warning icon */}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4756a"
               strokeWidth="1.5" className="shrink-0 mt-[1px]">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -221,9 +272,7 @@ export default function CartPage() {
             <div>
               <p className="text-[12px] font-medium mb-[3px]"
                 style={{ fontFamily: "'Jost', sans-serif", color: "#d4756a" }}>
-                {oosItems.length === 1
-                  ? `1 item is out of stock`
-                  : `${oosItems.length} items are out of stock`}
+                {oosItems.length === 1 ? "1 item is out of stock" : `${oosItems.length} items are out of stock`}
               </p>
               <p className="text-[11px] leading-[1.5]"
                 style={{ fontFamily: "'Jost', sans-serif", color: "#8a6f2e" }}>
@@ -231,31 +280,22 @@ export default function CartPage() {
               </p>
             </div>
           </div>
-
           <button
             onClick={removeOosItems}
             disabled={removingOos}
             className="shrink-0 flex items-center gap-2 px-4 py-[9px] text-[9px] tracking-[2px] uppercase transition-all duration-200"
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              color: removingOos ? "white" : "#d4756a",
-              background: "rgba(139,58,58,0.12)",
-              border: "1px solid rgba(139,58,58,0.3)",
-              cursor: removingOos ? "not-allowed" : "pointer",
-            }}
-            onMouseEnter={(e) => { if (!removingOos) { e.currentTarget.style.background = "rgba(139,58,58,0.22)"; e.currentTarget.style.borderColor = "rgba(139,58,58,0.5)"; } }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(139,58,58,0.12)"; e.currentTarget.style.borderColor = "rgba(139,58,58,0.3)"; }}
+            style={{ fontFamily: "'Jost', sans-serif", color: removingOos ? "white" : "#d4756a",
+                     background: "rgba(139,58,58,0.12)", border: "1px solid rgba(139,58,58,0.3)",
+                     cursor: removingOos ? "not-allowed" : "pointer" }}
+            onMouseEnter={e => { if (!removingOos) { e.currentTarget.style.background = "rgba(139,58,58,0.22)"; } }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(139,58,58,0.12)"; }}
           >
-            {removingOos ? (
-              <span className="inline-block w-3 h-3 border border-[#d4756a] border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6l-1 14H6L5 6"/>
-                <path d="M10 11v6"/><path d="M14 11v6"/>
-                <path d="M9 6V4h6v2"/>
-              </svg>
-            )}
+            {removingOos
+              ? <span className="inline-block w-3 h-3 border border-[#d4756a] border-t-transparent rounded-full animate-spin" />
+              : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                </svg>}
             Remove {oosItems.length === 1 ? "Item" : `All ${oosItems.length} Items`}
           </button>
         </div>
@@ -269,35 +309,29 @@ export default function CartPage() {
             const { displayPrice, originalPrice, discount } = resolveCartPrice(item);
             const oos        = isOutOfStock(item);
             const isRemoving = removingId === item.id;
-            /* paperback: qty+ capped at stock; ebook: no qty controls shown at all */
             const maxedOut   = item.format === "paperback" && item.quantity >= item.stock;
             const isEbook    = item.format === "ebook";
 
             return (
               <div key={item.id}
                 className={`fade-in group flex gap-5 p-6 transition-colors duration-300 max-sm:flex-col max-sm:gap-4 ${isRemoving ? "removing" : ""}`}
-                style={{
-                  background: oos ? "rgba(28,28,30,0.7)" : "#1c1c1e",
-                  animationDelay: `${idx * 60}ms`,
-                  outline: oos ? "1px solid rgba(139,58,58,0.2)" : "none",
-                }}
+                style={{ background: oos ? "rgba(28,28,30,0.7)" : "#1c1c1e",
+                         animationDelay: `${idx * 60}ms`,
+                         outline: oos ? "1px solid rgba(139,58,58,0.2)" : "none" }}
               >
                 {/* Thumbnail */}
                 <a href={`/product/${item.slug}`}
                   className="flex-shrink-0 relative overflow-hidden block"
                   style={{ width: 80, height: 112, background: "#2a2a2d", opacity: oos ? 0.5 : 1 }}>
                   {item.main_image ? (
-<div className=" w-full overflow-hidden">
-  <img 
-    src={`${API_URL}${item.main_image}`} 
-    alt={item.title}
-    className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
-    style={{
-      filter: oos ? "brightness(0.5) grayscale(0.8)" : "brightness(0.95)",
-      imageRendering: "auto"
-    }}
-  />
-</div>
+                    <div className="w-full overflow-hidden">
+                      <img
+                        src={item.main_image.startsWith("http") ? item.main_image : `${API_URL}${item.main_image}`}
+                        alt={item.title}
+                        className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                        style={{ filter: oos ? "brightness(0.5) grayscale(0.8)" : "brightness(0.95)" }}
+                      />
+                    </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1" className="opacity-40">
@@ -322,21 +356,14 @@ export default function CartPage() {
                       style={{ fontFamily: "'Cormorant Garamond', serif", color: oos ? "white" : "#f5f0e8" }}>
                       {item.title}
                     </a>
-
-                    {/* Badges row */}
                     <div className="flex items-center gap-2 mb-3 flex-wrap">
-                      {/* Format badge */}
                       <span className="inline-block text-[9px] tracking-[2px] uppercase px-[8px] py-[3px]"
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          color:      isEbook ? "#c9a84c" : "white",
-                          background: isEbook ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.04)",
-                          border:     `1px solid ${isEbook ? "rgba(201,168,76,0.25)" : "rgba(255,255,255,0.07)"}`,
-                        }}>
+                        style={{ fontFamily: "'Jost', sans-serif",
+                                 color:      isEbook ? "#c9a84c" : "white",
+                                 background: isEbook ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.04)",
+                                 border:     `1px solid ${isEbook ? "rgba(201,168,76,0.25)" : "rgba(255,255,255,0.07)"}` }}>
                         {isEbook ? "E-Book" : "Paperback"}
                       </span>
-
-                      {/* OOS badge — paperback only */}
                       {oos && (
                         <span className="inline-block text-[9px] tracking-[2px] uppercase px-[8px] py-[3px]"
                           style={{ fontFamily: "'Jost', sans-serif", color: "#d4756a",
@@ -344,14 +371,11 @@ export default function CartPage() {
                           Out of Stock
                         </span>
                       )}
-
-
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between flex-wrap gap-3">
-
-                    {/* ── Qty control: paperback only — hidden for ebook ── */}
+                    {/* Qty control */}
                     {!isEbook ? (
                       <div className="flex items-center" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
                         <button
@@ -359,48 +383,41 @@ export default function CartPage() {
                           disabled={updatingId === item.id || oos}
                           className="w-8 h-8 flex items-center justify-center transition-colors duration-200 disabled:opacity-40"
                           style={{ color: "white" }}
-                          onMouseEnter={(e) => { if (!oos) e.currentTarget.style.color = "#c9a84c"; }}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+                          onMouseEnter={e => { if (!oos) e.currentTarget.style.color = "#c9a84c"; }}
+                          onMouseLeave={e => (e.currentTarget.style.color = "white")}
                         >
                           {item.quantity === 1 ? (
-                            /* trash icon when qty would go to 0 */
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <polyline points="3 6 5 6 21 6"/>
                               <path d="M19 6l-1 14H6L5 6"/>
-                              <path d="M10 11v6"/><path d="M14 11v6"/>
-                              <path d="M9 6V4h6v2"/>
+                              <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
                             </svg>
                           ) : "−"}
                         </button>
-
                         <span className="w-9 text-center text-[13px]"
                           style={{ fontFamily: "'Jost', sans-serif", color: oos ? "white" : "#f5f0e8" }}>
-                          {updatingId === item.id ? (
-                            <span className="inline-block w-3 h-3 border border-[#c9a84c] border-t-transparent rounded-full animate-spin" />
-                          ) : item.quantity}
+                          {updatingId === item.id
+                            ? <span className="inline-block w-3 h-3 border border-[#c9a84c] border-t-transparent rounded-full animate-spin" />
+                            : item.quantity}
                         </span>
-
                         <button
                           onClick={() => updateQty(item, 1)}
                           disabled={updatingId === item.id || oos || maxedOut}
                           className="w-8 h-8 flex items-center justify-center text-[18px] transition-colors duration-200 disabled:opacity-40"
                           style={{ color: "white" }}
-                          onMouseEnter={(e) => { if (!oos && !maxedOut) e.currentTarget.style.color = "#c9a84c"; }}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+                          onMouseEnter={e => { if (!oos && !maxedOut) e.currentTarget.style.color = "#c9a84c"; }}
+                          onMouseLeave={e => (e.currentTarget.style.color = "white")}
                         >+</button>
                       </div>
                     ) : (
-                      /* Ebook: show a static "Qty: 1" pill instead of controls */
                       <div className="flex items-center px-3 py-1 text-[9px] tracking-[2px] uppercase"
-                        style={{
-                          fontFamily: "'Jost', sans-serif", color: "white",
-                          background: "rgba(255,255,255,0.03)",
-                          border: "1px solid rgba(255,255,255,0.06)",
-                        }}>
+                        style={{ fontFamily: "'Jost', sans-serif", color: "white",
+                                 background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
                         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           strokeWidth="1.5" className="mr-[5px]">
                           <rect x="4" y="4" width="16" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>
                         </svg>
+                        Digital
                       </div>
                     )}
 
@@ -424,8 +441,8 @@ export default function CartPage() {
                       disabled={removingId === item.id}
                       className="text-[9px] tracking-[2px] uppercase transition-colors duration-200 disabled:opacity-40"
                       style={{ fontFamily: "'Jost', sans-serif", color: "#ffffff" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = "#8b3a3a")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "#ffffff")}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#8b3a3a")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "#ffffff")}
                     >
                       {removingId === item.id ? "Removing…" : "Remove"}
                     </button>
@@ -441,18 +458,15 @@ export default function CartPage() {
           <div className="p-6" style={{ background: "#1c1c1e" }}>
             <p className="text-[9px] tracking-[3px] uppercase mb-5"
               style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>Order Summary</p>
-
             <div className="flex flex-col gap-3 mb-5">
               <SummaryRow label="Subtotal" value={fmt(subtotal)} />
               {savings > 0 && <SummaryRow label="You save" value={`−${fmt(savings)}`} accent />}
             </div>
-
             <div className="flex items-center gap-2 mb-5">
               <div className="flex-1 h-px" style={{ background: "rgba(201,168,76,0.1)" }} />
               <div className="w-[4px] h-[4px] rotate-45" style={{ background: "rgba(201,168,76,0.3)" }} />
               <div className="flex-1 h-px" style={{ background: "rgba(201,168,76,0.1)" }} />
             </div>
-
             <div className="flex items-baseline justify-between mb-6">
               <span className="text-[11px] tracking-[3px] uppercase"
                 style={{ fontFamily: "'Jost', sans-serif", color: "#f5f0e8" }}>Total</span>
@@ -460,22 +474,34 @@ export default function CartPage() {
                 style={{ fontFamily: "'Cormorant Garamond', serif", color: "#c9a84c" }}>{fmt(total)}</span>
             </div>
 
-            {/* ── Checkout button: locked when OOS items exist ── */}
-            {hasOos ? (
+            {/* ── Checkout button ── */}
+            {isGuest ? (
+              /* Guest: prompt login before checkout */
               <div>
                 <button
-                  disabled
-                  className="w-full py-[14px] text-[10px] tracking-[3px] uppercase font-medium cursor-not-allowed"
-                  style={{
-                    fontFamily: "'Jost', sans-serif",
-                    background: "rgba(80,80,80,0.25)",
-                    color: "white",
-                    border: "1px solid rgba(80,80,80,0.2)",
-                  }}
+                  className="w-full py-[14px] text-[10px] tracking-[3px] uppercase font-medium flex items-center justify-center gap-2 transition-colors duration-300"
+                  style={{ fontFamily: "'Jost', sans-serif", background: "#c9a84c", color: "#0a0a0b", border: "none" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#f5f0e8")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "#c9a84c")}
+                  onClick={() => window.location.href = "/login"}
                 >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                  </svg>
+                  Sign In to Checkout
+                </button>
+                <p className="text-[10px] text-center mt-3 leading-[1.6]"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
+                  Your cart is saved. Sign in or create a free account to complete your order.
+                </p>
+              </div>
+            ) : hasOos ? (
+              <div>
+                <button disabled className="w-full py-[14px] text-[10px] tracking-[3px] uppercase font-medium cursor-not-allowed"
+                  style={{ fontFamily: "'Jost', sans-serif", background: "rgba(80,80,80,0.25)",
+                           color: "white", border: "1px solid rgba(80,80,80,0.2)" }}>
                   Checkout Unavailable
                 </button>
-                {/* Inline nudge under the locked button */}
                 <div className="flex items-start gap-2 mt-3 px-1">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b3a3a"
                     strokeWidth="1.5" className="shrink-0 mt-[1px]">
@@ -485,7 +511,7 @@ export default function CartPage() {
                   <p className="text-[10px] leading-[1.6]"
                     style={{ fontFamily: "'Jost', sans-serif", color: "#8b3a3a" }}>
                     {oosItems.length === 1
-                      ? `Remove the out-of-stock item above to continue.`
+                      ? "Remove the out-of-stock item above to continue."
                       : `Remove ${oosItems.length} out-of-stock items above to continue.`}
                   </p>
                 </div>
@@ -494,27 +520,27 @@ export default function CartPage() {
               <button
                 className="w-full py-[14px] text-[10px] tracking-[3px] uppercase font-medium transition-colors duration-300"
                 style={{ fontFamily: "'Jost', sans-serif", background: "#c9a84c", color: "#0a0a0b", border: "none" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f0e8")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#c9a84c")}
+                onMouseEnter={e => (e.currentTarget.style.background = "#f5f0e8")}
+                onMouseLeave={e => (e.currentTarget.style.background = "#c9a84c")}
                 onClick={() => (window.location.href = "/checkout")}
               >
                 Proceed to Checkout
               </button>
             )}
 
-            <div className="flex items-center justify-center gap-4 mt-4">
-              {["Secure Payment"].map((t) => (
-                <span key={t} className="text-[9px] tracking-[1px]"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "#ffffff" }}>{t}</span>
-              ))}
-            </div>
+            {!isGuest && (
+              <div className="flex items-center justify-center gap-4 mt-4">
+                <span className="text-[9px] tracking-[1px]"
+                  style={{ fontFamily: "'Jost', sans-serif", color: "#ffffff" }}>Secure Payment</span>
+              </div>
+            )}
           </div>
 
           <button
             className="py-4 text-[9px] tracking-[3px] uppercase transition-colors duration-300"
             style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "transparent", border: "none" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#c9a84c")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+            onMouseEnter={e => (e.currentTarget.style.color = "#c9a84c")}
+            onMouseLeave={e => (e.currentTarget.style.color = "white")}
             onClick={() => (window.location.href = "/")}
           >← Continue Shopping</button>
         </div>
@@ -538,7 +564,7 @@ function PageWrap({ children }: { children: React.ReactNode }) {
 
 function Header({ count, loading, onClear }: { count: number; loading?: boolean; onClear?: () => void }) {
   return (
-    <div className="mb-8">
+    <div className="mb-8 mt-10">
       <span className="block mb-2 text-[10px] tracking-[5px] uppercase"
         style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}>Your Selections</span>
       <div className="flex items-end justify-between">
@@ -553,8 +579,8 @@ function Header({ count, loading, onClear }: { count: number; loading?: boolean;
         {onClear && count > 0 && (
           <button className="text-[9px] tracking-[2px] uppercase mb-2 transition-colors duration-200"
             style={{ fontFamily: "'Jost', sans-serif", color: "#ffffff" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#8b3a3a")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#ffffff")}
+            onMouseEnter={e => (e.currentTarget.style.color = "#8b3a3a")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#ffffff")}
             onClick={onClear}>Clear All</button>
         )}
       </div>
@@ -581,15 +607,15 @@ function GoldBtn({ children, onClick }: { children: React.ReactNode; onClick?: (
   return (
     <button className="px-8 py-3 text-[10px] tracking-[3px] uppercase font-medium transition-colors duration-300"
       style={{ fontFamily: "'Jost', sans-serif", background: "#c9a84c", color: "#0a0a0b", border: "none" }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f0e8")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "#c9a84c")}
+      onMouseEnter={e => (e.currentTarget.style.background = "#f5f0e8")}
+      onMouseLeave={e => (e.currentTarget.style.background = "#c9a84c")}
       onClick={onClick}>{children}</button>
   );
 }
 
 function Ornament() {
   return (
-    <div className="flex items-center gap-3 ">
+    <div className="flex items-center gap-3">
       <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.12), transparent)" }} />
       <div className="w-[5px] h-[5px] rotate-45 flex-shrink-0" style={{ background: "rgba(201,168,76,0.25)" }} />
       <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.12), transparent)" }} />

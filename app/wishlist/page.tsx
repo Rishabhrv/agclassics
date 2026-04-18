@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { guestWishlist, GuestWishlistItem } from "@/lib/guestStorage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -11,7 +12,6 @@ interface WishlistItem {
   main_image: string;
   price: number;
   sell_price: number;
-  /* Ebook-specific prices — null when no ebooks row */
   ebook_price: number | null;
   ebook_sell_price: number | null;
   stock: number;
@@ -21,58 +21,37 @@ interface WishlistItem {
 
 const fmt = (n: number) => `₹${parseFloat(String(n)).toFixed(0)}`;
 
-/* ─────────────────────────────────────────────────────────
-   Same resolution rules as ProductSlider.resolvePrice()
-
-   physical            → product price / sell_price  |  paperback  |  OOS when stock=0
-   ebook               → ebook_price / ebook_sell_price  |  ebook  |  never OOS
-   both (in stock)     → product price / sell_price  |  paperback
-   both (OOS) + ebook  → ebook_price / ebook_sell_price  |  ebook   |  never OOS
-   both (OOS) no ebook → product price               |  paperback  |  soldOut=true
-───────────────────────────────────────────────────────── */
 function resolveItem(item: WishlistItem): {
-  displayPrice:  number;
-  originalPrice: number | null;
-  discount:      number;
-  format:        "ebook" | "paperback";
-  label:         string | null;
-  soldOut:       boolean;
+  displayPrice: number; originalPrice: number | null;
+  discount: number; format: "ebook" | "paperback";
+  label: string | null; soldOut: boolean;
 } {
   const price      = Number(item.price);
   const sellPrice  = Number(item.sell_price);
   const ebookPrice = item.ebook_price      !== null ? Number(item.ebook_price)      : null;
   const ebookSell  = item.ebook_sell_price !== null ? Number(item.ebook_sell_price) : null;
-
   const disc = (orig: number, sell: number) =>
     orig > sell ? Math.round(((orig - sell) / orig) * 100) : 0;
 
   if (item.product_type === "ebook") {
-    const sell = ebookSell  ?? sellPrice;
-    const orig = ebookPrice ?? price;
+    const sell = ebookSell ?? sellPrice, orig = ebookPrice ?? price;
     return { displayPrice: sell, originalPrice: orig > sell ? orig : null,
              discount: disc(orig, sell), format: "ebook", label: "e-book", soldOut: false };
   }
-
   if (item.product_type === "physical") {
     return { displayPrice: sellPrice, originalPrice: price > sellPrice ? price : null,
              discount: disc(price, sellPrice), format: "paperback", label: null,
              soldOut: item.stock === 0 };
   }
-
-  // "both" — in stock
   if (item.stock > 0) {
     return { displayPrice: sellPrice, originalPrice: price > sellPrice ? price : null,
              discount: disc(price, sellPrice), format: "paperback", label: "print", soldOut: false };
   }
-
-  // "both" — physical OOS, ebook fallback available
   if (ebookSell !== null) {
     const orig = ebookPrice ?? price;
     return { displayPrice: ebookSell, originalPrice: orig > ebookSell ? orig : null,
              discount: disc(orig, ebookSell), format: "ebook", label: "e-book", soldOut: false };
   }
-
-  // "both" — physical OOS, no ebook row → truly sold out
   return { displayPrice: sellPrice, originalPrice: price > sellPrice ? price : null,
            discount: disc(price, sellPrice), format: "paperback", label: "print", soldOut: true };
 }
@@ -84,12 +63,24 @@ export default function WishlistPage() {
   const [removingId, setRemovingId]         = useState<number | null>(null);
   const [cartLoadingId, setCartLoadingId]   = useState<number | null>(null);
   const [movedToCartIds, setMovedToCartIds] = useState<Set<number>>(new Set());
+  const [isGuest, setIsGuest]               = useState(false);
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token   = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 
   const fetchWishlist = useCallback(async () => {
     setLoading(true);
+
+    /* ── GUEST ── */
+    if (!token) {
+      setIsGuest(true);
+      setItems(guestWishlist.get() as WishlistItem[]);
+      setLoading(false);
+      return;
+    }
+
+    /* ── LOGGED IN ── */
+    setIsGuest(false);
     try {
       const res  = await fetch(`${API_URL}/api/ag-classics/wishlist`, { headers });
       const data = await res.json();
@@ -101,23 +92,48 @@ export default function WishlistPage() {
 
   useEffect(() => { fetchWishlist(); }, [fetchWishlist]);
 
-  /* ── remove ── */
+  /* ── Remove ── */
   const removeItem = async (id: number) => {
     setRemovingId(id);
+    if (isGuest) {
+      guestWishlist.remove(id);
+      setTimeout(() => {
+        setItems(guestWishlist.get() as WishlistItem[]);
+        setRemovingId(null);
+        window.dispatchEvent(new Event("wishlist-change"));
+      }, 320);
+      return;
+    }
     try {
       await fetch(`${API_URL}/api/ag-classics/wishlist`, {
-        method: "DELETE", headers,
-        body: JSON.stringify({ product_id: id }),
+        method: "DELETE", headers, body: JSON.stringify({ product_id: id }),
       });
-      setTimeout(() => setItems((prev) => prev.filter((i) => i.id !== id)), 320);
+      setTimeout(() => setItems(prev => prev.filter(i => i.id !== id)), 320);
+      window.dispatchEvent(new Event("wishlist-change"));
     } finally { setRemovingId(null); }
   };
 
-  /* ── move to cart ──
-     format is resolved by resolveItem() — honours the both+OOS→ebook fallback */
+  /* ── Move to cart ── */
   const moveToCart = async (item: WishlistItem) => {
     const { format, soldOut } = resolveItem(item);
     if (soldOut) return;
+
+    /* GUEST: add to guest cart */
+    if (isGuest) {
+      const { guestCart } = await import("@/lib/guestStorage");
+      guestCart.add({
+        id: item.id, product_id: item.id, format, quantity: 1,
+        title: item.title, slug: item.slug, main_image: item.main_image,
+        price: item.price, sell_price: item.sell_price,
+        ebook_price: item.ebook_price, ebook_sell_price: item.ebook_sell_price,
+        stock: item.stock, product_type: item.product_type,
+      });
+      window.dispatchEvent(new Event("cart-change"));
+      setMovedToCartIds(prev => new Set(prev).add(item.id));
+      setTimeout(() => removeItem(item.id), 800);
+      return;
+    }
+
     setCartLoadingId(item.id);
     try {
       const res = await fetch(`${API_URL}/api/ag-classics/cart`, {
@@ -126,15 +142,33 @@ export default function WishlistPage() {
       });
       if (res.ok) {
         window.dispatchEvent(new Event("cart-change"));
-        setMovedToCartIds((prev) => new Set(prev).add(item.id));
+        setMovedToCartIds(prev => new Set(prev).add(item.id));
         setTimeout(() => removeItem(item.id), 800);
       }
     } finally { setCartLoadingId(null); }
   };
 
-  /* ── move all ── only non-soldOut items, each with their resolved format ── */
+  /* ── Move all ── */
   const moveAllToCart = async () => {
-    const available = items.filter((i) => !resolveItem(i).soldOut);
+    const available = items.filter(i => !resolveItem(i).soldOut);
+    if (isGuest) {
+      const { guestCart } = await import("@/lib/guestStorage");
+      for (const item of available) {
+        const { format } = resolveItem(item);
+        guestCart.add({
+          id: item.id, product_id: item.id, format, quantity: 1,
+          title: item.title, slug: item.slug, main_image: item.main_image,
+          price: item.price, sell_price: item.sell_price,
+          ebook_price: item.ebook_price, ebook_sell_price: item.ebook_sell_price,
+          stock: item.stock, product_type: item.product_type,
+        });
+      }
+      window.dispatchEvent(new Event("cart-change"));
+      guestWishlist.clear();
+      setItems([]);
+      window.dispatchEvent(new Event("wishlist-change"));
+      return;
+    }
     for (const item of available) {
       const { format } = resolveItem(item);
       await fetch(`${API_URL}/api/ag-classics/cart`, {
@@ -146,7 +180,7 @@ export default function WishlistPage() {
     setItems([]);
   };
 
-  /* ── skeleton ── */
+  /* ── Skeleton ── */
   if (loading) return (
     <PageWrap>
       <Header count={0} loading />
@@ -181,6 +215,7 @@ export default function WishlistPage() {
   if (items.length === 0) return (
     <PageWrap>
       <Header count={0} />
+      {isGuest && <GuestBanner />}
       <div className="flex flex-col items-center gap-6 py-32 text-center">
         <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#8a6f2e" strokeWidth="1" className="opacity-40">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -189,13 +224,12 @@ export default function WishlistPage() {
           style={{ fontFamily: "'Cormorant Garamond', serif", color: "#f5f0e8" }}>
           Your wishlist is empty
         </h2>
-
         <GoldBtn onClick={() => (window.location.href = "/")}>Explore Collection</GoldBtn>
       </div>
     </PageWrap>
   );
 
-  const availableCount = items.filter((i) => !resolveItem(i).soldOut).length;
+  const availableCount = items.filter(i => !resolveItem(i).soldOut).length;
 
   return (
     <PageWrap>
@@ -216,6 +250,9 @@ export default function WishlistPage() {
 
       <Header count={items.length} onMoveAll={availableCount > 1 ? moveAllToCart : undefined} />
 
+      {/* Guest banner */}
+      {isGuest && <GuestBanner />}
+
       {/* Stats bar */}
       <div className="flex items-center gap-6 mb-6 pb-5"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
@@ -230,18 +267,15 @@ export default function WishlistPage() {
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
         {items.map((item, idx) => {
           const { displayPrice, originalPrice, discount, format, label, soldOut } = resolveItem(item);
-          const isNew        = new Date(item.created_at) > new Date(Date.now() - 30 * 86400000);
-          const isRemoving   = removingId === item.id;
-          const inCart       = movedToCartIds.has(item.id);
-          const cartLoading  = cartLoadingId === item.id;
-
-          /* "both" + OOS fallen back to ebook */
+          const isNew       = new Date(item.created_at) > new Date(Date.now() - 30 * 86400000);
+          const isRemoving  = removingId === item.id;
+          const inCart      = movedToCartIds.has(item.id);
+          const cartLoading = cartLoadingId === item.id;
           const ebookFallback = item.product_type === "both" && item.stock === 0 && !soldOut;
 
-          /* Cart button label */
-          const cartBtnLabel = soldOut ? "Out of Stock"
-            : inCart           ? "Added"
-            : format === "ebook" ? "Move E-Book to Cart"
+          const cartBtnLabel = soldOut     ? "Out of Stock"
+            : inCart                        ? "Added"
+            : format === "ebook"            ? "Move E-Book to Cart"
             : "Move to Cart";
 
           return (
@@ -250,7 +284,7 @@ export default function WishlistPage() {
               style={{ background: "#1c1c1e", animationDelay: `${idx * 55}ms`, aspectRatio: "3 / 4" }}
               onClick={() => { window.location.href = `/product/${item.slug}`; }}
             >
-              {/* ── Left badge: status ── */}
+              {/* Left badge */}
               <div className="absolute top-3 left-3 z-10 flex flex-col gap-[5px]">
                 {soldOut ? (
                   <span className="text-[8px] tracking-[2px] uppercase font-medium px-[9px] py-[4px]"
@@ -268,47 +302,41 @@ export default function WishlistPage() {
                     New
                   </span>
                 ) : null}
-
-                {/* Format / type indicator */}
                 {(item.product_type !== "physical" || ebookFallback) && (
                   <span className="text-[7px] tracking-[1.5px] uppercase px-[9px] py-[4px]"
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      background:  ebookFallback || item.product_type === "ebook"
-                        ? "rgba(201,168,76,.18)" : "rgba(255,255,255,.08)",
-                      color:       ebookFallback || item.product_type === "ebook"
-                        ? "#c9a84c" : "#a0a0a0",
-                      border:      ebookFallback || item.product_type === "ebook"
-                        ? "1px solid rgba(201,168,76,.3)" : "1px solid rgba(255,255,255,.1)",
-                    }}>
-                    {item.product_type === "ebook"   ? "E-Book"
-                     : ebookFallback                  ? "E-Book Only"
-                     : "Print + Digital"}
+                    style={{ fontFamily: "'Jost', sans-serif",
+                             background: ebookFallback || item.product_type === "ebook" ? "rgba(201,168,76,.18)" : "rgba(255,255,255,.08)",
+                             color:      ebookFallback || item.product_type === "ebook" ? "#c9a84c" : "#a0a0a0",
+                             border:     ebookFallback || item.product_type === "ebook" ? "1px solid rgba(201,168,76,.3)" : "1px solid rgba(255,255,255,.1)" }}>
+                    {item.product_type === "ebook" ? "E-Book" : ebookFallback ? "E-Book Only" : "Print + Digital"}
                   </span>
                 )}
               </div>
 
-              {/* ── Remove button ── */}
+              {/* Remove button */}
               <button
                 className="absolute top-3 right-3 z-10 w-7 h-7 flex items-center justify-center transition-all duration-200"
                 style={{ background: "rgba(10,10,11,0.6)", border: "1px solid rgba(255,255,255,0.08)",
                          color: "#6b6b70", backdropFilter: "blur(4px)" }}
                 aria-label="Remove from wishlist"
-                onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "#f87171"; e.currentTarget.style.borderColor = "rgba(248,113,113,0.4)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "#6b6b70"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                onClick={e => { e.stopPropagation(); removeItem(item.id); }}
+                onMouseEnter={e => { e.currentTarget.style.color = "#f87171"; e.currentTarget.style.borderColor = "rgba(248,113,113,0.4)"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "#6b6b70"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
               >
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
               </button>
 
-              {/* ── Cover ── */}
+              {/* Cover */}
               {item.main_image ? (
-                <img src={`${API_URL}${item.main_image}`} alt={item.title}
+                <img 
+                  src={item.main_image.startsWith("http") ? item.main_image : `${API_URL}${item.main_image}`} 
+                  alt={item.title}
                   className="wl-img absolute inset-0 w-full h-full object-cover transition-[transform,filter] duration-[560ms] ease-in-out"
                   style={{ filter: "brightness(0.83) saturate(0.75)" }}
-                  loading="lazy" draggable={false} />
+                  loading="lazy" draggable={false} 
+                />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center"
                   style={{ background: "linear-gradient(135deg, #2a2a2d 0%, #1c1c1e 100%)" }}>
@@ -319,18 +347,15 @@ export default function WishlistPage() {
                 </div>
               )}
 
-              {/* ── Overlay ── */}
+              {/* Overlay */}
               <div className="wl-overlay absolute inset-0 flex flex-col justify-end px-4 pb-4 transition-[background] duration-[380ms]"
                 style={{ background: "linear-gradient(to top, rgba(10,10,11,0.97) 0%, rgba(10,10,11,0.46) 42%, transparent 68%)" }}>
-
                 <h3 className="wl-title font-semibold leading-[1.2] mb-[5px] transition-colors duration-300"
                   style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(14px,1.2vw,17px)",
                            color: "#f5f0e8", display: "-webkit-box", WebkitLineClamp: 2,
                            WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                   {item.title}
                 </h3>
-
-                {/* Price row — uses resolved ebook/print pricing */}
                 <div className="flex items-center gap-2 flex-wrap mb-3">
                   <span className="text-[14px] font-medium"
                     style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}>
@@ -353,22 +378,18 @@ export default function WishlistPage() {
                 {/* Actions */}
                 <div className="wl-actions flex gap-[5px] transition-[opacity,transform] duration-[360ms] ease-in-out"
                   style={{ opacity: 0, transform: "translateY(8px)" }}>
-
                   <button
                     className={`flex-1 text-[9px] tracking-[2px] uppercase font-medium py-2 px-2
-                      flex items-center justify-center gap-1 transition-all duration-300
-                      ${inCart ? "cart-pop" : ""}`}
-                    style={{
-                      fontFamily: "'Jost', sans-serif",
-                      color:      soldOut ? "#6b6b70" : inCart ? "#4a9a5a" : "#0a0a0b",
-                      background: soldOut ? "#2a2a2d" : inCart ? "rgba(74,154,90,0.15)" : "#c9a84c",
-                      border:     inCart  ? "1px solid rgba(74,154,90,0.4)" : "none",
-                      cursor:     soldOut ? "not-allowed" : "pointer",
-                    }}
+                      flex items-center justify-center gap-1 transition-all duration-300 ${inCart ? "cart-pop" : ""}`}
+                    style={{ fontFamily: "'Jost', sans-serif",
+                             color:      soldOut ? "#6b6b70" : inCart ? "#4a9a5a" : "#0a0a0b",
+                             background: soldOut ? "#2a2a2d" : inCart ? "rgba(74,154,90,0.15)" : "#c9a84c",
+                             border:     inCart  ? "1px solid rgba(74,154,90,0.4)" : "none",
+                             cursor:     soldOut ? "not-allowed" : "pointer" }}
                     disabled={soldOut || cartLoading || inCart}
-                    onClick={(e) => { e.stopPropagation(); moveToCart(item); }}
-                    onMouseEnter={(e) => { if (!soldOut && !inCart) e.currentTarget.style.background = "#f5f0e8"; }}
-                    onMouseLeave={(e) => { if (!soldOut && !inCart) e.currentTarget.style.background = "#c9a84c"; }}
+                    onClick={e => { e.stopPropagation(); moveToCart(item); }}
+                    onMouseEnter={e => { if (!soldOut && !inCart) e.currentTarget.style.background = "#f5f0e8"; }}
+                    onMouseLeave={e => { if (!soldOut && !inCart) e.currentTarget.style.background = "#c9a84c"; }}
                   >
                     {cartLoading ? (
                       <span className="inline-block w-[10px] h-[10px] border border-[#0a0a0b] border-t-transparent rounded-full animate-spin" />
@@ -381,7 +402,6 @@ export default function WishlistPage() {
                       </>
                     ) : (
                       <>
-                        {/* Icon changes by resolved format */}
                         {format === "ebook" ? (
                           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="4" y="4" width="16" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>
@@ -402,29 +422,54 @@ export default function WishlistPage() {
                     className="w-8 h-8 flex-shrink-0 flex items-center justify-center transition-all duration-300"
                     style={{ color: "#6b6b70", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
                     aria-label="View product"
-                    onClick={(e) => { e.stopPropagation(); window.location.href = `/product/${item.slug}`; }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "#c9a84c"; e.currentTarget.style.borderColor = "rgba(201,168,76,0.4)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "#6b6b70"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
+                    onClick={e => { e.stopPropagation(); window.location.href = `/product/${item.slug}`; }}
+                    onMouseEnter={e => { e.currentTarget.style.color = "#c9a84c"; e.currentTarget.style.borderColor = "rgba(201,168,76,0.4)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = "#6b6b70"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
                   >
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                       <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                     </svg>
                   </button>
-
                 </div>
               </div>
             </div>
           );
         })}
       </div>
-
       <Ornament />
     </PageWrap>
   );
 }
 
 /* ═══════════════════ SUB-COMPONENTS ═══════════════════ */
+function GuestBanner() {
+  return (
+    <div className="flex items-center justify-between gap-4 mb-6 px-5 py-4 flex-wrap"
+      style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.2)" }}>
+      <div className="flex items-center gap-3">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        <p className="text-[11px] leading-[1.6]"
+          style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
+          You're browsing as a guest. <strong style={{ color: "#c9a84c" }}>Sign in</strong> to sync your wishlist across devices.
+        </p>
+      </div>
+      <button
+        className="shrink-0 px-4 py-2 text-[9px] tracking-[2px] uppercase transition-all duration-200"
+        style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c",
+                 background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)" }}
+        onMouseEnter={e => { e.currentTarget.style.background = "#c9a84c"; e.currentTarget.style.color = "#0a0a0b"; }}
+        onMouseLeave={e => { e.currentTarget.style.background = "rgba(201,168,76,0.08)"; e.currentTarget.style.color = "#c9a84c"; }}
+        onClick={() => window.location.href = "/login"}
+      >
+        Sign In
+      </button>
+    </div>
+  );
+}
+
 function PageWrap({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen pt-[130px] pb-20 px-12 max-md:px-6 max-sm:px-4"
@@ -437,7 +482,7 @@ function PageWrap({ children }: { children: React.ReactNode }) {
 
 function Header({ count, loading, onMoveAll }: { count: number; loading?: boolean; onMoveAll?: () => void }) {
   return (
-    <div className="mb-8">
+    <div className="mb-8 mt-10">
       <span className="block mb-2 text-[10px] tracking-[5px] uppercase"
         style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}>Saved for Later</span>
       <div className="flex items-end justify-between flex-wrap gap-3">
@@ -453,8 +498,8 @@ function Header({ count, loading, onMoveAll }: { count: number; loading?: boolea
           <button className="mb-2 px-5 py-2 text-[9px] tracking-[2px] uppercase transition-all duration-200"
             style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c",
                      background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.2)" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#c9a84c"; e.currentTarget.style.color = "#0a0a0b"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.06)"; e.currentTarget.style.color = "#c9a84c"; }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#c9a84c"; e.currentTarget.style.color = "#0a0a0b"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(201,168,76,0.06)"; e.currentTarget.style.color = "#c9a84c"; }}
             onClick={onMoveAll}>Move All to Cart</button>
         )}
       </div>
@@ -481,8 +526,8 @@ function GoldBtn({ children, onClick }: { children: React.ReactNode; onClick?: (
   return (
     <button className="px-8 py-3 text-[10px] tracking-[3px] uppercase font-medium transition-colors duration-300"
       style={{ fontFamily: "'Jost', sans-serif", background: "#c9a84c", color: "#0a0a0b", border: "none" }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f0e8")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "#c9a84c")}
+      onMouseEnter={e => (e.currentTarget.style.background = "#f5f0e8")}
+      onMouseLeave={e => (e.currentTarget.style.background = "#c9a84c")}
       onClick={onClick}>{children}</button>
   );
 }

@@ -47,20 +47,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? [{ url: `${API_URL}${author.profile_image}`, width: 800, height: 800, alt: author.name }]
     : [];
 
+    const keywords = [
+  author.name,
+  `${author.name} books`,
+  `${author.name} author`,
+  "AG Classics",
+  "classic books",
+  "classic literature",
+];
+
   return {
     metadataBase: new URL(SITE_URL),
 
     title: `${author.name} | AG Classics`,
     description,
+     keywords,
 
     alternates: {
-      canonical: `${SITE_URL}/ag-classics/authors/${author.slug}`,
+      canonical: `${SITE_URL}/authors/${author.slug}`,
     },
 
     openGraph: {
       title: `${author.name} | AG Classics`,
       description,
-      url: `${SITE_URL}/ag-classics/authors/${author.slug}`,
+      url: `${SITE_URL}/authors/${author.slug}`,
       type: "profile",
       siteName: "AG Classics",
       images,
@@ -100,9 +110,9 @@ export default async function Page({ params }: Props) {
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
-    "@id": `${SITE_URL}/ag-classics/authors/${author.slug}`,
+    "@id": `${SITE_URL}/authors/${author.slug}`,
     name: author.name,
-    url: `${SITE_URL}/ag-classics/authors/${author.slug}`,
+    url: `${SITE_URL}/authors/${author.slug}`,
     description: author.bio || "",
     ...(author.profile_image && {
       image: {
@@ -121,7 +131,7 @@ export default async function Page({ params }: Props) {
       author: books.map((book: { title: string; slug: string; isbn?: string }) => ({
         "@type": "Book",
         name: book.title,
-        url: `${SITE_URL}/ag-classics/${book.slug}`,
+        url: `${SITE_URL}/product/${book.slug}`,
         ...(book.isbn && { isbn: book.isbn }),
       })),
     }),
@@ -133,8 +143,7 @@ export default async function Page({ params }: Props) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home",        item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "AG Classics", item: `${SITE_URL}/ag-classics` },
-      { "@type": "ListItem", position: 3, name: author.name,   item: `${SITE_URL}/ag-classics/authors/${author.slug}` },
+      { "@type": "ListItem", position: 2, name: author.name,   item: `${SITE_URL}/authors/${author.slug}` },
     ],
   };
 

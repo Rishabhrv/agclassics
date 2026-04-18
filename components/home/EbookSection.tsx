@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { guestCart, guestWishlist } from "@/lib/guestStorage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -18,6 +19,7 @@ interface Ebook {
   authors?: { id: number; name: string; slug: string }[];
   avg_rating?: number | null;
   review_count?: number;
+  product_type?: "physical" | "ebook" | "both";
 }
 
 const ebookStyles = `
@@ -214,9 +216,18 @@ export default function EbookSection() {
   }, []);
 
   /* Pre-load wishlist ids */
+/* Pre-load wishlist ids */
   useEffect(() => {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    if (!token) return;
+    
+    if (!token) {
+      const guestIds = guestWishlist.getIds();
+      const map: Record<number, boolean> = {};
+      guestIds.forEach((id) => { map[id] = true; });
+      setWishlisted(map);
+      return;
+    }
+
     fetch(`${API_URL}/api/ag-classics/wishlist/ids`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -234,15 +245,39 @@ export default function EbookSection() {
   const totalReviews = ebooks.reduce((acc, b) => acc + (b.review_count ?? 0), 0);
 
   /* ─── Add to cart ─── */
+ /* ─── Add to cart ─── */
   const handleCart = async (e: React.MouseEvent, book: Ebook) => {
     e.stopPropagation();
     const token = localStorage.getItem("token");
-    if (!token) { setToast("Please log in to add to cart"); return; }
 
     setCartLoading((p) => ({ ...p, [book.id]: true }));
     setCartAnim((p) => ({ ...p, [book.id]: true }));
     setTimeout(() => setCartAnim((p) => ({ ...p, [book.id]: false })), 400);
 
+    /* GUEST: save to localStorage */
+    if (!token) {
+      guestCart.add({
+        id: book.id,
+        product_id: book.id,
+        format: "ebook",
+        quantity: 1,
+        title: book.title,
+        slug: book.slug,
+        main_image: book.main_image,
+        price: book.price,
+        sell_price: book.sell_price,
+        ebook_price: book.ebook_price ?? null,
+        ebook_sell_price: book.ebook_sell_price ?? null,
+        stock: book.stock,
+        product_type: book.product_type || "ebook",
+      });
+      setToast("Added to cart ✓");
+      window.dispatchEvent(new Event("cart-change"));
+      setCartLoading((p) => ({ ...p, [book.id]: false }));
+      return;
+    }
+
+    /* LOGGED-IN: sync with API */
     try {
       const res = await fetch(`${API_URL}/api/ag-classics/cart`, {
         method: "POST",
@@ -263,13 +298,41 @@ export default function EbookSection() {
   const handleWishlist = async (e: React.MouseEvent, book: Ebook) => {
     e.stopPropagation();
     const token = localStorage.getItem("token");
-    if (!token) { setToast("Please log in to save to wishlist"); return; }
-
     const already = !!wishlisted[book.id];
+
+    // Optimistic UI update
+    setWishlisted((p) => ({ ...p, [book.id]: !already }));
     setWishLoading((p) => ({ ...p, [book.id]: true }));
     setHeartAnim((p) => ({ ...p, [book.id]: true }));
     setTimeout(() => setHeartAnim((p) => ({ ...p, [book.id]: false })), 450);
 
+    /* GUEST: save to localStorage */
+    if (!token) {
+      if (already) {
+        guestWishlist.remove(book.id);
+        setToast("Removed from wishlist");
+      } else {
+        guestWishlist.add({
+          id: book.id,
+          title: book.title,
+          slug: book.slug,
+          main_image: book.main_image,
+          price: book.price,
+          sell_price: book.sell_price,
+          ebook_price: book.ebook_price ?? null,
+          ebook_sell_price: book.ebook_sell_price ?? null,
+          stock: book.stock,
+          product_type: book.product_type || "ebook",
+          created_at: book.created_at || new Date().toISOString(),
+        });
+        setToast("Saved to wishlist ✓");
+      }
+      window.dispatchEvent(new Event("wishlist-change"));
+      setWishLoading((p) => ({ ...p, [book.id]: false }));
+      return;
+    }
+
+    /* LOGGED-IN: sync with API */
     try {
       const res = await fetch(`${API_URL}/api/ag-classics/wishlist`, {
         method: already ? "DELETE" : "POST",
@@ -278,10 +341,14 @@ export default function EbookSection() {
       });
       const data = await res.json();
       if (data.success) {
-        setWishlisted((p) => ({ ...p, [book.id]: !already }));
+        window.dispatchEvent(new Event("wishlist-change"));
         setToast(already ? "Removed from wishlist" : "Saved to wishlist ✓");
-      } else setToast(data.message || "Failed");
+      } else {
+        throw new Error(data.message || "Failed");
+      }
     } catch {
+      // Revert optimistic UI update if API fails
+      setWishlisted((p) => ({ ...p, [book.id]: already }));
       setToast("Something went wrong");
     } finally {
       setWishLoading((p) => ({ ...p, [book.id]: false }));

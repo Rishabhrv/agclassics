@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import SubscriptionPage from "@/components/subscription/SubscriptionPage";
+
 /* ═══════════════════════════════════════════════════════════════════
    ENV
 ═══════════════════════════════════════════════════════════════════ */
-const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agclassics.agkit.in/";
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL ?? "/";
 const SITE_NAME = "AG Classics";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -11,10 +12,11 @@ const SITE_NAME = "AG Classics";
 ═══════════════════════════════════════════════════════════════════ */
 export const metadata: Metadata = {
   /* ── Core ─────────────────────────────────────────── */
-  title:       "Unlimited eBook Subscription Plans | AG Classics",
+  title: "Read Every Classic, Anytime eBook Plans | AG Classics",
   description:
-    "Subscribe to AG Classics and get unlimited access to our entire eBook library. " +
-    "Monthly at ₹399, 3-month at ₹999, or annual at ₹3,599. No ads. Cancel anytime.",
+    "Your all-access pass to the world's greatest literature. " +
+    "Choose a plan that fits you monthly at ₹399, quarterly at ₹999, or yearly at ₹3,599. " +
+    "No ads. No limits. Just great books.",
 
   /* ── Canonical ────────────────────────────────────── */
   alternates: {
@@ -23,19 +25,19 @@ export const metadata: Metadata = {
 
   /* ── Open Graph ───────────────────────────────────── */
   openGraph: {
-    type:        "website",
-    url:         `${SITE_URL}/subscriptions`,
-    siteName:    SITE_NAME,
-    title:       "Unlimited eBook Subscription | AG Classics",
+    type:     "website",
+    url:      `${SITE_URL}/subscriptions`,
+    siteName: SITE_NAME,
+    title:    "Read Every Classic, Anytime eBook Plans | AG Classics",
     description:
-      "One subscription. Every classic. Starting at ₹399/month — read unlimited eBooks " +
-      "on any device with no ads and no limits.",
+      "Dive into the world's greatest classic literature — unlimited eBooks, zero ads, " +
+      "any device. Plans start at just ₹399/month. Cancel whenever you like.",
     images: [
       {
-        url:    `${SITE_URL}/logo/AGClassicLogo.png`, // ← place a 1200×630 image here
+        url:    `${SITE_URL}/logo/AGClassicLogo.png`,
         width:  1200,
         height: 630,
-        alt:    "AG Classics Subscription — Unlimited eBook Reading Pass",
+        alt:    "AG Classics — Your All-Access eBook Reading Pass",
       },
     ],
     locale: "en_IN",
@@ -44,11 +46,12 @@ export const metadata: Metadata = {
   /* ── Twitter / X ──────────────────────────────────── */
   twitter: {
     card:        "summary_large_image",
-    site:        "@agclassics",              // ← update your handle
-    title:       "Unlimited eBook Subscription | AG Classics",
+    site:        "@agclassics",
+    title:       "Your All-Access eBook Pass | AG Classics",
     description:
-      "Read unlimited classic eBooks starting at ₹399/month. No ads. Cancel anytime.",
-    images:      [`${SITE_URL}/logo/AGClassicLogo.png`],
+      "Classics without limits read the world's greatest books from ₹399/month. " +
+      "Ad-free. Device-friendly. Cancel anytime.",
+    images: [`${SITE_URL}/logo/AGClassicLogo.png`],
   },
 
   /* ── Robots ───────────────────────────────────────── */
@@ -65,16 +68,18 @@ export const metadata: Metadata = {
 
   /* ── Keywords ─────────────────────────────────────── */
   keywords: [
-    "ebook subscription india",
-    "unlimited ebook reading india",
-    "classic book subscription plan",
-    "ag classics subscription",
-    "monthly ebook plan india",
-    "annual ebook subscription",
-    "read unlimited books online india",
-    "digital library subscription india",
-    "cheap ebook subscription india",
-    "classic literature subscription",
+    "classic ebook subscription india",
+    "best ebook subscription plan india",
+    "unlimited classic literature online india",
+    "ag classics reading pass",
+    "affordable ebook plan india",
+    "digital classic books subscription",
+    "online reading membership india",
+    "monthly ebook access india",
+    "yearly ebook subscription india",
+    "classic novels online india",
+    "read great books online india",
+    "ebook library membership india",
   ],
 };
 
@@ -89,10 +94,10 @@ const schemaWebPage = {
   "@type":    "WebPage",
   "@id":      `${pageUrl}#webpage`,
   url:        pageUrl,
-  name:       "Unlimited eBook Subscription Plans — AG Classics Pass",
+  name:       "Read Every Classic, Anytime — eBook Plans | AG Classics",
   description:
-    "Subscribe for unlimited access to AG Classics' entire eBook library. " +
-    "Monthly, quarterly, and annual plans available.",
+    "Explore AG Classics' flexible subscription plans and get unlimited access to the " +
+    "world's greatest literature. Monthly, quarterly, and annual options available.",
   inLanguage: "en-IN",
   isPartOf: {
     "@type":  "WebSite",
@@ -128,16 +133,16 @@ const schemaBreadcrumb = {
   ],
 };
 
-/* 3 ── Product  (the subscription itself — all three offers in one product) */
+/* 3 ── Product */
 const schemaProduct = {
   "@context":   "https://schema.org",
   "@type":      "Product",
   "@id":        `${pageUrl}#product`,
-  name:         "AG Classics Pass | Unlimited eBook Subscription",
+  name:         "AG Classics Pass — Unlimited Classic eBook Access",
   url:          pageUrl,
   description:
-    "Unlimited access to the entire AG Classics eBook library. " +
-    "Read on any device, no ads, cancel anytime.",
+    "One subscription. Every classic. Read ad-free on any device — smartphone, tablet, " +
+    "or laptop. Your entire library syncs automatically across all screens.",
   brand: {
     "@type": "Brand",
     name:    SITE_NAME,
@@ -149,7 +154,9 @@ const schemaProduct = {
       "@type":         "Offer",
       "@id":           `${pageUrl}#offer-monthly`,
       name:            "Monthly Plan",
-      description:     "Unlimited eBook access — billed monthly. Cancel anytime.",
+      description:
+        "Full, unlimited eBook access billed each month. " +
+        "Perfect for readers who want flexibility — pause or cancel anytime.",
       url:             `${SITE_URL}/subscriptions/payment?plan=monthly`,
       priceCurrency:   "INR",
       price:           "399.00",
@@ -159,9 +166,9 @@ const schemaProduct = {
         new Date().setFullYear(new Date().getFullYear() + 1)
       ).toISOString().split("T")[0],
       eligibleQuantity: {
-        "@type":    "QuantitativeValue",
-        unitText:   "month",
-        value:      1,
+        "@type":  "QuantitativeValue",
+        unitText: "month",
+        value:    1,
       },
     },
     /* ── Quarterly ── */
@@ -169,7 +176,9 @@ const schemaProduct = {
       "@type":         "Offer",
       "@id":           `${pageUrl}#offer-quarterly`,
       name:            "3-Month Plan",
-      description:     "Unlimited eBook access for 3 months. Save ₹198 vs monthly.",
+      description:
+        "Three months of unlimited classic eBook reading for ₹999. " +
+        "Save ₹198 compared to three separate monthly payments.",
       url:             `${SITE_URL}/subscriptions/payment?plan=quarterly`,
       priceCurrency:   "INR",
       price:           "999.00",
@@ -179,9 +188,9 @@ const schemaProduct = {
         new Date().setFullYear(new Date().getFullYear() + 1)
       ).toISOString().split("T")[0],
       eligibleQuantity: {
-        "@type":    "QuantitativeValue",
-        unitText:   "month",
-        value:      3,
+        "@type":  "QuantitativeValue",
+        unitText: "month",
+        value:    3,
       },
     },
     /* ── Annual ── */
@@ -189,7 +198,9 @@ const schemaProduct = {
       "@type":         "Offer",
       "@id":           `${pageUrl}#offer-annual`,
       name:            "Annual Plan",
-      description:     "Unlimited eBook access for 12 months. Save ₹1,189 vs monthly.",
+      description:
+        "A full year of unlimited classic eBook access for ₹3,599. " +
+        "Our best value — save ₹1,189 (roughly 25%) compared to paying monthly.",
       url:             `${SITE_URL}/subscriptions/payment?plan=yearly`,
       priceCurrency:   "INR",
       price:           "3599.00",
@@ -199,69 +210,64 @@ const schemaProduct = {
         new Date().setFullYear(new Date().getFullYear() + 1)
       ).toISOString().split("T")[0],
       eligibleQuantity: {
-        "@type":    "QuantitativeValue",
-        unitText:   "month",
-        value:      12,
+        "@type":  "QuantitativeValue",
+        unitText: "month",
+        value:    12,
       },
     },
   ],
 };
 
-/* 4 ── FAQPage  (pulls directly from your existing FAQ items) */
+/* 4 ── FAQPage */
 const schemaFaq = {
   "@context": "https://schema.org",
   "@type":    "FAQPage",
   mainEntity: [
     {
       "@type": "Question",
-      name:    "Does the AG Classics subscription include paperback books?",
+      name:    "Does AG Classics sell physical or printed books?",
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "No. The subscription is only for digital eBooks. " +
-          "Paperback books are sold separately.",
+          "No. AG Classics is a 100% digital platform — we sell eBooks only. " +
+          "All titles are available exclusively in digital format and can be read " +
+          "on any internet-connected device.",
       },
     },
     {
       "@type": "Question",
-      name:    "Can I cancel my AG Classics subscription anytime?",
+      name:    "What is the price of the annual AG Classics subscription?",
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "Yes. You can cancel your subscription at any time from your account settings " +
-          "with no cancellation fees.",
+          "The annual plan is priced at ₹3,599 for 12 months of unlimited access. " +
+          "Compared to paying ₹399 every month (₹4,788 per year), you save ₹1,189 — " +
+          "roughly 25% off.",
       },
     },
     {
       "@type": "Question",
-      name:    "How much does the annual eBook subscription cost?",
+      name:    "What do I get with the 3-month subscription plan?",
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "The annual plan is priced at ₹3,599 for 12 months, compared to ₹4,788 if " +
-          "you paid monthly — saving you ₹1,189 (approximately 25% off).",
+          "The 3-month plan gives you complete, unlimited access to the entire AG Classics " +
+          "eBook library for 90 days at ₹999. That's a saving of ₹198 over three individual " +
+          "monthly payments, and everything syncs across all your devices automatically.",
       },
     },
     {
       "@type": "Question",
-      name:    "What is included in the 3-month subscription plan?",
+      name:    "Which devices can I use to read AG Classics eBooks?",
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "The 3-month plan costs ₹999 and gives you full access to the entire AG Classics " +
-          "eBook library on all devices, saving ₹198 compared to three individual monthly payments.",
+          "AG Classics works on any internet-connected device Android or iPhone, tablet, " +
+          "or laptop/desktop browser. Your reading progress and library sync automatically, " +
+          "so you can pick up exactly where you left off on any screen.",
       },
     },
-    {
-      "@type": "Question",
-      name:    "On which devices can I read AG Classics eBooks?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text:
-          "You can read on any device — smartphone, tablet, or laptop. " +
-          "Your library syncs automatically across all your devices.",
-      },
-    },
+
   ],
 };
 

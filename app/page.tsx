@@ -14,11 +14,11 @@ const OG_IMAGE  = `${SITE_URL}/images/logo/AGClassicLogosquare.png`; // 1200×63
 export const metadata: Metadata = {
   /* ── Basics ── */
   title: {
-    default: "AG Classics | Books & E-Books for Every Reader",
+    default: "AG Classics | E-Books for Every Reader",
     template: "%s | AG Classics",
   },
   description:
-    "Discover AG Classics — a curated collection of timeless literature, business, philosophy, and self-development books for intentional readers.",
+    "Discover AG Classics a curated collection of timeless literature, business, philosophy, and self-development books for intentional readers.",
   keywords: [
     "AG Classics",
     "classic literature books",
@@ -46,9 +46,9 @@ export const metadata: Metadata = {
     type:        "website",
     url:         SITE_URL,
     siteName:    SITE_NAME,
-    title:       "AG Classics | Books & E-Books for Intentional Readers",
+    title:       "AG Classics | E-Books for Every Reader",
     description:
-      "Timeless literature, business, philosophy, and self-development books — curated for those who read with intention.",
+      "Discover AG Classics a curated collection of timeless literature, business, philosophy, and self-development books for intentional readers.",
     images: [
       {
         url:    OG_IMAGE,
@@ -63,8 +63,8 @@ export const metadata: Metadata = {
   /* ── Twitter / X Card ── */
   twitter: {
     card:        "summary_large_image",
-    title:       "AG Classics | Curated Books & E-Books",
-    description: "Timeless literature and curated reads for intentional readers.",
+    title:       "AG Classics | Curated E-Books",
+    description: "Timeless literature and curated reads for every readers.",
     images:      [OG_IMAGE],
     // creator: "@agclassics",  // ← add if you have a Twitter handle
   },
@@ -116,7 +116,7 @@ const organizationSchema = {
     height:      80,
   },
   description:
-    "AG Classics curates timeless books and e-books across literature, business, philosophy, and self-development for intentional readers.",
+    "Discover AG Classics a curated collection of timeless literature, business, philosophy, and self-development books for intentional readers.",
   sameAs: [
     // Add your real social profiles:
     // "https://www.instagram.com/agclassics",
@@ -136,7 +136,7 @@ const websiteSchema = {
   "@type":      "WebSite",
   name:         SITE_NAME,
   url:          SITE_URL,
-  description:  "Curated books and e-books for intentional readers.",
+  description:  "Curated e-books for every readers.",
   potentialAction: {
     "@type":       "SearchAction",
     target: {

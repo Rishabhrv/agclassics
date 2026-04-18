@@ -3,8 +3,8 @@ import CategoryPage from "@/components/category/CategoryPage";
 /* ═══════════════════════════════════════════════════════════════════
    ENV
 ═══════════════════════════════════════════════════════════════════ */
-const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agclassics.agkit.in";
-const API_URL   = process.env.NEXT_PUBLIC_API_URL  ?? "https://agclassics.agkit.in";
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL ?? "  ";
+const API_URL   = process.env.NEXT_PUBLIC_API_URL  ?? "  ";
 const SITE_NAME = "AG Classics";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -85,7 +85,7 @@ export async function generateMetadata({
   const description =
     cat?.description ??
     `Explore our curated collection of ${count > 0 ? `${count} ` : ""}classic ${name} books at AG Classics. ` +
-    `Available in paperback and eBook formats. Instant delivery, lifetime access.`;
+    `Available in eBook formats. lifetime access.`;
 
   const ogImage = cat?.image
     ? `${API_URL}${cat.image}`
@@ -174,7 +174,7 @@ function buildSchemas(
     name:       `${name} Books | AG Classics`,
     description:
       cat?.description ??
-      `Curated classic ${name} books — paperback & eBook formats. Instant delivery, lifetime access.`,
+      `Curated classic ${name} books with eBook formats. Instant Access, lifetime access.`,
     inLanguage: "en-IN",
     isPartOf: {
       "@type": "WebSite",

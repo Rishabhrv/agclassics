@@ -272,7 +272,7 @@ export default function PrivacyPolicyPage() {
               >
                 We care about your privacy and want to be fully transparent about how
                 we handle your data at{" "}
-                <span style={{ color: "#8a8790" }}>agclassics.agkit.in</span>.
+                <span style={{ color: "#8a8790" }}>agclassics.in</span>.
               </p>
             </div>
           </div>
@@ -554,7 +554,7 @@ export default function PrivacyPolicyPage() {
                   Questions about your privacy?
                 </p>
                 <Link
-                  href="https://agclassics.com/contact"
+                  href="https://agphbooks.com/contact-us/"
                   className="inline-flex items-center gap-2 text-[12px] font-medium transition-colors duration-200"
                   style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}
                 >
