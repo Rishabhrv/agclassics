@@ -4,6 +4,7 @@ import { useState } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter, usePathname } from "next/navigation";
+import { syncGuestDataAfterLogin } from "@/lib/guestStorage"
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
@@ -47,6 +48,7 @@ const SocialAuthButtons = () => {
     }
 
     localStorage.setItem("token", data.token);
+    await syncGuestDataAfterLogin(data.token);
     window.dispatchEvent(new Event("auth-change"));
 
     window.location.href = "/";

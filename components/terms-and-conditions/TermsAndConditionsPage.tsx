@@ -95,7 +95,7 @@ const sections = [
     number: "01",
     title: "Acceptance of Terms",
     content:
-      "By accessing or using AG Classics, you confirm that you are at least 18 years old, or have the legal capacity to enter into this agreement. If you are using the platform on behalf of an organization, you represent that you are authorized to bind that organization to these Terms. Continued use of agclassics.agkit.in constitutes your acceptance of these Terms in full.",
+      "By accessing or using AG Classics, you confirm that you are at least 18 years old, or have the legal capacity to enter into this agreement. If you are using the platform on behalf of an organization, you represent that you are authorized to bind that organization to these Terms. Continued use of agclassics.in constitutes your acceptance of these Terms in full.",
   },
   {
     id: "services",
@@ -160,7 +160,7 @@ const sections = [
     subsections: [
       {
         label: "Platform Content",
-        text: "All content on agclassics.agkit.in — including the website design, logos, typography, original cover art, editorial selections, and software — is owned by or licensed to AG Classics. You may not reproduce, modify, distribute, or commercially use our content without prior written consent.",
+        text: "All content on agclassics.in — including the website design, logos, typography, original cover art, editorial selections, and software — is owned by or licensed to AG Classics. You may not reproduce, modify, distribute, or commercially use our content without prior written consent.",
       },
       {
         label: "Third-Party Rights",
@@ -350,7 +350,7 @@ export default function TermsAndConditionsPage() {
                 style={{ fontFamily: "'Jost', sans-serif", color: "white" }}
               >
                 These Terms govern your use of{" "}
-                <span style={{ color: "#8a8790" }}>agclassics.agkit.in</span> and all
+                <span style={{ color: "#8a8790" }}>agclassics.in</span> and all
                 services provided by AG Classics. Please read them carefully before
                 exploring our collection.
               </p>

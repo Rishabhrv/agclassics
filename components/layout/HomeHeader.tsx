@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { guestCart, guestWishlist } from "@/lib/guestStorage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -279,22 +280,30 @@ export default function HomeHeader() {
   }, []);
 
   /* ── Cart count ── */
-  const fetchCartCount = useCallback(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    fetch(`${API_URL}/api/ag-classics/cart`, {
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    })
-      .then(res => { if (!res.ok) throw new Error(); return res.json(); })
-      .then(data => { if (data.success) setCartCount(data.cart.length); })
-      .catch(console.error);
-  }, []);
+  /* ── Cart count ── */
+const fetchCartCount = useCallback(() => {
+  const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    fetchCartCount();
-    window.addEventListener("cart-change", fetchCartCount);
-    return () => window.removeEventListener("cart-change", fetchCartCount);
-  }, [fetchCartCount]);
+  // GUEST: read directly from localStorage
+  if (!token) {
+    setCartCount(guestCart.count());
+    return;
+  }
+
+  // LOGGED IN: fetch from API
+  fetch(`${API_URL}/api/ag-classics/cart`, {
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+  })
+    .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+    .then(data => { if (data.success) setCartCount(data.cart.length); })
+    .catch(console.error);
+}, []);
+
+useEffect(() => {
+  fetchCartCount();
+  window.addEventListener("cart-change", fetchCartCount);
+  return () => window.removeEventListener("cart-change", fetchCartCount);
+}, [fetchCartCount]);
 
   /* ── Outside-click: dropdown ── */
   useEffect(() => {

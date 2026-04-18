@@ -3,7 +3,7 @@ import BestSellersPage from "@/components/bestseller/BestSellerPage";
 /* ═══════════════════════════════════════════════════════════════════
    ENV
 ═══════════════════════════════════════════════════════════════════ */
-const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agclassics.agkit.in";
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL ?? "https://agclassics.in";
 const API_URL   = process.env.NEXT_PUBLIC_API_URL  ?? "";
 const SITE_NAME = "AG Classics";
 
@@ -45,10 +45,10 @@ const calcDisc = (p: number, s: number) =>
 ═══════════════════════════════════════════════════════════════════ */
 export const metadata: Metadata = {
   /* ── Core ─────────────────────────────────────────── */
-  title:       "Bestselling Classic Books | AG Classics",
+  title:       "Bestselling Classic eBooks | AG Classics",
   description:
-    "Discover the most-loved classic books at AG Classics — ranked by readers, " +
-    "verified by sales. Paperback & eBook formats. Instant delivery, lifetime access.",
+    "Discover the most-loved classic books at AG Classics  ranked by readers, " +
+    "verified by sales. with eBook formats, lifetime access.",
 
   /* ── Canonical ────────────────────────────────────── */
   alternates: {
@@ -60,10 +60,10 @@ export const metadata: Metadata = {
     type:        "website",
     url:         `${SITE_URL}/bestseller`,
     siteName:    SITE_NAME,
-    title:       "Bestselling Classic Books | AG Classics",
+    title:       "Bestselling Classic eBooks | AG Classics",
     description:
-      "Reader-ranked. Sales-verified. The most-loved classics in one place — " +
-      "available in paperback and eBook.",
+    "Discover the most-loved classic books at AG Classics  ranked by readers, " +
+    "verified by sales. with eBook formats, lifetime access.",
     images: [
       {
         url:    `${SITE_URL}/logo/AGClassicLogo.png`, // ← place a 1200×630 image here
@@ -126,7 +126,7 @@ function buildSchemas(books: BookMeta[]) {
     url:        pageUrl,
     name:       "Bestselling Classic Books | AG Classics",
     description:
-      "Reader-ranked bestselling classic books — paperback & eBook formats. " +
+      "Reader-ranked bestselling classic books available in eBook formats. " +
       "Instant delivery, lifetime access.",
     inLanguage: "en-IN",
     isPartOf: {
@@ -167,12 +167,6 @@ function buildSchemas(books: BookMeta[]) {
       {
         "@type":    "ListItem",
         position:   2,
-        name:       "AG Classics",
-        item:       `${SITE_URL}/`,
-      },
-      {
-        "@type":    "ListItem",
-        position:   3,
         name:       "Bestsellers",
         item:       pageUrl,
       },
@@ -280,7 +274,7 @@ function buildSchemas(books: BookMeta[]) {
           "@type": "Answer",
           text:
             "Our bestseller rankings are determined by a combination of total sales volume, " +
-            "reader ratings, and review counts — updated regularly to reflect the most " +
+            "reader ratings, and review counts updated regularly to reflect the most " +
             "loved titles in our catalogue.",
         },
       },
@@ -290,7 +284,7 @@ function buildSchemas(books: BookMeta[]) {
         acceptedAnswer: {
           "@type": "Answer",
           text:
-            "Yes. Most bestsellers at AG Classics are available in both paperback and eBook " +
+            "Yes. Most bestsellers at AG Classics are available in eBook " +
             "formats. eBooks are delivered instantly after purchase and are accessible on " +
             "any device for life.",
         },

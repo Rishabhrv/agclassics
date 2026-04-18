@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { guestCart, guestWishlist } from "@/lib/guestStorage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
@@ -16,6 +17,10 @@ interface Book {
   avg_rating: number | null;
   review_count: number;
   authors: { id: number; name: string; slug: string }[];
+  // Added fields for guest storage compatibility
+  product_type?: "physical" | "ebook" | "both";
+  ebook_price?: number | null;
+  ebook_sell_price?: number | null;
 }
 
 type FormatFilter = "all" | "ebook" | "physical";
@@ -94,6 +99,22 @@ export default function BestSellersPage() {
     setTimeout(startAutoSlide, 6000);
   };
 
+  /* ── Sync wishlist state (guest or logged-in) ── */
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // Load guest wishlist IDs into the Set
+      setWish(new Set(guestWishlist.getIds()));
+      return;
+    }
+    fetch(`${API_URL}/api/ag-classics/wishlist/ids`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.ids && Array.isArray(d.ids)) setWish(new Set(d.ids)); })
+      .catch(() => {});
+  }, []);
+
   /* ── Intersection for counters ── */
   useEffect(() => {
     if (!numbersRef.current) return;
@@ -117,12 +138,39 @@ export default function BestSellersPage() {
   }, [format, sort]);
 
   /* ── Add to cart ── */
+  /* ── Add to cart ── */
   const addCart = async (e: React.MouseEvent, b: Book) => {
     e.stopPropagation();
-    const token = localStorage.getItem("token");
-    if (!token) { setToast("Please log in to add to cart"); return; }
     if (b.stock === 0 || cartId === b.id) return;
+    
+    const token = localStorage.getItem("token");
+    const format = b.product_type === "ebook" ? "ebook" : "paperback";
     setCartId(b.id);
+
+    /* GUEST: save to localStorage */
+    if (!token) {
+      guestCart.add({
+        id: b.id,
+        product_id: b.id,
+        format: format,
+        quantity: 1,
+        title: b.title,
+        slug: b.slug,
+        main_image: b.main_image,
+        price: b.price,
+        sell_price: b.sell_price,
+        ebook_price: b.ebook_price ?? null,
+        ebook_sell_price: b.ebook_sell_price ?? null,
+        stock: b.stock,
+        product_type: b.product_type || "physical",
+      });
+      window.dispatchEvent(new Event("cart-change"));
+      setToast("Added to Cart");
+      setCartId(null);
+      return;
+    }
+
+    /* LOGGED-IN: sync with API */
     try {
       const r = await fetch(`${API_URL}/api/ag-classics/cart`, {
         method: "POST",
@@ -131,6 +179,7 @@ export default function BestSellersPage() {
       });
       if (!r.ok) throw new Error();
       window.dispatchEvent(new Event("cart-change"));
+      setToast("Added to Cart");
     } catch {} finally { setCartId(null); }
   };
 
@@ -138,16 +187,53 @@ export default function BestSellersPage() {
   const toggleWish = async (e: React.MouseEvent, b: Book) => {
     e.stopPropagation();
     const token = localStorage.getItem("token");
-    if (!token) { setToast("Please log in to save to wishlist"); return; }
-    const was = wish.has(b.id);
+    const wasLiked = wish.has(b.id);
+    
+    // Optimistic UI update
+    setWish(p => { const n = new Set(p); wasLiked ? n.delete(b.id) : n.add(b.id); return n; });
+
+    /* GUEST: save to localStorage */
+    if (!token) {
+      if (wasLiked) {
+        guestWishlist.remove(b.id);
+        setToast("Removed from wishlist");
+      } else {
+        guestWishlist.add({
+          id: b.id,
+          title: b.title,
+          slug: b.slug,
+          main_image: b.main_image,
+          price: b.price,
+          sell_price: b.sell_price,
+          ebook_price: b.ebook_price ?? null,
+          ebook_sell_price: b.ebook_sell_price ?? null,
+          stock: b.stock,
+          product_type: b.product_type || "physical",
+          created_at: new Date().toISOString(),
+        });
+        setToast("Saved to wishlist");
+      }
+      window.dispatchEvent(new Event("wishlist-change"));
+      return;
+    }
+
+    /* LOGGED-IN: sync with API */
     try {
-      await fetch(`${API_URL}/api/ag-classics/wishlist`, {
-        method: was ? "DELETE" : "POST",
+      const res = await fetch(`${API_URL}/api/ag-classics/wishlist`, {
+        method: wasLiked ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ product_id: b.id }),
       });
-      setWish(p => { const n = new Set(p); was ? n.delete(b.id) : n.add(b.id); return n; });
-    } catch {}
+      if (res.ok) {
+        window.dispatchEvent(new Event("wishlist-change"));
+        if (!wasLiked) setToast("Saved to wishlist");
+      } else {
+        throw new Error();
+      }
+    } catch {
+      // Revert optimistic UI update on error
+      setWish(p => { const n = new Set(p); wasLiked ? n.add(b.id) : n.delete(b.id); return n; });
+    }
   };
 
   /* ── Stars ── */

@@ -285,9 +285,90 @@ export default function CheckoutPage() {
   };
 
   /* ═══════ SUCCESS ═══════ */
-  if (orderSuccess) return (
+  /* ═══════ LOGIN GATE ═══════ */
+  if (!token) return (
     <PageWrap>
-      <SuccessScreen orderId={orderSuccess.orderId} total={orderSuccess.total} hasEbook={hasEbook} />
+      <div className="flex flex-col items-center gap-6 py-24 text-center max-w-md mx-auto">
+        <style>{`
+          @keyframes lockPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+          .lock-pulse { animation: lockPulse 2.4s ease infinite; }
+        `}</style>
+
+        {/* Icon */}
+        <div className="lock-pulse w-20 h-20 flex items-center justify-center"
+          style={{ border: "1px solid rgba(201,168,76,0.3)", background: "rgba(201,168,76,0.05)" }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+
+        <div>
+          <p className="text-[10px] tracking-[5px] uppercase mb-2"
+            style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}>
+            One More Step
+          </p>
+          <h2 className="text-[38px] font-light italic leading-none"
+            style={{ fontFamily: "'Cormorant Garamond', serif", color: "#f5f0e8" }}>
+            Sign In to Checkout
+          </h2>
+        </div>
+
+        <p className="text-[13px] leading-[1.9] max-w-sm"
+          style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
+          Your cart is saved. Create a free account or sign in to complete your order —
+          it only takes a moment.
+        </p>
+
+        {/* Cart summary pill */}
+        {!cartLoading && cart.length > 0 && (
+          <div className="w-full flex items-center justify-between px-5 py-4"
+            style={{ background: "#1c1c1e", border: "1px solid rgba(201,168,76,0.1)" }}>
+            <div className="flex items-center gap-3">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.5">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              <span className="text-[11px] tracking-[1px]"
+                style={{ fontFamily: "'Jost', sans-serif", color: "white" }}>
+                {cart.length} {cart.length === 1 ? "item" : "items"} in cart
+              </span>
+            </div>
+            <span className="text-[16px] font-light"
+              style={{ fontFamily: "'Cormorant Garamond', serif", color: "#c9a84c" }}>
+              {fmt(cart.reduce((s, i) => s + itemPrice(i).display * i.quantity, 0))}
+            </span>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-3 w-full">
+          <GoldBtn
+            onClick={() => window.dispatchEvent(new Event("open-account-slider"))}>
+            Sign In / Create Account
+          </GoldBtn>
+          <button
+            className="py-3 text-[9px] tracking-[3px] uppercase transition-colors duration-200"
+            style={{ fontFamily: "'Jost', sans-serif", color: "white", background: "none", border: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#c9a84c")}
+            onMouseLeave={e => (e.currentTarget.style.color = "white")}
+            onClick={() => (window.location.href = "/cart")}
+          >
+            ← Back to Cart
+          </button>
+        </div>
+
+        {/* Trust row */}
+        <div className="flex items-center gap-6 mt-2 flex-wrap justify-center">
+          {[{ icon: "🔒", text: "256-bit SSL" }, { icon: "💳", text: "Razorpay Secure" }, { icon: "📦", text: "DTDC Delivery" }].map(b => (
+            <div key={b.text} className="flex items-center gap-2">
+              <span className="text-sm">{b.icon}</span>
+              <span className="text-[9px] tracking-[2px] uppercase"
+                style={{ fontFamily: "'Jost', sans-serif", color: "#6b6b70" }}>{b.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </PageWrap>
   );
 

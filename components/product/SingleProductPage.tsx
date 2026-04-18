@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { MagneticBtn } from "@/components/motion/Motionutils";
 import Link from "next/link";
 import BottomBannerAd from "../ads/BottomBannerAd";
+import { guestCart, guestWishlist } from "@/lib/guestStorage"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -612,11 +613,14 @@ export default function ProductPage({ product }: { product: Product }) {
     return () => clearInterval(id);
   }, [product, allImages.length]);
 
-  /* ── wishlist check ── */
+ /* ── wishlist check ── */
   useEffect(() => {
     if (!product) return;
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setWishlisted(guestWishlist.has(product.id));
+      return;
+    }
     fetch(`${API_URL}/api/wishlist/check/${product.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -646,35 +650,105 @@ export default function ProductPage({ product }: { product: Product }) {
     else jumpToImage(activeImg > 0 ? activeImg - 1 : allImages.length - 1);
   };
 
-  const toggleWishlist = async () => {
+ const toggleWishlist = async () => {
     const token = localStorage.getItem("token");
-    if (!token) { setToast("Please log in to save to wishlist"); return; }
-    await fetch(`${API_URL}/api/wishlist/${product?.id}`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setWishlisted(!wishlisted);
+    const wasLiked = wishlisted;
+    
+    // Optimistic UI update
+    setWishlisted(!wasLiked);
+
+    /* GUEST: save to localStorage */
+    if (!token) {
+      if (wasLiked) {
+        guestWishlist.remove(product!.id);
+        setToast("Removed from wishlist");
+      } else {
+        guestWishlist.add({
+          id: product!.id,
+          title: product!.title,
+          slug: product!.slug,
+          main_image: product!.main_image,
+          price: product!.price,
+          sell_price: product!.sell_price,
+          ebook_price: product!.ebook_price ?? null,
+          ebook_sell_price: product!.ebook_sell_price ?? null,
+          stock: product!.stock,
+          product_type: product!.product_type,
+          created_at: new Date().toISOString(),
+        });
+        setToast("Saved to wishlist ✓");
+      }
+      window.dispatchEvent(new Event("wishlist-change"));
+      return;
+    }
+
+    /* LOGGED-IN: sync with API */
+    try {
+      const res = await fetch(`${API_URL}/api/wishlist/${product?.id}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        window.dispatchEvent(new Event("wishlist-change"));
+        setToast(wasLiked ? "Removed from wishlist" : "Saved to wishlist ✓");
+      } else {
+        throw new Error("Failed");
+      }
+    } catch {
+      // Revert optimistic UI update if API fails
+      setWishlisted(wasLiked);
+      setToast("Something went wrong");
+    }
   };
 
   const addToCart = async () => {
     const token = localStorage.getItem("token");
-    if (!token) { setToast("Please log in to add to cart"); return; }
+    const selectedFormat = format === "ebook" ? "ebook" : "paperback";
+    const selectedQty = format === "ebook" ? 1 : qty;
+
+    /* GUEST: save to localStorage */
+    if (!token) {
+      guestCart.add({
+        id: product!.id,
+        product_id: product!.id,
+        format: selectedFormat,
+        quantity: selectedQty,
+        title: product!.title,
+        slug: product!.slug,
+        main_image: product!.main_image,
+        price: product!.price,
+        sell_price: product!.sell_price,
+        ebook_price: product!.ebook_price ?? null,
+        ebook_sell_price: product!.ebook_sell_price ?? null,
+        stock: product!.stock,
+        product_type: product!.product_type,
+      });
+      window.dispatchEvent(new Event("cart-change"));
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 1800);
+      setToast("Added to cart ✓");
+      return;
+    }
+
+    /* LOGGED-IN: sync with API */
     try {
       const res = await fetch(`${API_URL}/api/cart/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           product_id: product!.id,
-          format: format === "ebook" ? "ebook" : "paperback",
-          quantity: format === "ebook" ? 1 : qty,
+          format: selectedFormat,
+          quantity: selectedQty,
         }),
       });
       if (!res.ok) throw new Error("Add to cart failed");
       window.dispatchEvent(new Event("cart-change"));
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 1800);
+      setToast("Added to cart ✓");
     } catch (err) {
       console.error(err);
+      setToast("Something went wrong");
     }
   };
 

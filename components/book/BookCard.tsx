@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { guestCart, guestWishlist } from "@/lib/guestStorage";
 
 type Book = {
   id: number;
@@ -68,31 +69,58 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
     setTimeout(() => setLocalToast(null), 2400);
   };
 
+  /* ── Sync wishlist state (guest or logged-in) ── */
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) { setLiked(false); return; }
+    if (!token) {
+      setLiked(guestWishlist.has(book.id));
+      return;
+    }
     fetch(`${API_URL}/api/ag-classics/wishlist/ids`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.ids && Array.isArray(d.ids)) setLiked(d.ids.includes(book.id));
-      })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.ids && Array.isArray(d.ids)) setLiked(d.ids.includes(book.id)); })
       .catch(() => {});
   }, [book.id]);
 
+  /* ── Wishlist toggle ── */
   const toggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation();
     if (wlLoading) return;
-    const token = localStorage.getItem("token");
+
+    const token    = localStorage.getItem("token");
+    const wasLiked = liked;
+    setLiked(!wasLiked);
+    setWlAnimating(true);
+    setTimeout(() => setWlAnimating(false), 350);
+
+    /* GUEST: save to localStorage */
     if (!token) {
-      showToast("Please log in to save to wishlist");
-      window.dispatchEvent(new Event("open-account-slider"));
+      if (wasLiked) {
+        guestWishlist.remove(book.id);
+        showToast("Removed from wishlist");
+      } else {
+        guestWishlist.add({
+          id:              book.id,
+          title:           book.title,
+          slug:            book.slug,
+          main_image:      book.image,
+          price:           book.price,
+          sell_price:      book.sell_price,
+          ebook_price:     book.ebook_price     ?? null,
+          ebook_sell_price: book.ebook_sell_price ?? null,
+          stock:           book.stock,
+          product_type:    book.product_type,
+          created_at:      new Date().toISOString(),
+        });
+        showToast("Saved to wishlist");
+      }
+      window.dispatchEvent(new Event("wishlist-change"));
       return;
     }
-    const wasLiked = liked;
-    setLiked(!wasLiked); setWlAnimating(true);
-    setTimeout(() => setWlAnimating(false), 350);
+
+    /* LOGGED-IN: sync with API */
     setWlLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/ag-classics/wishlist`, {
@@ -108,24 +136,46 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
 
   const getCartFormat = (): "ebook" | "paperback" => {
     if (forceFormat) return forceFormat;
-    if (book.product_type === "ebook") return "ebook";
+    if (book.product_type === "ebook")    return "ebook";
     if (book.product_type === "physical") return "paperback";
     return book.stock > 0 ? "paperback" : "ebook";
   };
 
+  /* ── Add to cart ── */
   const addToCart = async (e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation();
     if (cartLoading || addedToCart) return;
-    const token = localStorage.getItem("token");
+
+    const format = getCartFormat();
+    const token  = localStorage.getItem("token");
+
+    /* GUEST: save to localStorage */
     if (!token) {
-      showToast("Please log in to add to cart");
-      window.dispatchEvent(new Event("open-account-slider"));
+      guestCart.add({
+        id:              book.id,
+        product_id:      book.id,
+        format,
+        quantity:        1,
+        title:           book.title,
+        slug:            book.slug,
+        main_image:      book.image,
+        price:           book.price,
+        sell_price:      book.sell_price,
+        ebook_price:     book.ebook_price     ?? null,
+        ebook_sell_price: book.ebook_sell_price ?? null,
+        stock:           book.stock,
+        product_type:    book.product_type,
+      });
+      window.dispatchEvent(new Event("cart-change"));
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 1800);
       return;
     }
-    const format = getCartFormat();
+
+    /* LOGGED-IN: sync with API */
     setCartLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/ag-classics/cart`, {
+      const res  = await fetch(`${API_URL}/api/ag-classics/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ product_id: book.id, format, quantity: 1 }),
@@ -156,10 +206,6 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
     ? Math.round(((displayMrp - displaySellPrice) / displayMrp) * 100) : 0;
   const isOutOfStock = book.product_type === "physical" && book.stock === 0;
   const isDisabled   = cartLoading || addedToCart || isOutOfStock;
-
-  // Responsive sizes derived from visibleCount passed from the parent
-  // When used inside ProductSlider, visibleCount=1 (card fills its container cell)
-  // so we use Tailwind responsive classes for internal sizing instead.
 
   return (
     <>
@@ -257,7 +303,7 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
                 </div>
               )}
 
-              {/* Cover image — responsive size */}
+              {/* Cover image */}
               <div className="agc-cover-img transition-transform duration-700 py-4 sm:py-6 pb-0">
                 <Image
                   src={book.image}
@@ -359,7 +405,6 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
                     <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
-                  {/* On very narrow cards (2-col mobile) show shorter label */}
                   <span className="hidden sm:inline">Add to Cart</span>
                   <span className="sm:hidden">Add</span>
                 </span>

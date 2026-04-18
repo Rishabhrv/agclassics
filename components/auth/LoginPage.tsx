@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
+import { syncGuestDataAfterLogin } from "@/lib/guestStorage"; // ← add this
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const LOCKOUT_MINUTES = 15;
@@ -16,7 +17,6 @@ export default function LoginPage() {
   const [countdown, setCountdown] = useState(0);
   const [remaining, setRemaining] = useState<number | null>(null);
 
-  // Live countdown tick
   useEffect(() => {
     if (countdown <= 0) { setLocked(false); return; }
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
@@ -52,6 +52,7 @@ export default function LoginPage() {
       }
 
       localStorage.setItem("token", data.token);
+      await syncGuestDataAfterLogin(data.token); // ← sync guest cart + wishlist before redirect
       window.location.href = "/";
     } catch {
       setError("Network error. Please try again.");

@@ -12,10 +12,10 @@ const SITE_NAME = "AG Classics";
 ═══════════════════════════════════════════════════════════════════ */
 export const metadata: Metadata = {
   /* ── Core ──────────────────────────────────────────────────────── */
-  title:       "Buy Classic eBooks Online | Timeless Literature",
+  title:       "Buy Classic eBooks Online | AG Classics",
   description:
     "Build your digital library with premium classic eBooks from AG Classics. " +
-    "Instant download, lifetime access, beautifully typeset — browse by genre today.",
+    "Instant access, lifetime access, beautifully typeset browse by genre today.",
 
   /* ── Canonical ─────────────────────────────────────────────────── */
   alternates: {
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     siteName:    SITE_NAME,
     title:       "Buy Classic eBooks Online | AG Classics",
     description:
-      "Download timeless classics instantly. Works on every device. " +
-      "Professionally typeset, lifetime ownership — starting at ₹99.",
+    "Build your digital library with premium classic eBooks from AG Classics. " +
+    "Instant access, lifetime access, beautifully typeset browse by genre today.",
     images: [
       {
         url:    `${SITE_URL}/logo/AGClassicLogo.png`, // ← place a 1200×630 image here
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     site:        "@agclassics",              // ← update to your handle
     title:       "Classic eBooks | AG Classics",
     description:
-      "Instant download. Lifetime access. Professionally typeset classics on every device.",
+      "Instant access. Lifetime access. Professionally typeset classics on every device.",
     images: [`${SITE_URL}/logo/AGClassicLogo.png`],
   },
 
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     "classic ebooks india",
     "buy classic books online india",
     "timeless literature ebook",
-    "english classics digital download",
+    "english classics digital access",
     "ebook store india",
     "ag classics ebooks",
     "premium ebooks india",
@@ -94,7 +94,7 @@ const schemaWebPage = {
   url:        `${SITE_URL}/ebooks`,
   name:       "Classic eBooks | AG Classics",
   description:
-    "Browse and instantly download premium classic eBooks. " +
+    "Browse and instantly access premium classic eBooks. " +
     "Timeless literature, professionally typeset, lifetime access.",
   inLanguage: "en-IN",
   isPartOf: {
