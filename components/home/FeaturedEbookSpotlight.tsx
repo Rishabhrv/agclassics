@@ -188,13 +188,13 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
           {/* CTA Row */}
           <div className="flex items-center gap-5">
             <Link
-              href={`/books/${book.slug}`}
+              href={`/product/${book.slug}`}
               className="inline-block font-['Jost',sans-serif] text-[10px] tracking-[3px] uppercase font-medium bg-[#c9a84c] text-[#080809] px-9 py-4 border-none cursor-pointer transition-colors duration-300 hover:bg-[#f5f0e8]"
             >
               Get This eBook
             </Link>
             <Link
-              href={`/books/${book.slug}#reviews`}
+              href={`/product/${book.slug}#reviews`}
               className="font-['Jost',sans-serif] text-[11px] text-white hover:text-[#c9a84c] underline underline-offset-4 decoration-[rgba(201,168,76,0.3)] transition-colors"
             >
               Read reviews

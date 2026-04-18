@@ -199,8 +199,8 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
   };
 
   const isEbookOnly      = book.product_type === "ebook";
-  const displaySellPrice = isEbookOnly ? (book.ebook_sell_price ?? 0) : book.sell_price;
-  const displayMrp       = isEbookOnly ? (book.ebook_price ?? 0)      : book.price;
+  const displaySellPrice = isEbookOnly ? (book.ebook_sell_price ?? book.sell_price) : book.sell_price;
+  const displayMrp       = isEbookOnly ? (book.ebook_price ?? book.price)      : book.price;
   const showDiscount     = displayMrp > 0 && displayMrp > displaySellPrice;
   const discountPercent  = showDiscount
     ? Math.round(((displayMrp - displaySellPrice) / displayMrp) * 100) : 0;

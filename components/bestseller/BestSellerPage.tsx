@@ -137,13 +137,13 @@ export default function BestSellersPage() {
       .finally(() => setLoading(false));
   }, [format, sort]);
 
-  /* ── Add to cart ── */
-  /* ── Add to cart ── */
+ /* ── Add to cart ── */
   const addCart = async (e: React.MouseEvent, b: Book) => {
     e.stopPropagation();
     if (b.stock === 0 || cartId === b.id) return;
     
     const token = localStorage.getItem("token");
+    // ✅ 1. Dynamically determine the format here
     const format = b.product_type === "ebook" ? "ebook" : "paperback";
     setCartId(b.id);
 
@@ -152,7 +152,7 @@ export default function BestSellersPage() {
       guestCart.add({
         id: b.id,
         product_id: b.id,
-        format: format,
+        format: format, // ✅ 2. Used here correctly
         quantity: 1,
         title: b.title,
         slug: b.slug,
@@ -175,7 +175,8 @@ export default function BestSellersPage() {
       const r = await fetch(`${API_URL}/api/ag-classics/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ product_id: b.id, format: "paperback", quantity: 1 }),
+        // ✅ 3. FIX: Changed hardcoded "paperback" to the dynamic `format` variable
+        body: JSON.stringify({ product_id: b.id, format: format, quantity: 1 }), 
       });
       if (!r.ok) throw new Error();
       window.dispatchEvent(new Event("cart-change"));
@@ -570,9 +571,12 @@ export default function BestSellersPage() {
                       willChange: "transform",
                     }}
                   >
-                    {reelBooks.map((book, i) => {
+                 {reelBooks.map((book, i) => {
                       const isActive = i === reelIdx;
-                      const d = calcDisc(book.price, book.sell_price);
+                      const isEbook = book.product_type === "ebook";
+                      const displaySellPrice = isEbook ? (book.ebook_sell_price || book.sell_price) : book.sell_price;
+                      const displayMrp = isEbook ? (book.ebook_price || book.price) : book.price;
+                      const d = calcDisc(displayMrp, displaySellPrice);
                       return (
                         <div
                           key={book.id}
@@ -642,12 +646,12 @@ export default function BestSellersPage() {
                             <div className="flex items-center gap-2 mb-3 flex-wrap">
                               <span className="font-bold text-[#d4aa4e]"
                                 style={{ fontFamily: "var(--fm)", fontSize: "clamp(12px,1.4vw,15px)" }}>
-                                ₹{parseFloat(String(book.sell_price)).toFixed(0)}
+                                ₹{parseFloat(String(displaySellPrice)).toFixed(0)}
                               </span>
                               {d > 0 && (
                                 <>
                                   <span className="text-[10px] line-through text-[#8a8490]" style={{ fontFamily: "var(--fm)" }}>
-                                    ₹{parseFloat(String(book.price)).toFixed(0)}
+                                    ₹{parseFloat(String(displayMrp)).toFixed(0)}
                                   </span>
                                   <span className="px-[6px] py-[2px] text-[#c07070]"
                                     style={{ fontFamily: "var(--fm)", fontSize: "8px", background: "rgba(139,58,58,.22)" }}>
@@ -832,8 +836,11 @@ export default function BestSellersPage() {
                 <div className="border border-[rgba(212,170,78,.08)] border-t-0">
                   {books.map((book, idx) => {
                     const rank  = idx + 1;
-                    const d     = calcDisc(book.price, book.sell_price);
-                    const oos   = book.stock === 0;
+                    const isEbook = book.product_type === "ebook";
+                    const displaySellPrice = isEbook ? (book.ebook_sell_price || book.sell_price) : book.sell_price;
+                    const displayMrp = isEbook ? (book.ebook_price || book.price) : book.price;
+                    const d     = calcDisc(displayMrp, displaySellPrice);
+                    const oos   = book.product_type === "physical" && book.stock === 0; // Fix so eBooks don't show Sold Out
                     const isNew = new Date(book.created_at) > new Date(Date.now() - 30 * 864e5);
                     return (
                       <div key={book.id} className="rr"
@@ -892,12 +899,12 @@ export default function BestSellersPage() {
                           <div className="text-right">
                             <div className="font-bold text-[#d4aa4e]"
                               style={{ fontFamily: "var(--fm)", fontSize: "clamp(11px,1vw,15px)" }}>
-                              ₹{parseFloat(String(book.sell_price)).toFixed(0)}
+                              ₹{parseFloat(String(displaySellPrice)).toFixed(0)}
                             </div>
                             {d > 0 && (
                               <div className="flex items-center gap-1 justify-end mt-[2px]">
                                 <span className="text-[9px] line-through text-[#8a8490]">
-                                  ₹{parseFloat(String(book.price)).toFixed(0)}
+                                  ₹{parseFloat(String(displayMrp)).toFixed(0)}
                                 </span>
                                 <span className="px-[5px] py-[1px] text-[#c07070] text-[7px]"
                                   style={{ fontFamily: "var(--fm)", background: "rgba(139,58,58,.15)" }}>
