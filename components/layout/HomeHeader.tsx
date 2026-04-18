@@ -67,7 +67,7 @@ const globalStyles = `
 
 const NAV_LINKS = [
   { href: "/",                                      label: "Home" },
-  { href: "/category/business-professional-skills", label: "Genre" },
+  { href: "/category/all", label: "Genre" },
   { href: "/ebooks",                                label: "E-Books" },
   { href: "/bestseller",                            label: "Bestseller" },
   { href: "/subscriptions",                         label: "Subscription" },
