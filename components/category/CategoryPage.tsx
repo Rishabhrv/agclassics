@@ -16,6 +16,8 @@ interface Product {
   price: number; sell_price: number; stock: number;
   product_type: "physical" | "ebook" | "both"; main_image: string;
   created_at: string; rating: number;
+  ebook_price?: number;         // Added this
+  ebook_sell_price?: number;
 }
 interface Author {
   id: number; name: string; slug: string;
