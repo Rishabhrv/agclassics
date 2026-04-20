@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect, useState, Suspense, useMemo } from "react";
 import { Check } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { RevealText } from "@/components/motion/Motionutils";
+import { useSearchParams, useRouter } from "next/navigation";
+import { RevealText } from "@/components/motion/Motionutils"; // <-- Adjust path if needed
 
-const themeStyles = `
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
+const paymentStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
 
   .anim-fade-up { 
@@ -38,23 +41,78 @@ const themeStyles = `
   }
 `;
 
-// ── Pricing derived from ₹399 / month ──────────────────────────
-// Monthly  : ₹399       × 1  = ₹399   (base)
-// Quarterly: ₹399       × 3  = ₹1197  → ₹999   (save ₹198, ~17% off)
-// Yearly   : ₹399       × 12 = ₹4788  → ₹3599  (save ₹1189, ~25% off)
-// ───────────────────────────────────────────────────────────────
+type SubscriptionPlan = {
+  id: number;
+  plan_key: string;
+  title: string;
+  base_price: number;
+  duration_months: number;
+  description: string;
+  status: string;
+  features: string[]; // <-- Dynamic features from DB
+};
+
+// UI extras that aren't stored in the database (like badges and buttons)
+const PLAN_UI_EXTRAS: Record<string, any> = {
+  monthly: {
+    period: "per month",
+    button: "Start Monthly",
+    highlight: false,
+    badge: null,
+  },
+  quarterly: {
+    period: "per 3 months",
+    button: "Start 3 Months",
+    highlight: true,
+    badge: "Most Popular",
+  },
+  yearly: {
+    period: "per year",
+    button: "Go Annual",
+    highlight: false,
+    badge: "Best Value",
+  },
+};
 
 export default function SubscriptionPage() {
-  const router = useRouter();
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch plans from backend
+  useEffect(() => {
+    fetch(`${API_URL}/api/subscriptions/subscription-plans`)
+      .then((res) => res.json())
+      .then((data) => {
+        const activePlans = data.filter((p: SubscriptionPlan) => p.status === 'active');
+        setPlans(activePlans);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch plans:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // Calculate dynamic pricing
+  const enrichedPlans = useMemo(() => {
+    return plans.map(plan => {
+      const uiData = PLAN_UI_EXTRAS[plan.plan_key] || PLAN_UI_EXTRAS.monthly;
+
+      return {
+        ...plan,
+        ui: uiData,
+        displayPrice: `₹${plan.base_price.toLocaleString()}`
+      };
+    });
+  }, [plans]);
 
   return (
     <>
-      <style>{themeStyles}</style>
+      <style>{paymentStyles}</style>
       <div
         className="min-h-screen bg-[#0a0a0b] text-[#e8e0d0] pt-[130px] pb-20"
         style={{ fontFamily: "'Jost', sans-serif" }}
       >
-
         {/* ── HERO ─────────────────────────────────────── */}
         <section className="relative mx-auto max-w-6xl px-6 py-16 text-center overflow-hidden">
           <div
@@ -81,125 +139,65 @@ export default function SubscriptionPage() {
             Read unlimited eBooks anytime, anywhere. No limits. No ads.
             Collected for those who read with intention.
           </p>
-
-
         </section>
 
         {/* ── PLANS ────────────────────────────────────── */}
-        <section className="mx-auto max-w-6xl px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          {/* Monthly */}
-          <PlanCard
-            title="Monthly"
-            price="₹399"
-            strikePrice={null}
-            period="per month"
-            description="Perfect for casual readers"
-            features={[
-              "Unlimited eBook access",
-              "Read on any device",
-              "Cancel anytime",
-            ]}
-            note={null}
-            button="Start Monthly"
-            planType="monthly"
-            highlight={false}
-            badge={null}
-          />
-
-          {/* Quarterly */}
-          <PlanCard
-            title="3 Months"
-            price="₹999"
-            strikePrice="₹1,197"
-            period="per 3 months"
-            description="Best balance of value & flexibility"
-            features={[
-              "Unlimited eBook access",
-              "Read on any device",
-              "Priority support",
-            ]}
-            note="Save ₹198 vs monthly"
-            button="Start 3 Months"
-            planType="quarterly"
-            highlight={true}
-            badge="Most Popular"
-          />
-
-          {/* Yearly */}
-          <PlanCard
-            title="Annual"
-            price="₹3,599"
-            strikePrice="₹4,788"
-            period="per year"
-            description="For serious, committed readers"
-            features={[
-              "Unlimited eBook access",
-              "Read on any device",
-              "Early access to new releases",
-            ]}
-            note="Save ₹1,189 vs monthly"
-            button="Go Annual"
-            planType="yearly"
-            highlight={false}
-            badge="Best Value"
-          />
-        </section>
-
-        {/* ── PRICE BREAKDOWN TABLE ──────────────────── */}
-        <section className="mx-auto max-w-3xl px-6 pb-20">
-          <div
-            className="border border-[rgba(201,168,76,0.12)] overflow-hidden"
-            style={{ background: "#141416" }}
-          >
-            <div className="grid grid-cols-4 text-[10px] tracking-[2px] uppercase text-white border-b border-[rgba(201,168,76,0.08)] px-6 py-3"
-              style={{ fontFamily: "'Cinzel', serif" }}>
-              <span>Plan</span>
-              <span className="text-center">Duration</span>
-              <span className="text-center">Regular</span>
-              <span className="text-right text-[#c9a84c]">You Pay</span>
-            </div>
-            {[
-              { plan: "Monthly",    duration: "1 month",  regular: "₹399",    youPay: "₹399",    saving: null },
-              { plan: "3 Months",   duration: "3 months", regular: "₹1,197",  youPay: "₹999",    saving: "Save ₹198" },
-              { plan: "Annual",     duration: "12 months",regular: "₹4,788",  youPay: "₹3,599",  saving: "Save ₹1,189" },
-            ].map((row, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-4 items-center px-6 py-4 border-b border-[rgba(255,255,255,0.04)] last:border-b-0 text-sm"
-              >
-                <span className="text-[#f0ece4]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  {row.plan}
-                </span>
-                <span className="text-center text-white">{row.duration}</span>
-                <span className="text-center text-white line-through">{row.regular}</span>
-                <div className="text-right">
-                  <span className="text-[#c9a84c] font-medium">{row.youPay}</span>
-                  {row.saving && (
-                    <span className="block text-[10px] text-[#8b3a3a] mt-0.5">{row.saving}</span>
-                  )}
-                </div>
-              </div>
+        {loading ? (
+          <div className="text-center py-20 text-[#c9a84c]">Loading plans...</div>
+        ) : (
+          <section className="mx-auto max-w-6xl px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {enrichedPlans.map((plan) => (
+              <PlanCard
+                key={plan.id}
+                title={plan.title}
+                price={plan.displayPrice}
+                period={plan.ui.period}
+                description={plan.description || "Unlimited Classic Literature"}
+                features={plan.features || []} // <-- Now passing dynamic features from DB!
+                button={plan.ui.button}
+                planType={plan.plan_key}
+                highlight={plan.ui.highlight}
+                badge={plan.ui.badge}
+              />
             ))}
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* ── FAQ ──────────────────────────────────────── */}
-        <section className="mx-auto max-w-4xl px-6 py-16 border-t border-[rgba(201,168,76,0.1)]">
-          <h2
-            className="italic font-light text-[#f5f0e8] text-center mb-12"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "32px" }}
-          >
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-4">
-            <Faq q="Does this include paperback books?" a="No. Subscription is only for digital eBooks. Paperbacks are sold separately." />
-            <Faq q="Can I cancel anytime?" a="Yes. You can cancel your subscription anytime from your account settings." />
-            <Faq q="How is the annual price calculated?" a="Annual plan is ₹3,599 vs ₹4,788 if you paid monthly for 12 months saving you ₹1,189 (25% off)." />
-            <Faq q="What's included in the 3-month plan?" a="3-month plan is ₹999 vs ₹1,197 monthly saving you ₹198. Full library access, all devices." />
-          </div>
-        </section>
-
+        {/* ── FAQ SECTION ──────────────────────────── */}
+        {!loading && enrichedPlans.length > 0 && (
+          <section className="mx-auto max-w-4xl px-6 pb-20">
+            <div className="text-center mb-10">
+              <h2
+                className="text-3xl italic text-[#f5f0e8] mb-4"
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              >
+                Frequently Asked Questions
+              </h2>
+              <p className="text-[#8a8790] text-sm uppercase tracking-widest font-medium" style={{ fontFamily: "'Jost', sans-serif" }}>
+                Everything you need to know
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Faq 
+                q="Which books are included in the plan?" 
+                a="Your subscription grants you complete and unlimited access to read all the books available on our website." 
+              />
+              <Faq 
+                q="Which devices are supported?" 
+                a="You can read on any device! Our web reader is fully optimized and works seamlessly across desktops, tablets, and mobile phones." 
+              />
+              <Faq 
+                q="Can I download books to read offline?" 
+                a="No, books cannot be downloaded. Our platform is designed strictly for online reading directly through your web browser." 
+              />
+              <Faq 
+                q="Can I cancel my subscription or get a refund?" 
+                a="All subscriptions are final. We do not offer cancellations or refunds once a plan has been purchased." 
+              />
+            </div>
+          </section>
+        )}
       </div>
     </>
   );
@@ -207,11 +205,11 @@ export default function SubscriptionPage() {
 
 // ── PlanCard ─────────────────────────────────────────────────────
 function PlanCard({
-  title, price, strikePrice, period, description,
-  features, note, button, planType, highlight, badge,
+  title, price, period, description,
+  features, button, planType, highlight, badge,
 }: {
-  title: string; price: string; strikePrice: string | null; period: string;
-  description: string; features: string[]; note: string | null; button: string;
+  title: string; price: string; period: string;
+  description: string; features: string[]; button: string;
   planType: string; highlight: boolean; badge: string | null;
 }) {
   const router = useRouter();
@@ -236,6 +234,7 @@ function PlanCard({
           {badge}
         </span>
       )}
+      {!badge && <div className="mb-5 h-[22px]" />}
 
       <h3
         className="text-2xl italic mb-1 text-[#f5f0e8]"
@@ -253,24 +252,15 @@ function PlanCard({
         >
           {price}
         </span>
-        {strikePrice && (
-          <span className="text-white text-sm line-through">{strikePrice}</span>
-        )}
       </div>
-      <p className="text-white text-xs mb-1">{period}</p>
-      {note && (
-        <p className="text-[11px] text-[#8b4a2e] mb-6 font-medium tracking-wide">
-          ✦ {note}
-        </p>
-      )}
-      {!note && <div className="mb-6" />}
+      <p className="text-white text-xs mb-8">{period}</p>
 
-      {/* Features */}
+      {/* Features - Now maps the dynamic features! */}
       <ul className="mb-10 space-y-3 flex-1">
         {features.map((f, i) => (
-          <li key={i} className="flex items-center gap-3 text-sm text-[#c4bfb5]">
-            <Check className="text-[#c9a84c] shrink-0" size={14} />
-            {f}
+          <li key={i} className="flex items-start gap-3 text-sm text-[#c4bfb5]">
+            <Check className="text-[#c9a84c] shrink-0 mt-0.5" size={16} />
+            <span className="leading-snug">{f}</span>
           </li>
         ))}
       </ul>
@@ -292,9 +282,9 @@ function PlanCard({
 // ── FAQ item ─────────────────────────────────────────────────────
 function Faq({ q, a }: { q: string; a: string }) {
   return (
-    <div className="p-6 border border-[rgba(201,168,76,0.06)] hover:border-[rgba(201,168,76,0.2)] transition-colors" style={{ background: "#141416" }}>
-      <p className="text-[#f5f0e8] font-medium mb-2 tracking-wide text-sm" style={{ fontFamily: "'Cinzel', serif" }}>{q}</p>
-      <p className="text-white text-sm leading-relaxed">{a}</p>
+    <div className="p-6 border border-[rgba(201,168,76,0.06)] hover:border-[rgba(201,168,76,0.2)] transition-colors h-full" style={{ background: "#141416" }}>
+      <p className="text-[#f5f0e8] font-medium mb-3 tracking-wide text-sm" style={{ fontFamily: "'Cinzel', serif" }}>{q}</p>
+      <p className="text-[#c4bfb5] text-sm leading-relaxed">{a}</p>
     </div>
   );
 }
