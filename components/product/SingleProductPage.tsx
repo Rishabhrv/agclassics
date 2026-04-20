@@ -1121,7 +1121,7 @@ export default function ProductPage({ product }: { product: Product }) {
                   )}
                   {(format === "paperback" ? paperbackDiscount : ebookDiscount) > 0 && (
                     <span
-                      className="text-[8px] tracking-[2px] px-2.5 py-1 bg-[rgba(122,46,46,0.22)] text-[#c97070] border border-[rgba(201,100,100,0.18)]"
+                      className="text-[9px] tracking-[2px] px-2.5 bg-[rgba(122,46,46,0.22)] text-[#c97070] border border-[rgba(201,100,100,0.18)]"
                       style={{ fontFamily: "'Cinzel', serif" }}
                     >
                       SAVE {format === "paperback" ? paperbackDiscount : ebookDiscount}%
@@ -1256,60 +1256,9 @@ export default function ProductPage({ product }: { product: Product }) {
                 </div>
 
                 {/* Trust strip */}
-                <div className="grid grid-cols-3 gap-2 pt-5 border-t-2 border-[rgba(201,168,76,0.6)] ">
-                  {[
-                    {
-                      icon: (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.3">
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                      ),
-                      title: "Premium Quality",
-                      sub: "Fine paper & binding",
-                    },
-                    {
-                      icon: (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.3">
-                          <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                          <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-                        </svg>
-                      ),
-                      title: "Fast Shipping",
-                      sub: "Dispatched in 4–7days",
-                    },
-                    {
-                      icon: (
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="#c9a84c"
-                          strokeWidth="1.3"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M4 5h12" />
-                          <path d="M4 9h12" />
-                          <path d="M6 19l8-6" />
-                          <path d="M6 9c0-2.5 2-4 4.5-4S15 6.5 15 9s-2 4-4.5 4H6" />
-                        </svg>
-                      ),
-                      title: "Best Price",
-                      sub: "Direct from publisher",
-                    },
-                  ].map((item, i) => (
-                    <div key={i} className="flex flex-col items-center text-center gap-1.5 py-3">
-                      <div className="opacity-80">{item.icon}</div>
-                      <p className="text-xs tracking-[1px] uppercase text-[#fafafa] leading-tight" style={{ fontFamily: "'Cinzel', serif" }}>
-                        {item.title}
-                      </p>
-                      <p className="text-xs text-white hidden sm:block" style={{ fontFamily: "'Jost', sans-serif" }}>
-                        {item.sub}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+   <div className="grid grid-cols-3 gap-2 pt-5 border-t-2 border-[rgba(201,168,76,0.6)]">
+  
+</div>
               </div>
 
               {/* ISBN / SKU */}
