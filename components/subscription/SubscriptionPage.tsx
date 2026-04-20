@@ -3,42 +3,22 @@
 import { useEffect, useState, Suspense, useMemo } from "react";
 import { Check } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { RevealText } from "@/components/motion/Motionutils"; // <-- Adjust path if needed
+import { RevealText } from "@/components/motion/Motionutils"; 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 const paymentStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap');
 
-  .anim-fade-up { 
-    animation: fadeUp 1s ease forwards; 
-  }
+  .anim-fade-up { animation: fadeUp 1s ease forwards; }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  .mag-cta { position: relative; overflow: hidden; }
-  .mag-cta::after {
-    content: '';
-    position: absolute;
-    top: 0; width: 40%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-  }
-  .mag-cta:hover::after { animation: shimmerSweep 0.55s ease; }
-  @keyframes shimmerSweep {
-    from { left: -50%; }
-    to { left: 150%; }
-  }
-
-  .plan-card {
-    transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
-  }
-  .plan-card:hover {
-    border-color: #c9a84c !important;
-    transform: translateY(-6px);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-  }
+  .btn-glow { transition: all 0.3s ease; }
+  .btn-glow:hover { box-shadow: 0 0 20px rgba(201,168,76,0.4); transform: translateY(-2px); }
+  .plan-card-modern { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .plan-card-modern:hover { transform: translateY(-10px) scale(1.02); z-index: 20; }
 `;
 
 type SubscriptionPlan = {
@@ -46,62 +26,62 @@ type SubscriptionPlan = {
   plan_key: string;
   title: string;
   base_price: number;
+  discount_price: number | null; 
   duration_months: number;
   description: string;
   status: string;
-  features: string[]; // <-- Dynamic features from DB
+  features: string[];
 };
 
-// UI extras that aren't stored in the database (like badges and buttons)
 const PLAN_UI_EXTRAS: Record<string, any> = {
-  monthly: {
-    period: "per month",
-    button: "Start Monthly",
-    highlight: false,
-    badge: null,
-  },
-  quarterly: {
-    period: "per 3 months",
-    button: "Start 3 Months",
-    highlight: true,
-    badge: "Most Popular",
-  },
-  yearly: {
-    period: "per year",
-    button: "Go Annual",
-    highlight: false,
-    badge: "Best Value",
-  },
+  monthly: { period: "per month", button: "Start Plan", highlight: false, badge: null, promo: "1st Month Free" },
+  quarterly: { period: "per 3 months", button: "Start 3 Months", highlight: false, badge: null, promo: "+ 1 Month Free" },
+  "half-yearly": { period: "per 6 months", button: "Start 6 Months", highlight: true, badge: "Most Popular", promo: "+ 1 Month Free" },
+  yearly: { period: "per year", button: "Go Annual", highlight: false, badge: "Best Value", promo: "+ 1 Month Free" },
 };
 
 export default function SubscriptionPage() {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isEligibleForPromo, setIsEligibleForPromo] = useState(true); // Default true to show promo to guests
 
-  // Fetch plans from backend
   useEffect(() => {
+    // 1. Fetch Plans
     fetch(`${API_URL}/api/subscriptions/subscription-plans`)
       .then((res) => res.json())
       .then((data) => {
-        const activePlans = data.filter((p: SubscriptionPlan) => p.status === 'active');
-        setPlans(activePlans);
+        setPlans(data.filter((p: SubscriptionPlan) => p.status === 'active'));
         setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to fetch plans:", err);
         setLoading(false);
       });
+
+    // 2. Check Promo Eligibility if Logged In
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch(`${API_URL}/api/subscription-payment/eligibility`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.isNewUser !== undefined) {
+          setIsEligibleForPromo(data.isNewUser);
+        }
+      })
+      .catch(console.error);
+    }
   }, []);
 
-  // Calculate dynamic pricing
   const enrichedPlans = useMemo(() => {
     return plans.map(plan => {
       const uiData = PLAN_UI_EXTRAS[plan.plan_key] || PLAN_UI_EXTRAS.monthly;
-
       return {
         ...plan,
         ui: uiData,
-        displayPrice: `₹${plan.base_price.toLocaleString()}`
+        displayBasePrice: `₹${plan.base_price.toLocaleString()}`,
+        displayDiscountPrice: plan.discount_price ? `₹${plan.discount_price.toLocaleString()}` : null
       };
     });
   }, [plans]);
@@ -109,55 +89,37 @@ export default function SubscriptionPage() {
   return (
     <>
       <style>{paymentStyles}</style>
-      <div
-        className="min-h-screen bg-[#0a0a0b] text-[#e8e0d0] pt-[130px] pb-20"
-        style={{ fontFamily: "'Jost', sans-serif" }}
-      >
-        {/* ── HERO ─────────────────────────────────────── */}
+      <div className="min-h-screen bg-[#0a0a0b] text-[#e8e0d0] pt-[130px] pb-20" style={{ fontFamily: "'Jost', sans-serif" }}>
+        
         <section className="relative mx-auto max-w-6xl px-6 py-16 text-center overflow-hidden">
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 opacity-[0.03] pointer-events-none select-none"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "200px" }}
-          >
-            Pass
-          </div>
-
-          <h1
-            className="font-light leading-tight tracking-tight mb-6"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(40px, 6vw, 80px)" }}
-          >
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-[0.03] pointer-events-none select-none" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "200px" }}>Pass</div>
+          <h1 className="font-light leading-tight tracking-tight mb-6" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(40px, 6vw, 80px)" }}>
             <RevealText text="Unlimited Reading." delay={0.2} />
-            <br />
-            <em className="italic text-[#c9a84c]">
-              <RevealText text="One Simple Plan." delay={0.4} />
-            </em>
+            <br /><em className="italic text-[#c9a84c]"><RevealText text="One Simple Plan." delay={0.4} /></em>
           </h1>
-          <p
-            className="anim-fade-up mt-4 text-white max-w-2xl mx-auto italic text-xl"
-            style={{ fontFamily: "'Cormorant Garamond', serif", animationDelay: "0.6s" }}
-          >
-            Read unlimited eBooks anytime, anywhere. No limits. No ads.
-            Collected for those who read with intention.
+          <p className="anim-fade-up mt-4 text-white max-w-2xl mx-auto italic text-xl" style={{ fontFamily: "'Cormorant Garamond', serif", animationDelay: "0.6s" }}>
+            Read unlimited eBooks anytime, anywhere. No limits. No ads. Collected for those who read with intention.
           </p>
         </section>
 
-        {/* ── PLANS ────────────────────────────────────── */}
         {loading ? (
           <div className="text-center py-20 text-[#c9a84c]">Loading plans...</div>
         ) : (
-          <section className="mx-auto max-w-6xl px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <section className="mx-auto px-4 sm:px-8 mt-10 pb-24 flex flex-wrap justify-center items-center gap-4 lg:gap-6">
             {enrichedPlans.map((plan) => (
               <PlanCard
                 key={plan.id}
                 title={plan.title}
-                price={plan.displayPrice}
+                basePrice={plan.displayBasePrice}
+                discountPrice={plan.displayDiscountPrice}
                 period={plan.ui.period}
                 description={plan.description || "Unlimited Classic Literature"}
-                features={plan.features || []} // <-- Now passing dynamic features from DB!
+                features={plan.features || []}
                 button={plan.ui.button}
                 planType={plan.plan_key}
                 highlight={plan.ui.highlight}
                 badge={plan.ui.badge}
+                promo={isEligibleForPromo ? plan.ui.promo : null} // ONLY SHOW IF ELIGIBLE
               />
             ))}
           </section>
@@ -203,76 +165,59 @@ export default function SubscriptionPage() {
   );
 }
 
-// ── PlanCard ─────────────────────────────────────────────────────
+// ── PlanCard (Premium Glass & Elevated Design) ─────────────────────
 function PlanCard({
-  title, price, period, description,
-  features, button, planType, highlight, badge,
+  title, basePrice, discountPrice, period, description, features, button, planType, highlight, badge, promo
 }: {
-  title: string; price: string; period: string;
-  description: string; features: string[]; button: string;
-  planType: string; highlight: boolean; badge: string | null;
+  title: string; basePrice: string; discountPrice: string | null; period: string; description: string; features: string[]; button: string; planType: string; highlight: boolean; badge: string | null; promo?: string | null;
 }) {
   const router = useRouter();
-
   return (
-    <div
-      className={`plan-card flex flex-col p-8 bg-[#141416] border ${
-        highlight
-          ? "border-[#c9a84c] shadow-[0_0_40px_rgba(201,168,76,0.08)]"
-          : "border-[rgba(201,168,76,0.1)]"
-      }`}
-    >
+    <div className={`plan-card-modern relative w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)] min-w-[280px] max-w-[340px] flex flex-col p-8 rounded-3xl backdrop-blur-xl border ${highlight ? "bg-gradient-to-b from-[#1a1710] to-[#0a0a0b] border-[#c9a84c]/50 shadow-[0_10px_40px_rgba(201,168,76,0.15)] lg:scale-110 lg:-translate-y-4 z-10 py-10" : "bg-white/[0.02] border-white/10 shadow-2xl hover:bg-white/[0.04]"}`}>
       {badge && (
-        <span
-          className="mb-5 self-start text-[9px] tracking-[2px] uppercase font-medium px-3 py-1"
-          style={{
-            background: highlight ? "#c9a84c" : "rgba(201,168,76,0.12)",
-            color: highlight ? "#0a0a0b" : "#c9a84c",
-            border: highlight ? "none" : "1px solid rgba(201,168,76,0.25)",
-          }}
-        >
-          {badge}
-        </span>
+        <div className="absolute -top-4 left-0 right-0 flex justify-center">
+          <span className="bg-gradient-to-r from-[#e3c77d] to-[#c9a84c] text-black text-[10px] tracking-widest uppercase font-bold px-4 py-1.5 rounded-full shadow-lg">{badge}</span>
+        </div>
       )}
-      {!badge && <div className="mb-5 h-[22px]" />}
-
-      <h3
-        className="text-2xl italic mb-1 text-[#f5f0e8]"
-        style={{ fontFamily: "'Cormorant Garamond', serif" }}
-      >
-        {title}
-      </h3>
-      <p className="text-white text-xs tracking-wide uppercase mb-7">{description}</p>
-
-      {/* Price */}
-      <div className="mb-1 flex items-baseline gap-3">
-        <span
-          className="text-4xl font-light text-[#f5f0e8]"
-          style={{ fontFamily: "'Cormorant Garamond', serif" }}
-        >
-          {price}
-        </span>
+      <div className="text-center mb-6">
+        <h3 className="text-3xl italic mb-2 text-[#f5f0e8]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{title}</h3>
+        <p className="text-[#8a8790] text-xs tracking-wider uppercase">{description}</p>
       </div>
-      <p className="text-white text-xs mb-8">{period}</p>
 
-      {/* Features - Now maps the dynamic features! */}
-      <ul className="mb-10 space-y-3 flex-1">
+      <div className="mb-4 flex flex-col items-center justify-center">
+        {promo && (
+          <div className="relative inline-flex group">
+            <div className="absolute transition-all duration-1000 opacity-70 -inset-px bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] rounded-full blur-sm hidden"></div>
+            <span className="relative inline-block bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] text-[10px] tracking-widest uppercase font-bold px-3 py-1 rounded-full"> {promo}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="mb-2 flex flex-col items-center justify-center">
+        {discountPrice ? (
+          <div className="flex flex-col items-center">
+            <span className="text-sm text-[#8a8790] line-through mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{basePrice}</span>
+            <span className={`text-5xl font-light ${highlight ? 'text-[#c9a84c]' : 'text-[#f5f0e8]'}`} style={{ fontFamily: "'Cormorant Garamond', serif" }}>{discountPrice}</span>
+          </div>
+        ) : (
+          <span className={`text-5xl font-light ${highlight ? 'text-[#c9a84c]' : 'text-[#f5f0e8]'}`} style={{ fontFamily: "'Cormorant Garamond', serif" }}>{basePrice}</span>
+        )}
+      </div>
+
+      <div className="text-center pb-6 mb-8 border-b border-white/10">
+        <p className="text-[#8a8790] text-xs">{period}</p>
+      </div>
+
+      <ul className="mb-10 space-y-4 flex-1">
         {features.map((f, i) => (
-          <li key={i} className="flex items-start gap-3 text-sm text-[#c4bfb5]">
-            <Check className="text-[#c9a84c] shrink-0 mt-0.5" size={16} />
+          <li key={i} className="flex items-center gap-3 text-xs text-[#c4bfb5]">
+            <div className={`p-1 rounded-full ${highlight ? 'bg-[#c9a84c]/20' : 'bg-white/5'}`}><Check className={highlight ? 'text-[#c9a84c]' : 'text-gray-400'} size={14} strokeWidth={3} /></div>
             <span className="leading-snug">{f}</span>
           </li>
         ))}
       </ul>
 
-      <button
-        onClick={() => router.push(`/subscriptions/payment?plan=${planType}`)}
-        className={`mag-cta w-full py-4 text-[11px] tracking-[3px] uppercase font-medium transition-all duration-300 cursor-pointer ${
-          highlight
-            ? "bg-[#c9a84c] text-[#0a0a0b] hover:bg-[#f5f0e8]"
-            : "bg-transparent border border-[rgba(201,168,76,0.3)] text-[#c9a84c] hover:border-[#c9a84c] hover:bg-[rgba(201,168,76,0.06)]"
-        }`}
-      >
+      <button onClick={() => router.push(`/subscriptions/payment?plan=${planType}`)} className={`btn-glow w-full py-4 rounded-xl text-[12px] tracking-[2px] uppercase font-bold transition-all duration-300 cursor-pointer ${highlight ? "bg-[#c9a84c] text-black hover:bg-[#e3c77d]" : "bg-white/5 text-white hover:bg-white/10 border border-white/10 hover:border-white/20"}`}>
         {button}
       </button>
     </div>
