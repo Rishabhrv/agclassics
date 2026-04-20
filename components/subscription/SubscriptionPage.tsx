@@ -34,7 +34,7 @@ type SubscriptionPlan = {
 };
 
 const PLAN_UI_EXTRAS: Record<string, any> = {
-  monthly: { period: "per month", button: "Start Plan", highlight: false, badge: null, promo: "1st Month Free" },
+  monthly: { period: "per month", button: "Start Plan", highlight: false, badge: null, promo: "+ 1 Month Free" },
   quarterly: { period: "per 3 months", button: "Start 3 Months", highlight: false, badge: null, promo: "+ 1 Month Free" },
   "half-yearly": { period: "per 6 months", button: "Start 6 Months", highlight: true, badge: "Most Popular", promo: "+ 1 Month Free" },
   yearly: { period: "per year", button: "Go Annual", highlight: false, badge: "Best Value", promo: "+ 1 Month Free" },
@@ -196,7 +196,7 @@ function PlanCard({
       <div className="mb-2 flex flex-col items-center justify-center">
         {discountPrice ? (
           <div className="flex flex-col items-center">
-            <span className="text-sm text-[#8a8790] line-through mb-1" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{basePrice}</span>
+            <span className="text-2xl text-[#8a8790] line-through mb-1" style={{ fontFamily: "'Cormorant Garamond', serif", textDecorationThickness: "1px" }}>{basePrice}</span>
             <span className={`text-5xl font-light ${highlight ? 'text-[#c9a84c]' : 'text-[#f5f0e8]'}`} style={{ fontFamily: "'Cormorant Garamond', serif" }}>{discountPrice}</span>
           </div>
         ) : (

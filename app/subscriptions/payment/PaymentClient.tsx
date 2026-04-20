@@ -31,7 +31,7 @@ type SubscriptionPlan = {
 };
 
 const PLAN_UI_EXTRAS: Record<string, any> = {
-  monthly: { promo: "1st Month Free" },
+  monthly: { promo: "+ 1 Month Free" },
   quarterly: { promo: "+ 1 Month Free" },
   "half-yearly": { promo: "+ 1 Month Free" },
   yearly: { promo: "+ 1 Month Free" },
