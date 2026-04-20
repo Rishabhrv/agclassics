@@ -281,17 +281,7 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
                 </span>
               )}
 
-              {/* Discount pill */}
-              {discountPercent > 5 && (
-                <span
-                  className="absolute bottom-2 left-2 z-10 bg-[rgba(201,168,76,0.15)]
-                    border border-[rgba(201,168,76,0.3)] text-[#c9a84c] px-1.5 py-0.5
-                    text-[7px] tracking-[2px] uppercase"
-                  style={{ fontFamily: "'Cinzel', serif" }}
-                >
-                  {discountPercent}% Off
-                </span>
-              )}
+             
 
               {/* Out of stock overlay */}
               {isOutOfStock && (
@@ -358,6 +348,17 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
                     ₹{parseFloat(String(displayMrp)).toFixed(0)}
                   </span>
                 )}
+                 {/* Discount pill */}
+              {discountPercent > 5 && (
+                <span
+                  className=" z-10 bg-[rgba(201,168,76,0.15)]
+                    border border-[rgba(201,168,76,0.3)] text-[#c9a84c] p-0.5
+                    text-[8px] tracking-[2px] uppercase"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  {discountPercent}% Off
+                </span>
+              )}
               </div>
             </div>
           </Link>

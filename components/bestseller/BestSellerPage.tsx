@@ -751,7 +751,17 @@ export default function BestSellersPage() {
                       { cs: 2, rs: 1 }, { cs: 1, rs: 1 }, { cs: 2, rs: 1 },
                     ];
                     const sp = spans[i] || { cs: 1, rs: 1 };
-                    const d  = calcDisc(book.price, book.sell_price);
+                    const isEbook = book.product_type === "ebook";
+
+const displaySellPrice = isEbook
+  ? (book.ebook_sell_price || book.sell_price)
+  : book.sell_price;
+
+const displayMrp = isEbook
+  ? (book.ebook_price || book.price)
+  : book.price;
+
+const d = calcDisc(displayMrp, displaySellPrice);
                     return (
                       <div key={book.id}
                         className="vi big border border-[rgba(212,170,78,.07)] bg-[#181520]"
@@ -781,7 +791,7 @@ export default function BestSellersPage() {
                           <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
                             <span className="font-bold text-[#d4aa4e]"
                               style={{ fontFamily: "var(--fm)", fontSize: "13px" }}>
-                              ₹{parseFloat(String(book.sell_price)).toFixed(0)}
+                              ₹{parseFloat(String(displaySellPrice)).toFixed(0)}
                             </span>
                             {d > 0 && (
                               <span className="px-[6px] py-[2px] text-[#c07070] text-[7px]"
