@@ -518,7 +518,7 @@ export default function EbookSection() {
                           <img
                             src={`${API_URL}${book.main_image}`}
                             alt={book.title}
-                            className="w-full h-full object-cover block"
+                            className="object-cover block"
                             loading="lazy"
                           />
                         ) : (
@@ -541,7 +541,7 @@ export default function EbookSection() {
                         {/* Discount badge */}
                         {disc > 5 && (
                           <div className="flex gap-[6px] mb-[5px]">
-                            <span className="text-[7px] tracking-[1.5px] uppercase px-[7px] py-[3px] bg-[rgba(139,58,58,0.18)] text-[#d47070]"
+                            <span className="text-[9px] tracking-[1.5px] uppercase px-[7px] py-[3px] bg-[rgba(139,58,58,0.18)] text-[#d47070]"
                               style={{ fontFamily: "'Jost', sans-serif" }}>{disc}% Off</span>
                           </div>
                         )}
@@ -574,7 +574,7 @@ export default function EbookSection() {
                             ₹{displayPrice.toFixed(0)}
                           </span>
                           {originalPrice && (
-                            <span className="text-[10px] sm:text-[11px] line-through text-[#4a4a4f]"
+                            <span className="text-[10px] sm:text-[13px] line-through text-[#a6a6a6]"
                               style={{ fontFamily: "'Jost', sans-serif" }}>
                               ₹{originalPrice.toFixed(0)}
                             </span>

@@ -165,7 +165,7 @@ const featuredTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   if (!books.length) return;
   featuredTimerRef.current = setInterval(() => {
     setFeaturedIdx((prev) => (prev + 1) % books.length);
-  }, 5000);
+  }, 15000);
   return () => {
     if (featuredTimerRef.current) clearInterval(featuredTimerRef.current);
   };

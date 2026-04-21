@@ -64,6 +64,9 @@ export default function WishlistPage() {
   const [cartLoadingId, setCartLoadingId]   = useState<number | null>(null);
   const [movedToCartIds, setMovedToCartIds] = useState<Set<number>>(new Set());
   const [isGuest, setIsGuest]               = useState(false);
+  
+  // NEW: State to track which ebooks the user already owns
+  const [ownedEbooks, setOwnedEbooks]       = useState<Set<number>>(new Set());
 
   const token   = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
@@ -92,6 +95,33 @@ export default function WishlistPage() {
 
   useEffect(() => { fetchWishlist(); }, [fetchWishlist]);
 
+  // NEW: Effect to check ownership status for items in the wishlist
+  useEffect(() => {
+    if (isGuest || items.length === 0 || !token) return;
+
+    const checkOwnership = async () => {
+      const owned = new Set<number>();
+      
+      // Filter down to items that *might* be checked out as an ebook
+      const ebookItems = items.filter(item => item.product_type === "ebook" || item.product_type === "both");
+      
+      const promises = ebookItems.map(async (item) => {
+        try {
+          const res = await fetch(`${API_URL}/api/ag-classics/orders/check-ebook-ownership/${item.id}`, { headers });
+          const data = await res.json();
+          if (data.owned) owned.add(item.id);
+        } catch (e) {
+          console.error("Failed to check ownership for", item.id, e);
+        }
+      });
+
+      await Promise.all(promises);
+      setOwnedEbooks(owned);
+    };
+
+    checkOwnership();
+  }, [items, isGuest, token]);
+
   /* ── Remove ── */
   const removeItem = async (id: number) => {
     setRemovingId(id);
@@ -117,6 +147,12 @@ export default function WishlistPage() {
   const moveToCart = async (item: WishlistItem) => {
     const { format, soldOut } = resolveItem(item);
     if (soldOut) return;
+
+    // GUARD: Check if it's an ebook and already owned
+    if (format === "ebook" && ownedEbooks.has(item.id)) {
+      alert("You already own this eBook. Check My Books.");
+      return;
+    }
 
     /* GUEST: add to guest cart */
     if (isGuest) {
@@ -150,7 +186,14 @@ export default function WishlistPage() {
 
   /* ── Move all ── */
   const moveAllToCart = async () => {
-    const available = items.filter(i => !resolveItem(i).soldOut);
+    // UPDATED: Filter out items that are either sold out OR already owned ebooks
+    const available = items.filter(i => {
+      const resolved = resolveItem(i);
+      if (resolved.soldOut) return false;
+      if (resolved.format === "ebook" && ownedEbooks.has(i.id)) return false;
+      return true;
+    });
+
     if (isGuest) {
       const { guestCart } = await import("@/lib/guestStorage");
       for (const item of available) {
@@ -177,7 +220,7 @@ export default function WishlistPage() {
       });
     }
     window.dispatchEvent(new Event("cart-change"));
-    setItems([]);
+    setItems([]); // Clear UI after moving all available
   };
 
   /* ── Skeleton ── */
@@ -229,7 +272,11 @@ export default function WishlistPage() {
     </PageWrap>
   );
 
-  const availableCount = items.filter(i => !resolveItem(i).soldOut).length;
+  // UPDATED: Available count shouldn't include already-owned ebooks
+  const availableCount = items.filter(i => {
+    const resolved = resolveItem(i);
+    return !resolved.soldOut && !(resolved.format === "ebook" && ownedEbooks.has(i.id));
+  }).length;
 
   return (
     <PageWrap>
@@ -272,10 +319,15 @@ export default function WishlistPage() {
           const inCart      = movedToCartIds.has(item.id);
           const cartLoading = cartLoadingId === item.id;
           const ebookFallback = item.product_type === "both" && item.stock === 0 && !soldOut;
+          
+          // NEW: Boolean check for specific product ownership
+          const isOwnedEbook = format === "ebook" && ownedEbooks.has(item.id);
 
+          // UPDATED: Include Owned logic in button label
           const cartBtnLabel = soldOut     ? "Out of Stock"
-            : inCart                        ? "Added"
-            : format === "ebook"            ? "Move E-Book to Cart"
+            : isOwnedEbook                 ? "Already Owned"
+            : inCart                       ? "Added"
+            : format === "ebook"           ? "Move E-Book to Cart"
             : "Move to Cart";
 
           return (
@@ -381,15 +433,16 @@ export default function WishlistPage() {
                   <button
                     className={`flex-1 text-[9px] tracking-[2px] uppercase font-medium py-2 px-2
                       flex items-center justify-center gap-1 transition-all duration-300 ${inCart ? "cart-pop" : ""}`}
+                    // UPDATED: Disable if sold out OR if owned
                     style={{ fontFamily: "'Jost', sans-serif",
-                             color:      soldOut ? "#6b6b70" : inCart ? "#4a9a5a" : "#0a0a0b",
-                             background: soldOut ? "#2a2a2d" : inCart ? "rgba(74,154,90,0.15)" : "#c9a84c",
+                             color:      soldOut || isOwnedEbook ? "#6b6b70" : inCart ? "#4a9a5a" : "#0a0a0b",
+                             background: soldOut || isOwnedEbook ? "#2a2a2d" : inCart ? "rgba(74,154,90,0.15)" : "#c9a84c",
                              border:     inCart  ? "1px solid rgba(74,154,90,0.4)" : "none",
-                             cursor:     soldOut ? "not-allowed" : "pointer" }}
-                    disabled={soldOut || cartLoading || inCart}
+                             cursor:     soldOut || isOwnedEbook ? "not-allowed" : "pointer" }}
+                    disabled={soldOut || cartLoading || inCart || isOwnedEbook}
                     onClick={e => { e.stopPropagation(); moveToCart(item); }}
-                    onMouseEnter={e => { if (!soldOut && !inCart) e.currentTarget.style.background = "#f5f0e8"; }}
-                    onMouseLeave={e => { if (!soldOut && !inCart) e.currentTarget.style.background = "#c9a84c"; }}
+                    onMouseEnter={e => { if (!soldOut && !inCart && !isOwnedEbook) e.currentTarget.style.background = "#f5f0e8"; }}
+                    onMouseLeave={e => { if (!soldOut && !inCart && !isOwnedEbook) e.currentTarget.style.background = "#c9a84c"; }}
                   >
                     {cartLoading ? (
                       <span className="inline-block w-[10px] h-[10px] border border-[#0a0a0b] border-t-transparent rounded-full animate-spin" />
@@ -402,7 +455,11 @@ export default function WishlistPage() {
                       </>
                     ) : (
                       <>
-                        {format === "ebook" ? (
+                        {isOwnedEbook ? (
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                          </svg>
+                        ) : format === "ebook" ? (
                           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="4" y="4" width="16" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>
                           </svg>
@@ -443,6 +500,8 @@ export default function WishlistPage() {
 }
 
 /* ═══════════════════ SUB-COMPONENTS ═══════════════════ */
+// ... (The rest of your code: GuestBanner, PageWrap, Header, Stat, GoldBtn, Ornament remains exactly the same) ...
+
 function GuestBanner() {
   return (
     <div className="flex items-center justify-between gap-4 mb-6 px-5 py-4 flex-wrap"

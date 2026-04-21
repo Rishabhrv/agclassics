@@ -72,7 +72,7 @@ const READER_STYLES = `
   .ag-nav-btn {
     width: 44px; height: 44px; border-radius: 50%;
     border: 1px solid rgba(201,168,76,0.22); background: rgba(201,168,76,0.05);
-    color: rgba(201,168,76,0.6); display: flex; align-items: center; justify-content: center;
+    color: rgba(201,168,76,0.6);  align-items: center; justify-content: center;
     cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
     backdrop-filter: blur(8px);
   }
@@ -175,6 +175,9 @@ export default function EpubReaderPage() {
   const [totalPages, setTotalPages]   = useState<number | null>(null);
   const trueTotalRef        = useRef<number>(0);
   const prevLocTotalRef     = useRef<number | null>(null);
+  const token = localStorage.getItem("token");
+
+  if (!token) { window.location.href = "/login"; return; }
 
   /* ── All existing logic hooks (unchanged) ── */
   useEffect(() => {
@@ -366,6 +369,8 @@ export default function EpubReaderPage() {
     { id: "typography" as const, icon: <Type size={15} />,     label: "Reading"   },
   ];
 
+  
+
   return (
     <div
       className="ag-reader fixed inset-0 z-[150] flex flex-col bg-[#06060a] text-[#f5f0e8] select-none"
@@ -384,15 +389,34 @@ export default function EpubReaderPage() {
       />
 
       {/* ══ HEADER ══ */}
-      <header className="absolute right-0 z-10 h-10 px-[18px] flex items-center justify-end  backdrop-blur-md shrink-0">
-        <button
-          onClick={toggleFullscreen}
-          className="ag-header-btn hidden md:flex w-[30px] h-[30px] text-[13px]"
-          title="Fullscreen"
-        >
-          ⛶
-        </button>
-      </header>
+        <header className="absolute right-0 z-10 h-10 px-[18px] hidden md:block items-center justify-end backdrop-blur-md shrink-0">
+          <button
+            onClick={toggleFullscreen}
+            className="ag-header-btn hidden md:flex w-[30px] h-[30px] text-[13px]  my-3"
+            title="Fullscreen"
+          >
+            ⛶
+          </button>
+
+          <a
+            href="/my-books"
+            className="ag-header-btn  w-[30px] h-[30px] text-[13px]"
+            title="Go to My Books"
+          >
+            <X size={12} />
+          </a>
+        </header>
+        <div className="absolute top-5 right-0 z-10 h-10 px-[18px]  md:hidden items-center justify-end  shrink-0">
+          <a
+            href="/my-books"
+            className="ag-header-btn  w-[30px] h-[30px] text-[13px]"
+            title="Go to My Books"
+          >
+            <X size={12} />
+          </a>
+
+        </div>
+
 
       {/* ══ BODY ══ */}
       <div className="flex flex-1 min-h-0 relative z-[1]">
@@ -706,7 +730,7 @@ export default function EpubReaderPage() {
             )}
 
             {/* Reader wrapper — px-4 on mobile, px-[68px] on desktop */}
-            <div className="relative w-full h-full flex items-center justify-center px-4 py-[14px] sm:px-[68px]">
+            <div className="relative w-full h-full flex items-center justify-center px-0 py-0 sm:px-[68px]">
 
               {/* Blur overlay */}
               {isBlurred && (
@@ -796,16 +820,16 @@ export default function EpubReaderPage() {
 
             {/* Desktop nav arrows */}
             <button onClick={() => viewRef.current?.prev()} className="ag-nav-btn hidden md:flex absolute left-[18px] top-1/2 -translate-y-1/2 z-[10]">
-              <ChevronLeft size={17} />
+              <ChevronLeft className="hidden md:flex" size={17} />
             </button>
             <button onClick={() => viewRef.current?.next()} className="ag-nav-btn hidden md:flex absolute right-[18px] top-1/2 -translate-y-1/2 z-[10]">
-              <ChevronRight size={17} />
+              <ChevronRight className="hidden md:flex" size={17} />
             </button>
           </div>
 
           {/* ── Mobile bottom bar ── */}
           <div className="md:hidden shrink-0 flex items-center justify-between px-[14px] py-[9px] border-t border-[rgba(201,168,76,0.08)] bg-[rgba(6,6,10,0.96)]">
-            <button onClick={() => viewRef.current?.prev()} className="ag-nav-btn w-10 h-10">
+            <button onClick={() => viewRef.current?.prev()} className="ag-nav-btn flex w-10 h-10">
               <ChevronLeft size={16} />
             </button>
 
@@ -815,7 +839,7 @@ export default function EpubReaderPage() {
                   key={item.id}
                   onClick={() => { setPanel(item.id); setSidebarOpen(true); }}
                   className="w-[37px] h-[37px] bg-transparent border-none cursor-pointer flex items-center justify-center rounded-[5px] transition-colors duration-200"
-                  style={{ color: panel === item.id && sidebarOpen ? "#c9a84c" : "rgba(201,168,76,0.3)" }}
+                  style={{ color: panel === item.id && sidebarOpen ? "#ffbb00" : "rgba(255, 190, 10, 0.81)" }}
                 >
                   {item.icon}
                 </button>
@@ -824,13 +848,13 @@ export default function EpubReaderPage() {
               <button
                 onClick={handleBookmarkClick}
                 className="w-[37px] h-[37px] bg-transparent border-none cursor-pointer flex items-center justify-center rounded-[5px] transition-colors duration-200"
-                style={{ color: isBookmarked ? "#c9a84c" : "rgba(201,168,76,0.3)" }}
+                style={{ color: isBookmarked ? "#ffbb00" : "rgba(255, 190, 10, 0.81)" }}
               >
                 <FontAwesomeIcon icon={isBookmarked ? solidBookmark : regularBookmark} style={{ fontSize: 14 }} />
               </button>
             </div>
 
-            <button onClick={() => viewRef.current?.next()} className="ag-nav-btn w-10 h-10">
+            <button onClick={() => viewRef.current?.next()} className="ag-nav-btn flex w-10 h-10">
               <ChevronRight size={16} />
             </button>
           </div>

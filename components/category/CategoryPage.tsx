@@ -686,7 +686,7 @@ function PaginationBtn({
       className={[
         "w-8 h-8 sm:w-[34px] sm:h-[34px] flex items-center justify-center border text-[11px] bg-transparent transition-all duration-200",
         active
-          ? "bg-[#c9a84c] text-[#0a0a0b] border-[#c9a84c]"
+          ? "bg-[#c9a84c] text-[#c9a84c] border-[#c9a84c]"
           : "text-white border-[rgba(255,255,255,.07)] hover:text-[#c9a84c] hover:border-[rgba(201,168,76,.25)]",
         disabled ? "opacity-25 cursor-not-allowed" : "cursor-pointer",
       ].join(" ")}

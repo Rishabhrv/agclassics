@@ -195,7 +195,7 @@ export default function AuthorPage({ params }: Props) {
   const joinYear = new Date(author.created_at).getFullYear();
 
   return (
-    <div className="ap min-h-screen mt-30 bg-[#0c0c0e] text-[#e8e0d0]" style={{ fontFamily:"'Jost',sans-serif" }}>
+    <div className="ap min-h-screen mt-35 bg-[#0c0c0e] text-[#e8e0d0]" style={{ fontFamily:"'Jost',sans-serif" }}>
       <style>{STYLES}</style>
 
       {/*
@@ -254,7 +254,7 @@ export default function AuthorPage({ params }: Props) {
                       src={`${API_URL}${author.profile_image}`}
                       alt={author.name}
                       fill
-                      className="object-cover"
+                      className="object-cover object-top"
                       unoptimized
                       style={{ position:"absolute" }}
                     />

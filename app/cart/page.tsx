@@ -51,6 +51,10 @@ export default function CartPage() {
   const [removingOos, setRemovingOos] = useState(false);
   const [isGuest, setIsGuest]         = useState(false);
 
+  // NEW: State for tracking owned eBooks in the cart and removal state
+  const [ownedEbooks, setOwnedEbooks] = useState<Set<number>>(new Set());
+  const [removingOwned, setRemovingOwned] = useState(false);
+
   const token   = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 
@@ -77,6 +81,33 @@ export default function CartPage() {
   }, []);
 
   useEffect(() => { fetchCart(); }, [fetchCart]);
+
+  /* ── Check eBook Ownership ── */
+  useEffect(() => {
+    if (isGuest || items.length === 0 || !token) return;
+
+    const checkOwnership = async () => {
+      const owned = new Set<number>();
+      
+      // Only check items currently in the cart as an eBook
+      const ebookItems = items.filter(item => item.format === "ebook");
+      
+      const promises = ebookItems.map(async (item) => {
+        try {
+          const res = await fetch(`${API_URL}/api/ag-classics/orders/check-ebook-ownership/${item.product_id}`, { headers });
+          const data = await res.json();
+          if (data.owned) owned.add(item.product_id);
+        } catch (e) {
+          console.error("Failed to check ownership for", item.product_id, e);
+        }
+      });
+
+      await Promise.all(promises);
+      setOwnedEbooks(owned);
+    };
+
+    checkOwnership();
+  }, [items, isGuest, token]);
 
   /* ── listen to cart-change events (e.g. from BookCard) ── */
   useEffect(() => {
@@ -151,6 +182,24 @@ export default function CartPage() {
     } finally { setRemovingOos(false); }
   };
 
+  /* ── remove all owned eBooks ── */
+  const removeOwnedItems = async () => {
+    setRemovingOwned(true);
+    const ownedItemsList = items.filter(i => i.format === "ebook" && ownedEbooks.has(i.product_id));
+    if (isGuest) {
+      ownedItemsList.forEach(i => guestCart.remove(i.product_id, i.format));
+      setItems(guestCart.get() as CartItem[]);
+      setRemovingOwned(false);
+      return;
+    }
+    try {
+      await Promise.all(
+        ownedItemsList.map(i => fetch(`${API_URL}/api/ag-classics/cart/${i.id}`, { method: "DELETE", headers }))
+      );
+      setItems(prev => prev.filter(i => !(i.format === "ebook" && ownedEbooks.has(i.product_id))));
+    } finally { setRemovingOwned(false); }
+  };
+
   const clearCart = async () => {
     if (isGuest) { guestCart.clear(); setItems([]); return; }
     await fetch(`${API_URL}/api/ag-classics/cart`, { method: "DELETE", headers });
@@ -165,9 +214,13 @@ export default function CartPage() {
   }, 0);
   const total    = subtotal;
 
-  const oosItems    = items.filter(isOutOfStock);
-  const hasOos      = oosItems.length > 0;
-  const canCheckout = !hasOos && items.length > 0;
+  const oosItems       = items.filter(isOutOfStock);
+  const hasOos         = oosItems.length > 0;
+  
+  const ownedItemsList = items.filter(i => i.format === "ebook" && ownedEbooks.has(i.product_id));
+  const hasOwnedEbooks = ownedItemsList.length > 0;
+
+  const canCheckout = !hasOos && !hasOwnedEbooks && items.length > 0;
 
   /* ── skeleton ── */
   if (loading) return (
@@ -301,6 +354,48 @@ export default function CartPage() {
         </div>
       )}
 
+      {/* ── Owned eBook warning ── */}
+      {hasOwnedEbooks && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 px-5 py-4"
+          style={{ background: "rgba(139,100,58,0.10)", border: "1px solid rgba(139,100,58,0.35)" }}>
+          <div className="flex items-start gap-3">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d49a6a"
+              strokeWidth="1.5" className="shrink-0 mt-[1px]">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <div>
+              <p className="text-[12px] font-medium mb-[3px]"
+                style={{ fontFamily: "'Jost', sans-serif", color: "#d49a6a" }}>
+                {ownedItemsList.length === 1 ? "1 eBook is already owned" : `${ownedItemsList.length} eBooks are already owned`}
+              </p>
+              <p className="text-[11px] leading-[1.5]"
+                style={{ fontFamily: "'Jost', sans-serif", color: "#8a6f2e" }}>
+                Remove {ownedItemsList.length === 1 ? "it" : "them"} before proceeding to checkout.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={removeOwnedItems}
+            disabled={removingOwned}
+            className="shrink-0 flex items-center gap-2 px-4 py-[9px] text-[9px] tracking-[2px] uppercase transition-all duration-200"
+            style={{ fontFamily: "'Jost', sans-serif", color: removingOwned ? "white" : "#d49a6a",
+                     background: "rgba(139,100,58,0.12)", border: "1px solid rgba(139,100,58,0.3)",
+                     cursor: removingOwned ? "not-allowed" : "pointer" }}
+            onMouseEnter={e => { if (!removingOwned) { e.currentTarget.style.background = "rgba(139,100,58,0.22)"; } }}
+            onMouseLeave={e => { e.currentTarget.style.background = "rgba(139,100,58,0.12)"; }}
+          >
+            {removingOwned
+              ? <span className="inline-block w-3 h-3 border border-[#d49a6a] border-t-transparent rounded-full animate-spin" />
+              : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                </svg>}
+            Remove {ownedItemsList.length === 1 ? "Item" : `All ${ownedItemsList.length} Items`}
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-0.5 items-start">
 
         {/* ── Left: Items ── */}
@@ -311,25 +406,26 @@ export default function CartPage() {
             const isRemoving = removingId === item.id;
             const maxedOut   = item.format === "paperback" && item.quantity >= item.stock;
             const isEbook    = item.format === "ebook";
+            const isOwnedEbook = isEbook && ownedEbooks.has(item.product_id);
 
             return (
               <div key={item.id}
                 className={`fade-in group flex gap-5 p-6 transition-colors duration-300 max-sm:flex-col max-sm:gap-4 ${isRemoving ? "removing" : ""}`}
-                style={{ background: oos ? "rgba(28,28,30,0.7)" : "#1c1c1e",
+                style={{ background: oos || isOwnedEbook ? "rgba(28,28,30,0.7)" : "#1c1c1e",
                          animationDelay: `${idx * 60}ms`,
-                         outline: oos ? "1px solid rgba(139,58,58,0.2)" : "none" }}
+                         outline: oos ? "1px solid rgba(139,58,58,0.2)" : isOwnedEbook ? "1px solid rgba(139,100,58,0.2)" : "none" }}
               >
                 {/* Thumbnail */}
                 <a href={`/product/${item.slug}`}
                   className="flex-shrink-0 relative overflow-hidden block"
-                  style={{ width: 80, height: 112, background: "#2a2a2d", opacity: oos ? 0.5 : 1 }}>
+                  style={{ width: 80, height: 112, background: "#2a2a2d", opacity: oos || isOwnedEbook ? 0.5 : 1 }}>
                   {item.main_image ? (
                     <div className="w-full overflow-hidden">
                       <img
                         src={item.main_image.startsWith("http") ? item.main_image : `${API_URL}${item.main_image}`}
                         alt={item.title}
                         className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
-                        style={{ filter: oos ? "brightness(0.5) grayscale(0.8)" : "brightness(0.95)" }}
+                        style={{ filter: oos || isOwnedEbook ? "brightness(0.5) grayscale(0.8)" : "brightness(0.95)" }}
                       />
                     </div>
                   ) : (
@@ -340,7 +436,7 @@ export default function CartPage() {
                       </svg>
                     </div>
                   )}
-                  {discount > 5 && !oos && (
+                  {discount > 5 && !oos && !isOwnedEbook && (
                     <div className="absolute top-0 right-0 px-[6px] py-[3px] text-[7px] tracking-[1px] uppercase"
                       style={{ background: "#8b3a3a", color: "#f5f0e8", fontFamily: "'Jost', sans-serif" }}>
                       {discount}%
@@ -353,7 +449,7 @@ export default function CartPage() {
                   <div>
                     <a href={`/product/${item.slug}`}
                       className="block text-[17px] font-semibold leading-[1.3] mb-1 hover:text-[#c9a84c] transition-colors duration-200"
-                      style={{ fontFamily: "'Cormorant Garamond', serif", color: oos ? "white" : "#f5f0e8" }}>
+                      style={{ fontFamily: "'Cormorant Garamond', serif", color: oos || isOwnedEbook ? "white" : "#f5f0e8" }}>
                       {item.title}
                     </a>
                     <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -364,11 +460,20 @@ export default function CartPage() {
                                  border:     `1px solid ${isEbook ? "rgba(201,168,76,0.25)" : "rgba(255,255,255,0.07)"}` }}>
                         {isEbook ? "E-Book" : "Paperback"}
                       </span>
+                      
                       {oos && (
                         <span className="inline-block text-[9px] tracking-[2px] uppercase px-[8px] py-[3px]"
                           style={{ fontFamily: "'Jost', sans-serif", color: "#d4756a",
                                    background: "rgba(139,58,58,.12)", border: "1px solid rgba(139,58,58,.3)" }}>
                           Out of Stock
+                        </span>
+                      )}
+                      
+                      {isOwnedEbook && (
+                        <span className="inline-block text-[9px] tracking-[2px] uppercase px-[8px] py-[3px]"
+                          style={{ fontFamily: "'Jost', sans-serif", color: "#d49a6a",
+                                   background: "rgba(139,100,58,.12)", border: "1px solid rgba(139,100,58,.3)" }}>
+                          Already Owned
                         </span>
                       )}
                     </div>
@@ -430,7 +535,7 @@ export default function CartPage() {
                         </span>
                       )}
                       <span className="text-[16px] font-medium"
-                        style={{ fontFamily: "'Jost', sans-serif", color: oos ? "white" : "#c9a84c" }}>
+                        style={{ fontFamily: "'Jost', sans-serif", color: oos || isOwnedEbook ? "white" : "#c9a84c" }}>
                         {fmt(displayPrice * item.quantity)}
                       </span>
                     </div>
@@ -495,7 +600,7 @@ export default function CartPage() {
                   Your cart is saved. Sign in or create a free account to complete your order.
                 </p>
               </div>
-            ) : hasOos ? (
+            ) : hasOos || hasOwnedEbooks ? (
               <div>
                 <button disabled className="w-full py-[14px] text-[10px] tracking-[3px] uppercase font-medium cursor-not-allowed"
                   style={{ fontFamily: "'Jost', sans-serif", background: "rgba(80,80,80,0.25)",
@@ -510,9 +615,7 @@ export default function CartPage() {
                   </svg>
                   <p className="text-[10px] leading-[1.6]"
                     style={{ fontFamily: "'Jost', sans-serif", color: "#8b3a3a" }}>
-                    {oosItems.length === 1
-                      ? "Remove the out-of-stock item above to continue."
-                      : `Remove ${oosItems.length} out-of-stock items above to continue.`}
+                    Please remove the {hasOos ? "out-of-stock" : ""} {hasOos && hasOwnedEbooks ? "and" : ""} {hasOwnedEbooks ? "already owned" : ""} item(s) above to continue.
                   </p>
                 </div>
               </div>
