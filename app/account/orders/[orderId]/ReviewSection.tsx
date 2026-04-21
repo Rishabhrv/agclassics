@@ -178,15 +178,15 @@ export default function ReviewSection({ productId, productTitle }: Props) {
           >
             Review Submitted
           </h3>
-          <p className="text-sm" style={{ fontFamily: "'Jost', sans-serif", color: "#555259" }}>
+          <p className="text-sm" style={{ fontFamily: "'Jost', sans-serif", color: "#d8d8d8" }}>
             It will appear after approval.
           </p>
           <button
             onClick={() => setSubmitted(false)}
             className="mt-6 text-[11px] uppercase tracking-[2px] transition-colors cursor-pointer"
-            style={{ fontFamily: "'Jost', sans-serif", color: "#555259", textDecoration: "underline" }}
+            style={{ fontFamily: "'Jost', sans-serif", color: "#d8d8d8", textDecoration: "underline" }}
             onMouseEnter={e => (e.currentTarget.style.color = "#c9a84c")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#555259")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#d8d8d8")}
           >
             Write another review
           </button>
@@ -205,7 +205,7 @@ export default function ReviewSection({ productId, productTitle }: Props) {
         <div>
           <p
             className="text-[10px] uppercase tracking-[3px] mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "#555259" }}
+            style={{ fontFamily: "'Cinzel', serif", color: "#d8d8d8" }}
           >
             Your Rating
           </p>
@@ -243,7 +243,7 @@ export default function ReviewSection({ productId, productTitle }: Props) {
         <div>
           <p
             className="text-[10px] uppercase tracking-[3px] mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "#555259" }}
+            style={{ fontFamily: "'Cinzel', serif", color: "#d8d8d8" }}
           >
             Your Review
           </p>
@@ -266,7 +266,7 @@ export default function ReviewSection({ productId, productTitle }: Props) {
         <div>
           <p
             className="text-[10px] uppercase tracking-[3px] mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "#555259" }}
+            style={{ fontFamily: "'Cinzel', serif", color: "#d8d8d8" }}
           >
             Photos{" "}
             <span className="normal-case tracking-normal text-[11px]" style={{ color: "#3a3a3e" }}>

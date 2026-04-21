@@ -105,12 +105,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
           {/* Gradient Overlay Behind Book */}
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(8,8,9,0.85)] via-[rgba(8,8,9,0.2)] to-transparent pointer-events-none" />
 
-          {/* Discount badge */}
-          {discount > 0 && (
-            <span className="absolute top-6 right-6 font-['Jost',sans-serif] text-[10px] font-medium text-white bg-[#4a9a5a] py-1 px-2.5 z-10">
-              −{discount}% OFF
-            </span>
-          )}
+        
 
           {/* Featured label */}
           <span className="absolute top-6 left-6 font-['Cinzel',serif] text-[8px] tracking-[3px] uppercase text-[#080809] bg-[#c9a84c] px-3.5 py-1.5 z-10">
@@ -183,6 +178,12 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
                 {fmt(original)}
               </s>
             )}
+             {/* Discount badge */}
+          {discount > 0 && (
+            <span className=" font-['Jost',sans-serif] text-[10px] font-medium bg-[rgba(139,58,58,0.18)] text-[#d47070] py-1 px-2.5 z-10">
+              −{discount}% OFF
+            </span>
+          )}
           </div>
 
           {/* CTA Row */}
@@ -193,12 +194,7 @@ export default function FeaturedEbookSpotlight({ book, loading }: { book: Book |
             >
               Get This eBook
             </Link>
-            <Link
-              href={`/product/${book.slug}#reviews`}
-              className="font-['Jost',sans-serif] text-[11px] text-white hover:text-[#c9a84c] underline underline-offset-4 decoration-[rgba(201,168,76,0.3)] transition-colors"
-            >
-              Read reviews
-            </Link>
+           
           </div>
 
         </div>

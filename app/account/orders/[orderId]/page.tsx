@@ -77,7 +77,7 @@ const globalStyles = `
     position: fixed; inset: 0; z-index: 50;
     background: rgba(0,0,0,0.75);
     backdrop-filter: blur(4px);
-    display: flex; align-items: flex-end; justify-content: center;
+    display: flex; align-items: flex-start; justify-content: center;
   }
   @media (min-width: 640px) {
     .overlay-backdrop { align-items: center; padding: 16px; }

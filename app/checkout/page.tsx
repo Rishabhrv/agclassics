@@ -418,9 +418,31 @@ export default function CheckoutPage() {
           border:1.5px solid rgba(10,10,11,0.3); border-top-color:#0a0a0b;
           border-radius:50%; animation:spin 0.6s linear infinite; flex-shrink:0;
         }
-        .razorpay-backdrop,div[class*="razorpay-backdrop"],div[id*="razorpay-backdrop"]{display:none!important}
-        .razorpay-container{z-index:2147483647!important;position:fixed!important}
-        body.razorpay-payment-open{overflow:hidden!important}
+/* 1. Apply the blur to the main fixed container, NOT the backdrop */
+.razorpay-container {
+  z-index: 2147483647 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(10, 10, 11, 0.5) !important; /* Dark luxury tint */
+  backdrop-filter: blur(10px) !important;       /* Blurs the website behind it */
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* 2. Completely hide Razorpay's default dark backdrop so it doesn't interfere */
+.razorpay-backdrop, 
+div[class*="razorpay-backdrop"], 
+div[id*="razorpay-backdrop"] {
+  display: none !important;
+  background: transparent !important;
+}
+
+/* 3. Lock background scrolling */
+body.razorpay-payment-open {
+  overflow: hidden !important;
+}
       `}</style>
 
       {/* Page heading */}

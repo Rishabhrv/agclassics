@@ -342,7 +342,7 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
                 </span>
                 {showDiscount && (
                   <span
-                    className="text-[10px] sm:text-[11px] text-[#3a3a3d] line-through"
+                    className="text-[10px] sm:text-[13px] text-[#a6a6a6] line-through"
                     style={{ fontFamily: "'Jost', sans-serif" }}
                   >
                     ₹{parseFloat(String(displayMrp)).toFixed(0)}
@@ -350,12 +350,8 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
                 )}
                  {/* Discount pill */}
               {discountPercent > 5 && (
-                <span
-                  className=" z-10 bg-[rgba(201,168,76,0.15)]
-                    border border-[rgba(201,168,76,0.3)] text-[#c9a84c] p-0.5
-                    text-[8px] tracking-[2px] uppercase"
-                  style={{ fontFamily: "'Cinzel', serif" }}
-                >
+                <span className="text-[9px] tracking-[1.5px] uppercase px-[7px] py-[3px] bg-[rgba(139,58,58,0.18)] text-[#d47070]"
+                          style={{ fontFamily: "'Jost', sans-serif" }}>
                   {discountPercent}% Off
                 </span>
               )}

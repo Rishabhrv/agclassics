@@ -187,7 +187,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         }
       `}</style>
 
-      <div className="min-h-screen pt-28 pb-20 md:pt-35 md:pb-16" style={{ fontFamily: "'Jost', sans-serif" }}>
+      <div className="min-h-screen pt-38 pb-20 md:pt-35 md:pb-16" style={{ fontFamily: "'Jost', sans-serif" }}>
 
         {/* ── Header ── */}
         <div className="text-center px-6 pb-8 md:pb-12">

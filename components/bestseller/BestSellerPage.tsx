@@ -785,16 +785,16 @@ const d = calcDisc(displayMrp, displaySellPrice);
                             </p>
                           )}
                           <h3 className="font-bold text-[#f0ebe0] leading-[1.2] mb-[6px] line-clamp-2"
-                            style={{ fontFamily: "var(--fs)", fontSize: sp.cs > 1 ? "16px" : "13px" }}>
+                            style={{ fontFamily: "var(--fs)", fontSize: sp.cs > 1 ? "19px" : "13px" }}>
                             {book.title}
                           </h3>
                           <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
                             <span className="font-bold text-[#d4aa4e]"
-                              style={{ fontFamily: "var(--fm)", fontSize: "13px" }}>
+                              style={{ fontFamily: "var(--fm)", fontSize: "15px" }}>
                               ₹{parseFloat(String(displaySellPrice)).toFixed(0)}
                             </span>
                             {d > 0 && (
-                              <span className="px-[6px] py-[2px] text-[#c07070] text-[7px]"
+                              <span className="px-[8px] py-[2px] text-[#c07070] text-[11px]"
                                 style={{ fontFamily: "var(--fm)", background: "rgba(139,58,58,.2)" }}>
                                 {d}%
                               </span>
@@ -908,15 +908,15 @@ const d = calcDisc(displayMrp, displaySellPrice);
                         <div className="py-3 px-2 sm:px-4 flex flex-col items-end gap-2">
                           <div className="text-right">
                             <div className="font-bold text-[#d4aa4e]"
-                              style={{ fontFamily: "var(--fm)", fontSize: "clamp(11px,1vw,15px)" }}>
+                              style={{ fontFamily: "var(--fm)", fontSize: "clamp(11px,1vw,18px)" }}>
                               ₹{parseFloat(String(displaySellPrice)).toFixed(0)}
                             </div>
                             {d > 0 && (
                               <div className="flex items-center gap-1 justify-end mt-[2px]">
-                                <span className="text-[9px] line-through text-[#8a8490]">
+                                <span className="text-[16px] line-through text-[#8a8490]">
                                   ₹{parseFloat(String(displayMrp)).toFixed(0)}
                                 </span>
-                                <span className="px-[5px] py-[1px] text-[#c07070] text-[7px]"
+                                <span className="px-[10px] py-[1px] text-[#c07070] text-[12px]"
                                   style={{ fontFamily: "var(--fm)", background: "rgba(139,58,58,.15)" }}>
                                   {d}%
                                 </span>

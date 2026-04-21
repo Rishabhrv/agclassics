@@ -141,24 +141,31 @@ export default function EbooksPage() {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [featuredBook, setFeaturedBook]     = useState<Book | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
     setLoading(true);
+    // Let's assume you have a target slug defined somewhere, for example:
+    const targetSlug = "the-art-of-war"; // Replace with your actual dynamic or static slug
+
     fetch(`${API_URL}/api/ag-classics/ebooks/categories`)
       .then(r => r.json())
       .then(d => {
         const cats: Category[] = d.categories ?? [];
         setCategories(cats);
+        
         if (cats.length > 0) {
           setActiveCategory(cats[0].category_id);
           const allBooks = cats.flatMap(c => c.books);
-          setFeaturedBook(
-            allBooks.sort((a, b) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0))[0] ?? null
-          );
+          
+          // Find the specific book by its slug. 
+          // If it doesn't exist in the array, it falls back to null.
+          const bookBySlug = allBooks.find(book => book.slug === targetSlug) ?? null;
+          
+          setFeaturedBook(bookBySlug);
         }
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // If targetSlug comes from props or outside this effect, make sure to add it to the dependency array
 
   const activeCat = categories.find(c => c.category_id === activeCategory);
   const allBooks  = categories.flatMap(c => c.books);

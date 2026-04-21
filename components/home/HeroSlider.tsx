@@ -205,7 +205,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
        
 
         {/* ── Eyebrow stamp ── */}
-        <div className="anim-fadeUp-1 flex items-center gap-3 mt-8 sm:mt-2 mb-5 sm:mb-6 opacity-90">
+        <div className="anim-fadeUp-1 flex items-center gap-3 mt-15 sm:mt-2 mb-5 sm:mb-6 opacity-90">
           <div
             className="w-10 h-px "
             style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.6))" }}
@@ -230,7 +230,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
 
         {/* ── Headline ── */}
         <h1
-          className="anim-fadeUp-1 text-center m-0 px-4 font-bold text-[#f5f0e8] max-w-[820px]"
+          className="anim-fadeUp-1 text-center mt-5 px-4 font-bold text-[#f5f0e8] max-w-[820px]"
           style={{
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: "clamp(34px, 6.5vw, 72px)",
@@ -265,7 +265,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
 
         {/* ══ CAROUSEL ══ */}
         <div
-          className="relative w-full overflow-hidden py-26 sm:py-25 md:py-40 mb-4 sm:mb-6 flex justify-center items-center z-10"
+          className="relative w-full overflow-hidden py-26 sm:py-25 md:py-40 mb-4 sm:mb-6 flex justify-center items-center z-10 mt-5"
           style={{ perspective: "1000px" }}
           onMouseEnter={() => (isPausedRef.current = true)}
           onMouseLeave={() => (isPausedRef.current = false)}
@@ -402,7 +402,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
                 {item.stat}
               </span>
               <span
-                className="text-[9px] tracking-[2.5px] uppercase text-white"
+                className="text-[7px] lg:text-[10px] tracking-[2.5px] uppercase text-white text-center"
                 style={{ fontFamily: "'Jost', sans-serif" }}
               >
                 {item.label}

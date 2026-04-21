@@ -76,6 +76,9 @@ interface RecommendedProduct {
   slug: string;
   price: number;
   sell_price: number;
+  ebook_price?: number | null;        // <-- Add this
+  ebook_sell_price?: number | null;   // <-- Add this
+  product_type: "ebook" | "physical" | "both"; // <-- Add this
   main_image: string;
   authors: { id: number; name: string; slug: string }[];
   avg_rating: number | null;
@@ -537,6 +540,22 @@ export default function ProductPage({ product }: { product: Product }) {
   const [rvPage, setRvPage] = useState(0);
   const RV_PER_PAGE = 3;
   const reviewRef = useRef<HTMLDivElement>(null);
+  const [ownsEbook, setOwnsEbook] = useState(false);
+
+  useEffect(() => {
+    if (!product) return;
+    const token = localStorage.getItem("token");
+    if (!token) return; // Guests haven't purchased anything yet
+
+    fetch(`${API_URL}/api/ag-classics/orders/check-ebook-ownership/${product.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.owned) setOwnsEbook(true);
+      })
+      .catch((err) => console.error("Failed to check ownership", err));
+  }, [product]);
 
   /* ── Fetch ── */
   useEffect(() => {
@@ -653,6 +672,10 @@ export default function ProductPage({ product }: { product: Product }) {
  const toggleWishlist = async () => {
     const token = localStorage.getItem("token");
     const wasLiked = wishlisted;
+    if (format === "ebook" && ownsEbook) {
+      setToast("Already purchased. Check My Books.");
+      return;
+    }
     
     // Optimistic UI update
     setWishlisted(!wasLiked);
@@ -704,6 +727,10 @@ export default function ProductPage({ product }: { product: Product }) {
   const addToCart = async () => {
     const token = localStorage.getItem("token");
     const selectedFormat = format === "ebook" ? "ebook" : "paperback";
+    if (selectedFormat === "ebook" && ownsEbook) {
+      setToast("Already purchased. Check My Books.");
+      return;
+    }
     const selectedQty = format === "ebook" ? 1 : qty;
 
     /* GUEST: save to localStorage */
@@ -1178,7 +1205,7 @@ export default function ProductPage({ product }: { product: Product }) {
                 )}
               </div>
 
-              {/* ── ACTIONS ── */}
+            {/* ── ACTIONS ── */}
               <div className="fu4 flex flex-col gap-4 mb-6">
                 {format === "paperback" && isOos && (
                   <p className="text-[11px] text-[#c97070]" style={{ fontFamily: "'Jost', sans-serif" }}>Out of stock</p>
@@ -1188,7 +1215,7 @@ export default function ProductPage({ product }: { product: Product }) {
                 )}
 
                 <div className="flex flex-wrap items-center gap-3">
-                  {/* Qty stepper */}
+                  {/* Qty stepper (Paperback Only) */}
                   {format === "paperback" && !isOos && (
                     <div className="flex items-center border border-[rgba(201,168,76,0.2)]">
                       <button
@@ -1209,55 +1236,118 @@ export default function ProductPage({ product }: { product: Product }) {
                     </div>
                   )}
 
-                  {/* Add to Cart */}
-                  <button
-                    className={`agc-cta-g flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 text-[11px] tracking-[3px] uppercase border-none cursor-pointer transition-colors duration-300 ${
-                      isOos
-                        ? "bg-[#1e1e20] text-white cursor-not-allowed"
-                        : addedToCart
-                        ? "bg-[rgba(201,168,76,0.12)] text-[#c9a84c] border border-[#c9a84c] agc-pulse"
-                        : "bg-[#c9a84c] text-[#0c0c0e] hover:bg-[#e4be54]"
-                    }`}
-                    style={{ fontFamily: "'Jost', sans-serif" }}
-                    disabled={isOos}
-                    onClick={addToCart}
-                  >
-                    {addedToCart ? (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
-                        Added to Cart
-                      </>
-                    ) : (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                        </svg>
-                        Add to Cart
-                      </>
-                    )}
-                  </button>
+                  {/* Condition: Does the user own this ebook AND is the ebook format currently selected? */}
+                  {format === "ebook" && ownsEbook ? (
+                    <button
+                      className="agc-cta-g flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 text-[11px] tracking-[3px] uppercase border border-[#4ade80] bg-[rgba(74,222,128,0.08)] text-[#4ade80] cursor-pointer transition-colors duration-300 hover:bg-[rgba(74,222,128,0.15)]"
+                      style={{ fontFamily: "'Jost', sans-serif" }}
+                      onClick={() => router.push("/my-books")} // Adjust this path to your actual reader/library route
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                      </svg>
+                      Already Purchased · Go to My Books
+                    </button>
+                  ) : (
+                    <>
+                      {/* Standard Add to Cart */}
+                      <button
+                        className={`agc-cta-g flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 text-[11px] tracking-[3px] uppercase border-none cursor-pointer transition-colors duration-300 ${
+                          isOos && format === "paperback"
+                            ? "bg-[#1e1e20] text-white cursor-not-allowed"
+                            : addedToCart
+                            ? "bg-[rgba(201,168,76,0.12)] text-[#c9a84c] border border-[#c9a84c] agc-pulse"
+                            : "bg-[#c9a84c] text-[#0c0c0e] hover:bg-[#e4be54]"
+                        }`}
+                        style={{ fontFamily: "'Jost', sans-serif" }}
+                        disabled={isOos && format === "paperback"}
+                        onClick={addToCart}
+                      >
+                        {addedToCart ? (
+                          <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            Added to Cart
+                          </>
+                        ) : (
+                          <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                            </svg>
+                            Add to Cart
+                          </>
+                        )}
+                      </button>
 
-                  {/* Wishlist */}
-                  <button
-                    onClick={toggleWishlist}
-                    className="w-11 h-11 flex items-center justify-center border cursor-pointer transition-all duration-300"
-                    style={{
-                      borderColor: wishlisted ? "rgba(201,168,76,0.5)" : "rgba(255,255,255,0.1)",
-                      background: wishlisted ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.03)",
-                      color: wishlisted ? "#c9a84c" : "#e8e0d0",
-                    }}
-                    aria-label="Wishlist"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill={wishlisted ? "#c9a84c" : "none"} stroke="currentColor" strokeWidth="1.5">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
-                  </button>
+                      {/* Standard Wishlist */}
+                      <button
+                        onClick={toggleWishlist}
+                        className="w-11 h-11 flex items-center justify-center border cursor-pointer transition-all duration-300"
+                        style={{
+                          borderColor: wishlisted ? "rgba(201,168,76,0.5)" : "rgba(255,255,255,0.1)",
+                          background: wishlisted ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.03)",
+                          color: wishlisted ? "#c9a84c" : "#e8e0d0",
+                        }}
+                        aria-label="Wishlist"
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill={wishlisted ? "#c9a84c" : "none"} stroke="currentColor" strokeWidth="1.5">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
                 </div>
 
                 {/* Trust strip */}
-   <div className="grid grid-cols-3 gap-2 pt-5 border-t-2 border-[rgba(201,168,76,0.6)]">
-  
+<div className="grid grid-cols-3 gap-2 pt-5 border-t-2 border-[rgba(201,168,76,0.6)]">
+  {[
+    {
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.3">
+          <path d="M4 4h16v16H4z"/>
+          <path d="M8 8h8M8 12h6M8 16h4"/>
+        </svg>
+      ),
+      title: "Unlimited Access",
+      sub: "Read anytime, anywhere",
+    },
+    {
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.3">
+          <path d="M12 1v22"/>
+          <path d="M5 6h14M5 12h14M5 18h14"/>
+        </svg>
+      ),
+      title: "Multiple Genres",
+      sub: "Classics, fiction & more",
+    },
+    {
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.3">
+          <rect x="3" y="4" width="18" height="12"/>
+          <path d="M8 20h8"/>
+        </svg>
+      ),
+      title: "Read on Any",
+      sub: "Mobile, tablet & desktop",
+    },
+  ].map((item, i) => (
+    <div key={i} className="flex flex-col items-center text-center gap-1.5 py-3">
+      <div className="opacity-80">{item.icon}</div>
+      <p
+        className="text-xs tracking-[1px] uppercase text-[#fafafa] leading-tight"
+        style={{ fontFamily: "'Cinzel', serif" }}
+      >
+        {item.title}
+      </p>
+      <p
+        className="text-xs text-white hidden sm:block"
+        style={{ fontFamily: "'Jost', sans-serif" }}
+      >
+        {item.sub}
+      </p>
+    </div>
+  ))}
 </div>
               </div>
 
@@ -1597,9 +1687,16 @@ export default function ProductPage({ product }: { product: Product }) {
             <div className="bg-[#0e0e10] py-12 sm:py-16 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 pb-20">
               <div className="max-w-6xl mx-auto">
                 <SectionHeading>You May Also Like</SectionHeading>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   {recommended.map((rec) => {
-                    const rpct = disc(rec.price, rec.sell_price);
+                    // Determine which prices to show based on product type
+                    const isOnlyEbook = rec.product_type === "ebook";
+                    const displaySellPrice = isOnlyEbook ? (rec.ebook_sell_price ?? 0) : rec.sell_price;
+                    const displayOriginalPrice = isOnlyEbook ? (rec.ebook_price ?? 0) : rec.price;
+
+                    // Calculate discount based on the correct format
+                    const rpct = disc(displayOriginalPrice, displaySellPrice);
+
                     return (
                       <div
                         key={rec.id}
@@ -1611,7 +1708,7 @@ export default function ProductPage({ product }: { product: Product }) {
                             <img
                               src={`${API_URL}${rec.main_image}`}
                               alt={rec.title}
-                              className="agc-rec-img w-full h-full object-cover block transition-transform duration-700"
+                              className=" agc-rec-img w-full h-full object-cover block transition-transform duration-700"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(135deg,#1e1e20,#141416)" }}>
@@ -1627,12 +1724,8 @@ export default function ProductPage({ product }: { product: Product }) {
                           )}
                         </div>
                         <div className="p-4">
-                          {rec.authors.length > 0 && (
-                            <div className="text-[9px] tracking-[2px] uppercase text-[#8a6f2e] mb-1.5" style={{ fontFamily: "'Jost', sans-serif" }}>
-                              {rec.authors.map((a) => a.name).join(", ")}
-                            </div>
-                          )}
-                          <div className="text-[16px] italic text-[#f5f0e8] leading-[1.2] mb-2.5" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+ 
+                          <div className="text-[16px] italic uppercase text-[#f5f0e8] leading-[1.2] mb-2.5" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                             {rec.title}
                           </div>
                           {rec.avg_rating && (
@@ -1643,11 +1736,11 @@ export default function ProductPage({ product }: { product: Product }) {
                           )}
                           <div className="flex items-baseline gap-2">
                             <span className="text-[16px] font-medium text-[#c9a84c]" style={{ fontFamily: "'Jost', sans-serif" }}>
-                              ₹{parseFloat(String(rec.sell_price)).toFixed(0)}
+                              ₹{parseFloat(String(displaySellPrice)).toFixed(0)}
                             </span>
                             {rpct > 0 && (
                               <span className="text-[12px] text-white line-through" style={{ fontFamily: "'Jost', sans-serif" }}>
-                                ₹{parseFloat(String(rec.price)).toFixed(0)}
+                                ₹{parseFloat(String(displayOriginalPrice)).toFixed(0)}
                               </span>
                             )}
                           </div>
