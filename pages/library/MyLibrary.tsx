@@ -91,9 +91,15 @@ export default function MyLibrary() {
           <LibraryHeader />
 
           <div className="lib-scroll-area flex-1">
+            <a 
+              href={`/`}
+              className="block md:hidden text-[17px] font-semibold leading-[1.3] text-[#ecab13] hover:text-[#c9a84c] transition-colors duration-200 p-3 md:p-5"
+            style={{ fontFamily: "'Cinzel', serif" }}>
+              Back to Home
+            </a>
 
             {/* ── WELCOME BANNER ── */}
-            <div className="lib-welcome-quote relative px-4 sm:px-8 pt-8 sm:pt-9 overflow-hidden">
+            <div className="lib-welcome-quote relative px-4 sm:px-8 pt-1 md:pt-4 overflow-hidden">
               <span
                 className="text-[8px] tracking-[5px] uppercase text-[#ecab13] block mb-1.5"
                 style={{ fontFamily: "'Cinzel', serif" }}

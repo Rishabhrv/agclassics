@@ -1491,7 +1491,7 @@ export default function ProductPage({ product }: { product: Product }) {
                           <img
                             src={`${API_URL}${a.profile_image}`}
                             alt={a.name}
-                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border border-[rgba(201,168,76,0.25)] cursor-pointer hover:opacity-80 transition-opacity"
+                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover object-top border border-[rgba(201,168,76,0.25)] cursor-pointer hover:opacity-80 transition-opacity"
                           />
                         ) : (
                           <div

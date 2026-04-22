@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Menu, Plus, Minus, Search, Bookmark, X, Type } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark as solidBookmark } from "@fortawesome/free-solid-svg-icons";
@@ -175,9 +175,15 @@ export default function EpubReaderPage() {
   const [totalPages, setTotalPages]   = useState<number | null>(null);
   const trueTotalRef        = useRef<number>(0);
   const prevLocTotalRef     = useRef<number | null>(null);
-  const token = localStorage.getItem("token");
+  const router              = useRouter();
 
-  if (!token) { window.location.href = "/login"; return; }
+  useEffect(() => {
+    // This safely runs only in the browser, avoiding the SSR crash
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.replace("/login"); 
+    }
+  }, [router]);
 
   /* ── All existing logic hooks (unchanged) ── */
   useEffect(() => {
@@ -275,27 +281,59 @@ export default function EpubReaderPage() {
     return () => { destroyed = true; setBookReady(false); viewRef.current?.close?.(); viewRef.current?.remove?.(); };
   }, [slug]);
 
-  useEffect(() => {
+ useEffect(() => {
     if (!viewRef.current || !bookReady) return;
+    
     const apply = () => {
       const contents = viewRef.current.renderer?.getContents?.();
       if (!contents) return;
+      
       contents.forEach((item: any) => {
-        const doc = item.doc; if (!doc) return;
+        const doc = item.doc; 
+        if (!doc) return;
+        
         doc.documentElement.style.fontSize = `${fontSize}%`;
         doc.documentElement.style.fontFamily = fontFamily;
-        const s = doc.createElement("style");
-        s.innerHTML = `html,body,p,div,span,li,blockquote{line-height:${lineHeight}!important}*{-webkit-user-select:none!important;user-select:none!important}`;
-        doc.head.appendChild(s);
-        const block = (e: Event) => e.preventDefault();
-        doc.addEventListener("copy", block); doc.addEventListener("cut", block); doc.addEventListener("contextmenu", block);
-        doc.addEventListener("keydown", (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && ["c","x","a","u","s","p"].includes(e.key.toLowerCase())) e.preventDefault(); });
+
+        // 1. Look for an existing style tag to prevent injecting duplicates
+        let s = doc.getElementById("ag-reader-styles");
+        if (!s) {
+          s = doc.createElement("style");
+          s.id = "ag-reader-styles";
+          doc.head.appendChild(s);
+        }
+
+        // 2. The magic trick: If dark mode is on, double-invert the media elements
+        const mediaFilter = theme === "dark" 
+          ? "img, image, video, svg, canvas { filter: invert(1) hue-rotate(180deg) !important; }" 
+          : "";
+
+        s.innerHTML = `
+          html,body,p,div,span,li,blockquote{line-height:${lineHeight}!important}
+          *{-webkit-user-select:none!important;user-select:none!important}
+          ${mediaFilter}
+        `;
+        
+      // 3. Prevent binding the same event listeners over and over again
+        if (!doc.documentElement.dataset.eventsBound) {
+          const block = (e: Event) => e.preventDefault();
+          doc.addEventListener("copy", block); 
+          doc.addEventListener("cut", block); 
+          doc.addEventListener("contextmenu", block);
+          doc.addEventListener("keydown", (e: KeyboardEvent) => { 
+            if ((e.ctrlKey || e.metaKey) && ["c","x","a","u","s","p"].includes(e.key.toLowerCase())) e.preventDefault(); 
+          });
+          doc.documentElement.dataset.eventsBound = "true"; // <- updated this line too
+        }
       });
     };
+
     apply();
     viewRef.current.addEventListener("load", apply);
     return () => viewRef.current?.removeEventListener("load", apply);
-  }, [fontSize, fontFamily, lineHeight, bookReady]);
+    
+  // 👇 Don't forget to add `theme` to this dependency array!
+  }, [fontSize, fontFamily, lineHeight, bookReady, theme]);
 
   const handleSearch = async (query: string) => {
     if (!viewRef.current || !bookReady || query.trim().length < 3) { setSearchResults([]); viewRef.current?.clearSearch?.(); return; }

@@ -14,6 +14,7 @@ interface Subscription {
   start_date: string;
   end_date: string;
   status: "active" | "expired" | "cancelled" | "pending";
+  autopay_enabled: number; // 1 = Active, 2 = Paused, 0 = Cancelled
 }
 
 interface Payment {
@@ -22,6 +23,15 @@ interface Payment {
   amount: number;
   status: string;
   created_at: string;
+}
+
+interface ModalState {
+  isOpen: boolean;
+  type: "alert" | "confirm";
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel?: () => void;
 }
 
 /* ── Helpers ── */
@@ -114,6 +124,44 @@ export default function SubscriptionsPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading]   = useState(true);
   const [showPayments, setShowPayments] = useState(false);
+  
+  // Action states
+  const [cancellingAutopay, setCancellingAutopay] = useState(false);
+  const [pausingAutopay, setPausingAutopay] = useState(false);
+  const [resumingAutopay, setResumingAutopay] = useState(false);
+
+  // Modal State
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    type: "alert",
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
+
+  const showAlert = (title: string, message: string) => {
+    setModal({
+      isOpen: true,
+      type: "alert",
+      title,
+      message,
+      onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+    });
+  };
+
+  const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setModal({
+      isOpen: true,
+      type: "confirm",
+      title,
+      message,
+      onConfirm: () => {
+        setModal((prev) => ({ ...prev, isOpen: false }));
+        onConfirm();
+      },
+      onCancel: () => setModal((prev) => ({ ...prev, isOpen: false })),
+    });
+  };
 
   const fetchData = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -121,20 +169,15 @@ export default function SubscriptionsPage() {
 
     setLoading(true);
     try {
-      /* ─── GET /api/subscription-payment/me ───────────────────────────────
-         Backend returns: { active: boolean, subscription: Subscription | null }
-      ──────────────────────────────────────────────────────────────── */
       const res = await fetch(`${API_URL}/api/subscription-payment/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
-      // Backend returns { active, subscription } — single object, not array
       const record: Subscription | null = data.subscription ?? null;
       setSub(record);
 
-      /* ─── GET /api/subscription-payment/payments ─────────────────────── */
       if (record) {
         const pRes = await fetch(`${API_URL}/api/subscription-payment/payments`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -153,6 +196,64 @@ export default function SubscriptionsPage() {
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  /* ── Autopay Actions ── */
+  const handleCancelAutopay = () => {
+    showConfirm(
+      "Cancel Auto-Renew",
+      "Are you sure you want to completely cancel auto-renewal? You will still have full access until the end of your current billing cycle.",
+      async () => {
+        setCancellingAutopay(true);
+        await performAutopayAction("cancel-autopay");
+        setCancellingAutopay(false);
+      }
+    );
+  };
+
+  const handlePauseAutopay = () => {
+    showConfirm(
+      "Pause Auto-Renew",
+      "Are you sure you want to pause auto-renewal? You can resume it anytime.",
+      async () => {
+        setPausingAutopay(true);
+        await performAutopayAction("pause-autopay");
+        setPausingAutopay(false);
+      }
+    );
+  };
+
+  const handleResumeAutopay = () => {
+    showConfirm(
+      "Resume Auto-Renew",
+      "Are you sure you want to resume auto-renewal? Your card will be charged automatically at the next billing cycle.",
+      async () => {
+        setResumingAutopay(true);
+        await performAutopayAction("resume-autopay");
+        setResumingAutopay(false);
+      }
+    );
+  };
+
+  const performAutopayAction = async (endpoint: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${API_URL}/api/subscription-payment/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showAlert("Success", data.msg || "Action completed successfully.");
+        fetchData(); // Refresh to update the UI
+      } else {
+        showAlert("Failed", data.msg || "Action failed.");
+      }
+    } catch (err) {
+      console.error(err);
+      showAlert("Error", "Something went wrong while processing your request.");
+    }
+  };
 
   /* ── Progress calculation ── */
   const getDaysLeft = (end: string) =>
@@ -229,7 +330,7 @@ export default function SubscriptionsPage() {
               <StatusBadge status={sub.status} />
             </div>
 
-            {/* Info grid — 2 cols on mobile, 3 on desktop */}
+            {/* Info grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 mb-5">
               <InfoBlock label="Amount Paid" value={fmtAmt(sub.amount_paid)} gold />
               <InfoBlock label="Start Date"  value={fmtDate(sub.start_date)} />
@@ -265,6 +366,51 @@ export default function SubscriptionsPage() {
               </div>
             )}
 
+            {/* Autopay Action Bar (Active: 1, Paused: 2) */}
+            {sub.status === "active" && (sub.autopay_enabled === 1 || sub.autopay_enabled === 2) && (
+              <div className="mt-6 pt-5 border-t border-[rgba(255,255,255,0.05)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${sub.autopay_enabled === 1 ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'}`} />
+                  <p className="text-[11px] text-gray-300 m-0" style={{ fontFamily: "'Jost', sans-serif" }}>
+                    {sub.autopay_enabled === 1 ? "Auto-renewal is active." : "Auto-renewal is paused."}
+                  </p>
+                </div>
+                
+                <div className="flex gap-2.5 flex-wrap">
+                  {/* Show PAUSE if Active, show RESUME if Paused */}
+                  {sub.autopay_enabled === 1 ? (
+                    <button
+                      onClick={handlePauseAutopay}
+                      disabled={pausingAutopay}
+                      className="px-4 py-2 text-[9px] tracking-[1.5px] uppercase border border-[rgba(245,158,11,0.4)] text-yellow-400 bg-transparent hover:bg-[rgba(245,158,11,0.1)] transition-colors cursor-pointer disabled:opacity-50"
+                      style={{ fontFamily: "'Jost', sans-serif" }}
+                    >
+                      {pausingAutopay ? "Pausing..." : "Pause Renewals"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleResumeAutopay}
+                      disabled={resumingAutopay}
+                      className="px-4 py-2 text-[9px] tracking-[1.5px] uppercase border border-[rgba(34,197,94,0.4)] text-green-400 bg-transparent hover:bg-[rgba(34,197,94,0.1)] transition-colors cursor-pointer disabled:opacity-50"
+                      style={{ fontFamily: "'Jost', sans-serif" }}
+                    >
+                      {resumingAutopay ? "Resuming..." : "Resume Renewals"}
+                    </button>
+                  )}
+
+                  {/* Cancel Button is always available if autopay hasn't been completely wiped */}
+                  <button
+                    onClick={handleCancelAutopay}
+                    disabled={cancellingAutopay}
+                    className="px-4 py-2 text-[9px] tracking-[1.5px] uppercase border border-[rgba(239,68,68,0.4)] text-red-400 bg-transparent hover:bg-[rgba(239,68,68,0.1)] transition-colors cursor-pointer disabled:opacity-50"
+                    style={{ fontFamily: "'Jost', sans-serif" }}
+                  >
+                    {cancellingAutopay ? "Cancelling..." : "Cancel Auto-Renew"}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Expired notice */}
             {sub.status === "expired" && (
               <div className="mt-4 flex items-center gap-2 p-3 border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.04)]">
@@ -277,8 +423,6 @@ export default function SubscriptionsPage() {
               </div>
             )}
           </div>
-
-
 
           {/* ── Payment History ── */}
           {payments.length > 0 && (
@@ -343,6 +487,50 @@ export default function SubscriptionsPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* ── Custom Modal Overlay ── */}
+      {modal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#1c1c1e] border border-[rgba(201,168,76,0.3)] max-w-sm w-full p-7 relative shadow-2xl">
+            {/* Corner accents */}
+            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-[#8a6f2e]" />
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-[#8a6f2e]" />
+
+            <h3 
+              className="text-xl md:text-2xl italic text-[#c9a84c] mb-3 text-center" 
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              {modal.title}
+            </h3>
+            
+            <p 
+              className="text-sm text-[#f5f0e8] text-center mb-6 leading-relaxed" 
+              style={{ fontFamily: "'Jost', sans-serif" }}
+            >
+              {modal.message}
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              {modal.type === "confirm" && (
+                <button
+                  onClick={modal.onCancel}
+                  className="w-full sm:w-auto px-6 py-2.5 text-[10px] tracking-[2px] uppercase border border-[rgba(255,255,255,0.2)] text-white hover:border-[#c9a84c] hover:text-[#c9a84c] bg-transparent transition-colors cursor-pointer"
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                >
+                  Go Back
+                </button>
+              )}
+              <button
+                onClick={modal.onConfirm}
+                className="w-full sm:w-auto px-6 py-2.5 text-[10px] tracking-[2px] uppercase border border-[#c9a84c] bg-[#c9a84c] text-[#0a0a0b] hover:bg-[#f5f0e8] hover:border-[#f5f0e8] transition-colors cursor-pointer font-medium"
+                style={{ fontFamily: "'Jost', sans-serif" }}
+              >
+                {modal.type === "confirm" ? "Confirm" : "Okay"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

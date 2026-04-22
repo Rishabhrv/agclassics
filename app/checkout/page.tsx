@@ -284,7 +284,6 @@ export default function CheckoutPage() {
     }
   };
 
-  /* ═══════ SUCCESS ═══════ */
   /* ═══════ LOGIN GATE ═══════ */
   if (!token) return (
     <PageWrap>
@@ -446,7 +445,7 @@ body.razorpay-payment-open {
       `}</style>
 
       {/* Page heading */}
-      <div className="mb-10 co-fade">
+      <div className="mb-10 co-fade mt-5">
         <span className="block mb-2 text-[10px] tracking-[5px] uppercase"
           style={{ fontFamily: "'Jost', sans-serif", color: "#c9a84c" }}>
           Secure Checkout
