@@ -107,7 +107,7 @@ export default function HomeFooter() {
 
 /* ── Link data ── */
 const exploreLinks = [
-  { href: "/", label: "Our Collection" },
+  { href: "/category/all", label: "Our Collection" },
   { href: "/ebooks", label: "Digital Library" }, 
   { href: "/bestseller", label: "Top Rated Titles" },
   { href: "/author", label: "Authors" },
@@ -149,27 +149,55 @@ function BrandBlock({ isMobile }: { isMobile?: boolean }) {
         )}
       </p>
 
-      {/* Social links stay exactly the same */}
-      <div className="flex gap-[12px] sm:gap-[14px]">
-        {[
-          { label: "Instagram", icon: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></> },
-          { label: "Twitter/X", icon: <><path d="M4 4l16 16M4 20L20 4"/></> },
-          { label: "Facebook",  icon: <><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></> },
-          { label: "WhatsApp",  icon: <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></> },
-        ].map(({ label, icon }) => (
-          <a
-            key={label}
-            href="#"
-            aria-label={label}
-            className="w-9 h-9 flex items-center justify-center transition-all duration-300 no-underline"
-            style={{ border: "1px solid rgba(201,168,76,0.2)", color: "white" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              {icon}
-            </svg>
-          </a>
-        ))}
-      </div>
+<div className="flex gap-[12px] sm:gap-[14px]">
+  {[
+    { 
+      label: "Instagram", 
+      url: "https://www.instagram.com/agclassicsbooks/",
+      icon: (
+        <>
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </>
+      )
+    },
+    { 
+      label: "Facebook",  
+      url: "https://www.facebook.com/agclassicsbooks",
+      icon: (
+        <>
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+        </>
+      )
+    },
+    { 
+      label: "LinkedIn",  
+      url: "https://www.linkedin.com/company/ag-classics-books/",
+      icon: (
+        <>
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-12h4v2"/>
+          <rect x="2" y="9" width="4" height="12"/>
+          <circle cx="4" cy="4" r="2"/>
+        </>
+      )
+    }
+  ].map(({ label, icon, url }) => (
+    <a
+      key={label}
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="w-9 h-9 flex items-center justify-center transition-all duration-300 no-underline hover:scale-110"
+      style={{ border: "1px solid rgba(201,168,76,0.2)", color: "white" }}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        {icon}
+      </svg>
+    </a>
+  ))}
+</div>
     </div>
   );
 }
