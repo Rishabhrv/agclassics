@@ -934,15 +934,7 @@ export default function ProductPage({ product }: { product: Product }) {
                   </div>
                 )}
 
-                {/* Low stock badge */}
-                {product.stock > 0 && product.stock <= 5 && (
-                  <div
-                    className="absolute top-3 left-3 px-3 py-1 border border-[rgba(201,168,76,0.3)] bg-[rgba(180,120,0,0.14)] text-[9px] tracking-[2px] uppercase text-[#c9a84c]"
-                    style={{ top: paperbackDiscount > 5 ? 46 : 12, fontFamily: "'Jost', sans-serif" }}
-                  >
-                    Only {product.stock} left
-                  </div>
-                )}
+
 
                 {/* Zoom hint */}
                 <div className="absolute bottom-3 right-3 bg-[rgba(12,12,14,0.75)] border border-[rgba(201,168,76,0.18)] px-2.5 py-1.5 flex items-center gap-1.5 hidden md:flex">
