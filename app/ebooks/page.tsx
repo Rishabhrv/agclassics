@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import EbooksPage from "@/components/ebooks/EbookPage"; // your "use client" component
+import EbooksPage from "@/components/ebooks/EbookPage"; 
 
 /* ═══════════════════════════════════════════════════════════════════
    ENV
@@ -12,10 +12,10 @@ const SITE_NAME = "AG Classics";
 ═══════════════════════════════════════════════════════════════════ */
 export const metadata: Metadata = {
   /* ── Core ──────────────────────────────────────────────────────── */
-  title:       "Buy Classic eBooks Online | AG Classics",
+  // ⬇ Primary Keyword at the exact front
+  title:       "Best Classic Books to Read | Buy Classic Literature Online | AG Classics",
   description:
-    "Build your digital library with premium classic eBooks from AG Classics. " +
-    "Instant access, lifetime access, beautifully typeset browse by genre today.",
+    "Discover the best classic books to read at AG Classics. Buy timeless classic literature books online and build your digital library with India's premium eBook store.",
 
   /* ── Canonical ─────────────────────────────────────────────────── */
   alternates: {
@@ -27,16 +27,15 @@ export const metadata: Metadata = {
     type:        "website",
     url:         `${SITE_URL}/ebooks`,
     siteName:    SITE_NAME,
-    title:       "Buy Classic eBooks Online | AG Classics",
+    title:       "Best Classic Books to Read | Buy Classic Literature Online | AG Classics",
     description:
-    "Build your digital library with premium classic eBooks from AG Classics. " +
-    "Instant access, lifetime access, beautifully typeset browse by genre today.",
+      "Discover the best classic books to read at AG Classics. Buy timeless classic literature books online and build your digital library with India's premium eBook store.",
     images: [
       {
-        url:    `${SITE_URL}/logo/AGClassicLogo.png`, // ← place a 1200×630 image here
+        url:    `${SITE_URL}/logo/AGClassicLogo.png`,
         width:  1200,
         height: 630,
-        alt:    "AG Classics eBook collection",
+        alt:    "AG Classics - Best Classic Books to Read",
       },
     ],
     locale: "en_IN",
@@ -45,10 +44,10 @@ export const metadata: Metadata = {
   /* ── Twitter / X ───────────────────────────────────────────────── */
   twitter: {
     card:        "summary_large_image",
-    site:        "@agclassics",              // ← update to your handle
-    title:       "Classic eBooks | AG Classics",
+    site:        "@agclassics", 
+    title:       "Classic Books to Read | AG Classics eBook Store",
     description:
-      "Instant access. Lifetime access. Professionally typeset classics on every device.",
+      "Find the best classic books to read. Instant access, lifetime access. Build your digital library of classic literature today.",
     images: [`${SITE_URL}/logo/AGClassicLogo.png`],
   },
 
@@ -66,20 +65,17 @@ export const metadata: Metadata = {
 
   /* ── Keywords ──────────────────────────────────────────────────── */
   keywords: [
-    "classic ebooks india",
-    "buy classic books online india",
-    "timeless literature ebook",
-    "english classics digital access",
+    "classic books to read",
+    "classic literature books",
+    "buy classic books online",
     "ebook store india",
     "ag classics ebooks",
+    "timeless literature ebook",
     "premium ebooks india",
     "classic novels ebook",
     "fiction ebooks india",
-    "best classic literature ebook",
+    "english classics digital access"
   ],
-
-  /* ── Google Search Console (uncomment after adding token) ──────── */
-  // verification: { google: "YOUR_TOKEN_HERE" },
 };
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -92,10 +88,9 @@ const schemaWebPage = {
   "@type":    "CollectionPage",
   "@id":      `${SITE_URL}/ebooks#webpage`,
   url:        `${SITE_URL}/ebooks`,
-  name:       "Classic eBooks | AG Classics",
+  name:       "Best Classic Books to Read | AG Classics eBook Store",
   description:
-    "Browse and instantly access premium classic eBooks. " +
-    "Timeless literature, professionally typeset, lifetime access.",
+    "Curated collection of the best classic books to read. Buy classic literature online from AG Classics, a dedicated eBook store in India.",
   inLanguage: "en-IN",
   isPartOf: {
     "@type":  "WebSite",
@@ -109,7 +104,7 @@ const schemaWebPage = {
       url:     SITE_URL,
       logo: {
         "@type":      "ImageObject",
-        url:          `${SITE_URL}/logo/AGClassicLogo.png`,   // ← update if needed
+        url:          `${SITE_URL}/logo/AGClassicLogo.png`,
         contentUrl:   `${SITE_URL}/logo/AGClassicLogo.png`,
       },
     },
@@ -153,28 +148,23 @@ const schemaOrg = {
     url:        `${SITE_URL}/logo/AGClassicLogo.png`,
     contentUrl: `${SITE_URL}/logo/AGClassicLogo.png`,
   },
-  sameAs: [
-    // "https://www.instagram.com/agclassics",  ← add your social URLs
-    // "https://twitter.com/agclassics",
-  ],
 };
 
-/** 4 ── ItemList  (genre category links — static, no API call needed) */
+/** 4 ── ItemList  (genre category links) */
 const schemaItemList = {
   "@context": "https://schema.org",
   "@type":    "ItemList",
-  name:       "Classic eBook Genres | AG Classics",
+  name:       "Classic Books to Read by Genre | AG Classics",
   url:        `${SITE_URL}/ebooks`,
   description:
-    "Explore our curated collection of classic eBooks organised by genre.",
+    "Explore our curated collection of classic books to read, organised by genre.",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Business & Professional Skills",      url: `${SITE_URL}/category/business-professional-skills` },
+    { "@type": "ListItem", position: 1, name: "Business & Professional Skills", url: `${SITE_URL}/category/business-professional-skills` },
     { "@type": "ListItem", position: 2, name: "Classic Literature",   url: `${SITE_URL}/category/classic-literature` },
     { "@type": "ListItem", position: 3, name: "Finance & Wealth",       url: `${SITE_URL}/category/finance-wealth` },
     { "@type": "ListItem", position: 4, name: "Self Development",      url: `${SITE_URL}/category/self-development` },
-    { "@type": "ListItem", position: 5, name: "Strategy & Philosophy",      url: `${SITE_URL}category/strategy-philosophy` },
+    { "@type": "ListItem", position: 5, name: "Strategy & Philosophy",      url: `${SITE_URL}/category/strategy-philosophy` },
   ],
-  // ↑ Replace / extend these entries to match your actual category slugs
 };
 
 /** 5 ── SiteLinksSearchBox */
@@ -188,7 +178,7 @@ const schemaSearchBox = {
     "@type":       "SearchAction",
     target: {
       "@type":       "EntryPoint",
-      urlTemplate:   `${SITE_URL}/search?q={search_term_string}`, // ← update to your search URL
+      urlTemplate:   `${SITE_URL}/search?q={search_term_string}`,
     },
     "query-input": "required name=search_term_string",
   },
@@ -208,7 +198,6 @@ const ALL_SCHEMAS = [
 export default function Page() {
   return (
     <>
-      {/* Inject all JSON-LD schemas into <head> via Next.js script rendering */}
       {ALL_SCHEMAS.map((schema, i) => (
         <script
           key={i}
@@ -216,8 +205,6 @@ export default function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       ))}
-
-      {/* Your full "use client" ebooks UI */}
       <EbooksPage />
     </>
   );

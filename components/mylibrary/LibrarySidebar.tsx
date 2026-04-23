@@ -80,14 +80,14 @@ export default function LibrarySidebar() {
         style={{ width: 224 }}
       >
         {/* Logo */}
-        <div className="flex items-center justify-center shrink-0 h-16 border-b border-[rgba(201,168,76,0.1)]">
+        <div className="flex items-center justify-center shrink-0 h-16 border-b border-[rgba(201,168,76,0.1)] p-5">
           <Link href="/">
             <Image
-              src="/images/logo/AGClassicLogo.png"
+              src="/images/logo/AGClaasiclogo2.png"
               alt="My Library"
-              width={110}
+              width={90}
               height={30}
-              className="object-contain"
+              className="object-contain p-4 opacity-90 transition-opacity duration-200 hover:opacity-100"
               priority
             />
           </Link>

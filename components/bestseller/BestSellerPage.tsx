@@ -437,8 +437,8 @@ export default function BestSellersPage() {
 
             <h1 className="a3 uppercase mb-5 sm:mb-6"
               style={{ fontFamily: "var(--fh)", fontSize: "clamp(52px,10vw,148px)", lineHeight: .86, letterSpacing: "3px", background: "linear-gradient(155deg,#f0ebe0 25%,#d4aa4e 65%,#a07c2a 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              THE<br/>SELLERS<br/>
-              <span style={{ WebkitTextFillColor: "transparent", WebkitTextStroke: "1px rgba(212,170,78,.4)" }}>VAULT</span>
+              TOP SELLING<br/>  NOVELS<br/> 
+              <span style={{ WebkitTextFillColor: "transparent", WebkitTextStroke: "1px rgba(212,170,78,.4)" }}>OF ALL TIME</span>
             </h1>
 
             <div className="a4 overflow-hidden mb-5">

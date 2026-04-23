@@ -43,12 +43,14 @@ const calcDisc = (p: number, s: number) =>
 /* ═══════════════════════════════════════════════════════════════════
    STATIC METADATA
 ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   STATIC METADATA
+═══════════════════════════════════════════════════════════════════ */
 export const metadata: Metadata = {
   /* ── Core ─────────────────────────────────────────── */
-  title:       "Bestselling Classic eBooks | AG Classics",
+  title:       "Top Selling Novels of All Time | Best Selling Classics | AG Classics",
   description:
-    "Discover the most-loved classic books at AG Classics  ranked by readers, " +
-    "verified by sales. with eBook formats, lifetime access.",
+    "Looking for the best books to read classics? Explore the most popular classic books and greatest novels of all time ranked on our best selling books website.",
 
   /* ── Canonical ────────────────────────────────────── */
   alternates: {
@@ -60,16 +62,15 @@ export const metadata: Metadata = {
     type:        "website",
     url:         `${SITE_URL}/bestseller`,
     siteName:    SITE_NAME,
-    title:       "Bestselling Classic eBooks | AG Classics",
+    title:       "Top Selling Novels of All Time | Best Selling Classics | AG Classics",
     description:
-    "Discover the most-loved classic books at AG Classics  ranked by readers, " +
-    "verified by sales. with eBook formats, lifetime access.",
+    "Looking for the best books to read classics? Explore the most popular classic books and greatest novels of all time ranked on our best selling books website.",
     images: [
       {
-        url:    `${SITE_URL}/logo/AGClassicLogo.png`, // ← place a 1200×630 image here
+        url:    `${SITE_URL}/logo/AGClassicLogo.png`,
         width:  1200,
         height: 630,
-        alt:    "AG Classics Bestsellers | AG Classics",
+        alt:    "Top Selling Novels of All Time | AG Classics",
       },
     ],
     locale: "en_IN",
@@ -78,10 +79,10 @@ export const metadata: Metadata = {
   /* ── Twitter / X ──────────────────────────────────── */
   twitter: {
     card:        "summary_large_image",
-    site:        "@agclassics",              // ← update your handle
-    title:       "Bestselling Classic Books | AG Classics",
+    site:        "@agclassics", 
+    title:       "Best Selling Classic Novels | AG Classics",
     description:
-      "Reader-ranked. Sales-verified. The most-loved classics all in one place.",
+      "Explore the greatest novels of all time ranked by readers. Find the most popular classic books available today.",
     images:      [`${SITE_URL}/logo/AGClassicLogo.png`],
   },
 
@@ -99,16 +100,16 @@ export const metadata: Metadata = {
 
   /* ── Keywords ─────────────────────────────────────── */
   keywords: [
-    "bestselling classic books india",
-    "most popular classic books",
-    "top rated classic books online",
-    "best classic novels to buy",
-    "ag classics bestsellers",
-    "classic literature bestsellers india",
-    "buy bestseller books online india",
-    "top classic ebooks",
-    "ranked classic books",
+    "top selling novels of all time",
     "best books to read classics",
+    "most popular classic books",
+    "best selling classics",
+    "best selling classic novels",
+    "greatest novels of all time ranked",
+    "best selling books website",
+    "classic literature bestsellers india",
+    "top rated classic books online",
+    "amazon best sellers"
   ],
 };
 
@@ -119,15 +120,14 @@ function buildSchemas(books: BookMeta[]) {
   const pageUrl = `${SITE_URL}/bestseller`;
 
   /* 1 ── CollectionPage */
-  const schemaWebPage = {
+const schemaWebPage = {
     "@context": "https://schema.org",
     "@type":    "CollectionPage",
     "@id":      `${pageUrl}#webpage`,
     url:        pageUrl,
-    name:       "Bestselling Classic Books | AG Classics",
+    name:       "Top Selling Novels of All Time | Best Selling Classics",
     description:
-      "Reader-ranked bestselling classic books available in eBook formats. " +
-      "Instant delivery, lifetime access.",
+      "Find the best books to read classics. Browse the most popular classic books and the greatest novels of all time ranked by reader sales.",
     inLanguage: "en-IN",
     isPartOf: {
       "@type":  "WebSite",
@@ -141,7 +141,7 @@ function buildSchemas(books: BookMeta[]) {
         url:     SITE_URL,
         logo: {
           "@type":    "ImageObject",
-          url:        `${SITE_URL}/logo/AGClassicLogo.png`,   // ← confirm path
+          url:        `${SITE_URL}/logo/AGClassicLogo.png`,
           contentUrl: `${SITE_URL}/logo/AGClassicLogo.png`,
         },
       },
@@ -177,9 +177,9 @@ function buildSchemas(books: BookMeta[]) {
   const schemaItemList = {
     "@context":    "https://schema.org",
     "@type":       "ItemList",
-    name:          "Bestselling Classic Books | AG Classics",
+    name:          "Best Selling Classic Novels | AG Classics",
     url:           pageUrl,
-    description:   "The most-loved classics ranked by reader votes and sales velocity.",
+    description:   "The greatest novels of all time ranked by sales and reader popularity.",
     numberOfItems: books.length,
     itemListElement: books.map((book, idx) => {
       const sell = parseFloat(String(book.sell_price));
