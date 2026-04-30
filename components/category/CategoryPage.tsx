@@ -454,7 +454,7 @@ export default function CategoryPage() {
             style={{ background: "radial-gradient(circle, rgba(201,168,76,.04) 0%, transparent 70%)" }} />
           <div className="max-w-[1400px] mx-auto">
             <div className="flex items-center gap-2 mb-3 sm:mb-4">
-              <a href="/ag-classics"
+              <a href="/"
                 className="text-[10px] tracking-[2px] uppercase text-white no-underline transition-colors duration-200 hover:text-[#c9a84c]"
                 style={{ fontFamily: "'Jost', sans-serif" }}>AG Classics</a>
               <span className="text-[#3a3a3d]">›</span>
@@ -844,11 +844,11 @@ const parents    = categories.filter((c) => c.parent_id === null);
         ))}
       </div>
 
-      {/* Authors */}
+   {/* Authors */}
       {authors.length > 0 && (
         <div className={sectionCls}>
           <span className={labelCls} style={{ fontFamily: "'Jost', sans-serif" }}>Authors</span>
-          {authors.map((author) => {
+          {authors.slice(0, 10).map((author) => {
             const isActive = selectedAuthor === String(author.id);
             return (
               <div key={author.id}
