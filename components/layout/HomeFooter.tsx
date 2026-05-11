@@ -108,7 +108,6 @@ export default function HomeFooter() {
 /* ── Link data ── */
 const exploreLinks = [
   { href: "/category/all", label: "Our Collection" },
-  { href: "/ebooks", label: "Digital Library" }, 
   { href: "/bestseller", label: "Top Rated Titles" },
   { href: "/author", label: "Authors" },
 ];

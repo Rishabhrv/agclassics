@@ -7,7 +7,7 @@ export async function GET() {
 
   const staticPages = [
     { path: "/",                     priority: "1.0", changefreq: "daily" },
-    { path: "/ebooks",               priority: "0.9", changefreq: "daily" },
+    { path: "/about-us",               priority: "0.9", changefreq: "daily" },
     { path: "/bestseller",          priority: "0.8", changefreq: "daily" },
     { path: "/privacy-policy",       priority: "0.3", changefreq: "monthly" },
     { path: "/terms-and-conditions", priority: "0.3", changefreq: "monthly" },
