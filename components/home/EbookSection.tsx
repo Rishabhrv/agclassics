@@ -463,7 +463,7 @@ export default function EbookSection() {
                 bg-transparent border border-[rgba(201,168,76,0.35)] text-[#c9a84c] cursor-pointer
                 transition-all duration-300 hover:bg-[#c9a84c] hover:text-[#0a0a0b] hover:border-[#c9a84c]"
               style={{ fontFamily: "'Jost', sans-serif" }}
-              onClick={() => { window.location.href = "/ebooks"; }}
+              onClick={() => { window.location.href = "/category/all"; }}
             >
               Browse All E-Books →
             </button>
@@ -677,7 +677,7 @@ export default function EbookSection() {
                   bg-[#c9a84c] text-[#0a0a0b] border-none cursor-pointer
                   transition-colors duration-300 hover:bg-[#f5f0e8]"
                 style={{ fontFamily: "'Jost', sans-serif" }}
-                onClick={() => { window.location.href = "/ebooks"; }}
+                onClick={() => { window.location.href = "/category/all"; }}
               >
                 View All E-Books
               </button>

@@ -341,7 +341,7 @@ const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
       </ul>
 
       <a
-        href="/ebooks"
+        href="/category/all"
         className="mag-cta inline-flex items-center gap-3 w-fit text-[10px] sm:text-[11px] tracking-[3px] uppercase font-medium px-7 py-[13px] bg-[#c9a84c] text-[#0a0a0b] transition-opacity hover:opacity-90"
         style={F_JOST}
       >
