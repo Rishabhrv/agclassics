@@ -350,7 +350,7 @@ const AboutUs: React.FC = () => {
       </section>
 
       {/* ─── Our Story ────────────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-5 py-16 md:py-28 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+      {/* <section className="max-w-6xl mx-auto px-5 py-16 md:py-28 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
         <div className="reveal">
           <SectionLabel text="Our Story" />
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-light leading-tight mt-2 mb-6">
@@ -363,7 +363,7 @@ const AboutUs: React.FC = () => {
           </div>
         </div>
 
-        {/* Blockquote card — clamp the decorative quote mark so it never bleeds */}
+     
         <div
           className="reveal reveal-delay-2 relative p-8 md:p-10 border grain-overlay overflow-hidden"
           style={{ borderColor: "rgba(201,168,76,0.25)", background: "rgba(201,168,76,0.03)", borderRadius: "2px" }}
@@ -378,7 +378,7 @@ const AboutUs: React.FC = () => {
           </footer>
           <span className="absolute bottom-4 right-6 text-yellow-500/10 font-display text-6xl leading-none select-none" aria-hidden>"</span>
         </div>
-      </section>
+      </section> */}
 
       {/* ─── Our Mission ─────────────────────────────────────────────────────── */}
       <section
@@ -479,34 +479,7 @@ const AboutUs: React.FC = () => {
       </section>
 
 
-      {/* ─── Values Grid ──────────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-5 py-14 md:py-20">
-        <div className="text-center mb-10 md:mb-14 reveal">
-          <SectionLabel text="What We Stand For" />
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-light mt-2">
-            Our <em className="gold-text not-italic">Core Values</em>
-          </h2>
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
-          {values.map((v, i) => (
-            <div
-              key={i}
-              className={`reveal reveal-delay-${(i % 4) + 1} card-hover p-6 md:p-8 border`}
-              style={{ borderColor: "rgba(201,168,76,0.2)", background: "rgba(255,255,255,0.015)", borderRadius: "2px" }}
-            >
-              <span className="gold-text font-display text-3xl">{v.icon}</span>
-              <h3 className="font-title text-sm tracking-widest text-stone-100 mt-4 mb-3 uppercase">{v.title}</h3>
-              <p className="font-display gold-text text-base md:text-lg leading-relaxed" style={{ fontWeight: 300 }}>
-                {v.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-
-      {/* ─── Timeless Classics ────────────────────────────────────────────────── */}
+       {/* ─── Timeless Classics ────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden"
         style={{ background: "#060604" }}
@@ -606,6 +579,36 @@ const AboutUs: React.FC = () => {
           </a>
         </div>
       </section>
+
+
+      {/* ─── Values Grid ──────────────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-5 py-14 md:py-20">
+        <div className="text-center mb-10 md:mb-14 reveal">
+          <SectionLabel text="What We Stand For" />
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-light mt-2">
+            Our <em className="gold-text not-italic">Core Values</em>
+          </h2>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
+          {values.map((v, i) => (
+            <div
+              key={i}
+              className={`reveal reveal-delay-${(i % 4) + 1} card-hover p-6 md:p-8 border`}
+              style={{ borderColor: "rgba(201,168,76,0.2)", background: "rgba(255,255,255,0.015)", borderRadius: "2px" }}
+            >
+              <span className="gold-text font-display text-3xl">{v.icon}</span>
+              <h3 className="font-title text-sm tracking-widest text-stone-100 mt-4 mb-3 uppercase">{v.title}</h3>
+              <p className="font-display gold-text text-base md:text-lg leading-relaxed" style={{ fontWeight: 300 }}>
+                {v.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+
+     
 
 
       {/* ─── Timeline ─────────────────────────────────────────────────────────── */}
