@@ -218,7 +218,7 @@ export default function HeroSlider({ books, loading }: HeroSliderProps) {
               className="text-[7px] sm:text-[10px] tracking-[4px] uppercase text-[rgba(201,168,76,0.8)]"
               style={{ fontFamily: "'Cinzel', serif" }}
             >
-              AG Classics · A Digital Library
+              AG Classics · Digital Library
             </span>
             <div className="w-[5px] h-[5px] bg-[#c9a84c] rotate-45 flex-shrink-0 opacity-70" />
           </div>
