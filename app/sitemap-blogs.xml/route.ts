@@ -6,12 +6,9 @@ export async function GET() {
   const now = new Date().toISOString();
 
   const staticPages = [
-    { path: "/",                     priority: "1.0", changefreq: "daily" },
-    { path: "/blog",                     priority: "1.0", changefreq: "daily" },
-    { path: "/about-us",               priority: "0.9", changefreq: "daily" },
-    { path: "/bestseller",          priority: "0.8", changefreq: "daily" },
-    { path: "/privacy-policy",       priority: "0.3", changefreq: "monthly" },
-    { path: "/terms-and-conditions", priority: "0.3", changefreq: "monthly" },
+    { path: "/blog/10-best-self-development-books-for-2026",                     priority: "1.0", changefreq: "daily" },
+    { path: "/blog/sun-tzu-art-of-war-summary-and-lessons",                      priority: "1.0", changefreq: "daily" },
+    { path: "/blog/10-best-business-books",                                      priority: "1.0", changefreq: "daily" },
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

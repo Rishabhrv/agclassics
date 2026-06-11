@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { MagneticBtn } from "@/components/motion/Motionutils";
 import Link from "next/link";
 import BottomBannerAd from "../ads/BottomBannerAd";
-import { guestCart, guestWishlist } from "@/lib/guestStorage"
+import { guestCart, guestWishlist } from "@/lib/guestStorage";
+import PreviewModal from "./PreviewModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -541,6 +542,7 @@ export default function ProductPage({ product }: { product: Product }) {
   const RV_PER_PAGE = 3;
   const reviewRef = useRef<HTMLDivElement>(null);
   const [ownsEbook, setOwnsEbook] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (!product) return;
@@ -1057,6 +1059,25 @@ export default function ProductPage({ product }: { product: Product }) {
                   )}
                 </div>
               )}
+              <div className="w-full gap-3 flex items-center justify-center mt-5">
+                {/* NEW: Preview Button for Ebooks */}
+              {(product.product_type === "ebook" || product.product_type === "both") && !ownsEbook && (
+                <button
+                  onClick={() => setShowPreview(true)}
+                  className=" agc-cta-g flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-3 text-[11px] tracking-[3px] uppercase border border-[#c9a84c] bg-transparent text-[#c9a84c] cursor-pointer transition-colors duration-300 hover:bg-[rgba(201,168,76,0.1)]"
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                  </svg>
+                  Read Preview
+                </button>
+              )}
+
+              </div>
+
+              
             </div>
 
             {/* ── RIGHT: Info ── */}
@@ -1765,7 +1786,17 @@ export default function ProductPage({ product }: { product: Product }) {
         >
           ✦ ✦ ✦
         </div>
+        {showPreview && (
+        <PreviewModal 
+          slug={product.slug} 
+          title={product.title} 
+          mainImage={product.main_image ? `${API_URL}${product.main_image}` : null}
+          ebookCover={product.ebook_files?.[0] ? null : null} // Update this if ebook_cover exists natively on product
+          onClose={() => setShowPreview(false)} 
+        />
+      )}
       </div>
+      
     </>
   );
 }

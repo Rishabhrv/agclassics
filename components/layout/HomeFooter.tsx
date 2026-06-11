@@ -110,6 +110,7 @@ const exploreLinks = [
   { href: "/category/all", label: "Our Collection" },
   { href: "/bestseller", label: "Top Rated Titles" },
   { href: "/author", label: "Authors" },
+  { href: "/blog", label: "Blogs" },
 ];
 const accountLinks = [
   { href: "/login",          label: "Sign In" },
