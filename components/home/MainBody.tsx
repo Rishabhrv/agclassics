@@ -10,6 +10,7 @@ const F_CORMORANT = { fontFamily: "'Cormorant Garamond', serif" } as const;
 const F_CINZEL    = { fontFamily: "'Cinzel', serif" } as const;
 const F_JOST      = { fontFamily: "'Jost', sans-serif" } as const;
 import BookHeroSection from "./BookHeroSection";
+import NewArrivals from "./NewArrivals";
 import TopBannerAd from "../ads/TopBannerAd";
 import BottomBannerAd from "../ads/BottomBannerAd";
 import PopupAd from "../ads/PopupAd";
@@ -470,6 +471,7 @@ const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
     </div>
   </div>
 </section>
+ <NewArrivals books={books} loading={loading} error={error} />
 
 
 <section id="books" aria-label="AG Classics book collection">
@@ -672,7 +674,7 @@ const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
 
         <EbookSection />
 
-        
+       
 
 
         {/* ════════════════════════════

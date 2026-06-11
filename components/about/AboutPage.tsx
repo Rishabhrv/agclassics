@@ -502,7 +502,7 @@ const AboutPage: React.FC = () => {
               Timeless <em className="gold-text not-italic">Classics</em>
             </h2>
             <p className="font-display text-stone-100 text-base md:text-lg max-w-2xl mx-auto" style={{ fontWeight: 300 }}>
-              Discover the literature that defies time. We curate and provide the profound, enduring works that have outlived their authors to shape modern philosophy, society, and storytelling.
+              We believe great books never lose their value. Our collection brings together classic works that continue to inspire readers, shape ideas, and influence the world even today.            
             </p>
           </div>
 
@@ -516,18 +516,18 @@ const AboutPage: React.FC = () => {
             {[
               {
                 numeral: "I",
-                title: "Enduring Masterpieces",
-                body: "We meticulously source works that have stood the ultimate test of time. Every title in our shop represents a pinnacle of human thought that remains as relevant today as the day it was written.",
+                title: "Classics",
+                body: "We carefully select books that have remained important across generations. Each title offers wisdom, stories, and ideas that are as meaningful now as when they were first written.",
               },
               {
                 numeral: "II",
-                title: "Heirloom Quality",
-                body: "Timeless words deserve a timeless vessel. We offer beautiful, high-quality editions crafted to be cherished, read, and passed down through generations in your personal library.",
+                title: "Quality",
+                body: "Great books deserve great presentation. That's why we offer high-quality editions designed to be enjoyed, displayed, and passed down for years to come.",
               },
               {
                 numeral: "III",
-                title: "A Library of Eras",
-                body: "From ancient philosophical treatises to sweeping Victorian epics, our collection spans centuries, offering you the rare opportunity to own the ideas that built civilizations.",
+                title: "Heritage",
+                body: "From ancient philosophy to beloved literary masterpieces, our collection spans different eras and cultures, giving you access to the works that have shaped human thought and imagination.",
               },
             ].map((card, i) => (
               <div
