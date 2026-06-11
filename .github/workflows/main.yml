@@ -26,5 +26,13 @@ jobs:
             nvm use 24.2.0
             npm install
             npm run build
-            pm2 restart agclassics --update-env || pm2 start npm --name "agclassics" -- start -- --port 3001
+
+            # ✅ SAFE: check if already registered in PM2, never create duplicates
+            if pm2 describe agclassics > /dev/null 2>&1; then
+              pm2 restart agclassics --update-env
+            else
+              pm2 start npm --name "agclassics" -- start -- --port 3001
+            fi
+
+            pm2 save
             echo "✅ AG Classics Frontend Deployment Successful!"
