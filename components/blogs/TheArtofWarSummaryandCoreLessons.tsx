@@ -146,9 +146,10 @@ function FeaturedImage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]/30" />
         <div className="absolute inset-0 bg-[rgba(201,168,76,0.08)] mix-blend-overlay" />
       </div>
-      <p className="text-center text-[9px] text-[#444] mt-4 tracking-[0.3em] uppercase select-none">
+      {/* Changed to H2 to establish the hierarchy for the 6 lessons beneath it */}
+      <h2 className="text-center text-[9px] text-[#444] mt-4 tracking-[0.3em] uppercase select-none">
         The Six Stratagems
-      </p>
+      </h2>
     </div>
   );
 }
@@ -179,13 +180,13 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
             </span>
           </div>
 
-          {/* Title */}
-          <h2
+          {/* Title - Changed to H3 to nest perfectly under the "The Six Stratagems" H2 */}
+          <h3
             className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4 text-[#f5f0e8]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {lesson.title}
-          </h2>
+          </h3>
 
           {/* Author · Year */}
           <div className="flex items-center flex-wrap gap-2 text-xs md:text-sm mb-8">
@@ -229,10 +230,11 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
               
               {/* Strategic Concept */}
               <div>
-                <h4 className="text-[10px] tracking-[0.35em] uppercase text-[#c9b87a] mb-5 font-semibold flex items-center gap-3">
+                {/* Changed from H4 to P to prevent 6 duplicate H4 headings on the page */}
+                <p className="text-[10px] tracking-[0.35em] uppercase text-[#c9b87a] mb-5 font-semibold flex items-center gap-3">
                   <span className="w-1.5 h-1.5 rotate-45" style={{ background: lesson.accent }} />
                   Strategic Concept
-                </h4>
+                </p>
                 <p className="text-[#d8d8d8] text-[0.925rem] leading-[1.8]">
                   {lesson.whyRead}
                 </p>
@@ -243,10 +245,11 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
 
               {/* Modern Application */}
               <div>
-                <h4 className="text-[10px] tracking-[0.35em] uppercase text-[#c9b87a] mb-5 font-semibold flex items-center gap-3">
+                {/* Changed from H4 to P to prevent 6 duplicate H4 headings on the page */}
+                <p className="text-[10px] tracking-[0.35em] uppercase text-[#c9b87a] mb-5 font-semibold flex items-center gap-3">
                   <span className="w-2 h-2 rounded-full border border-current" style={{ color: lesson.accent }} />
                   Modern Application
-                </h4>
+                </p>
                 <p className="text-[#a7a7a7] text-[0.925rem] leading-[1.8] italic">
                   {lesson.legacy}
                 </p>
@@ -291,11 +294,11 @@ export default function TheArtofWarSummaryandCoreLessons() {
       {/* ══════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-5 md:px-8">
 
-        {/* Breadcrumb */}
+        {/* Breadcrumb - Anchor text updated to be highly distinct */}
         <nav className="flex items-center gap-2 text-[11px] text-[#333] pt-10 tracking-wider">
           <a href="/" className="hover:text-[#C9A227] text-[#C9A227] transition-colors">Home</a>
           <span className="text-white">›</span>
-          <a href="/blog" className="hover:text-[#C9A227] text-[#C9A227] transition-colors">Blog</a>
+          <a href="/blog" className="hover:text-[#C9A227] text-[#C9A227] transition-colors">Articles</a>
           <span className="text-white">›</span>
           <span className="text-white">The Art of War Summary</span>
         </nav>
@@ -308,7 +311,7 @@ export default function TheArtofWarSummaryandCoreLessons() {
             </span>
           </div>
 
-          {/* Headline */}
+          {/* Headline (H1 is correct) */}
           <h1
             className="text-5xl md:text-6xl lg:text-[4.25rem] font-black text-[#f5f0e8] leading-[1.03] mb-5"
             style={{ fontFamily: "'Playfair Display', serif" }}
@@ -348,7 +351,12 @@ export default function TheArtofWarSummaryandCoreLessons() {
         {/*  INTRO                                                 */}
         {/* ══════════════════════════════════════════════════════ */}
         <section className="mt-12 mb-12">
-          <blockquote className="border-l-2 border-[#C9A227]/50 pl-7 mb-10">
+          {/* Added an H2 here so the structure goes seamlessly from the H1 into the body content */}
+          <h2 className="sr-only">
+            Introduction
+          </h2>
+          
+          <blockquote className="border-l-2 border-[#C9A227]/50 pl-7 mb-10 mt-6">
             <p
               className="text-2xl md:text-3xl italic text-[#c9b87a] font-light leading-relaxed"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
@@ -421,9 +429,8 @@ export default function TheArtofWarSummaryandCoreLessons() {
           </a>
         </div>
 
-
-
         <div className="mt-8">
+          {/* Distinctive anchor text to avoid duplicating the breadcrumb link */}
           <a href="/blog" className="text-[11px] tracking-[0.25em] uppercase text-[#dcdcdc] hover:text-[#C9A227] transition-colors">
             ← Back to Blog
           </a>

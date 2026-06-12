@@ -4,7 +4,7 @@ import TheArtofWarSummaryandCoreLessons from "@/components/blogs/TheArtofWarSumm
 // ─── SEO Metadata ────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "The Art of War: Summary & Core Lessons | AG Classics",
-  description: "Written 2,500 years ago, Sun Tzu’s ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
+  description: "Sun Tzu's ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
   keywords: [
     "The Art of War Summary",
     "Sun Tzu Lessons",
@@ -15,12 +15,12 @@ export const metadata: Metadata = {
     "Leadership Books"
   ],
   alternates: {
-    canonical: "https://agclassics.in/blog/art-of-war-summary",
+    canonical: "https://agclassics.in/blog/sun-tzu-art-of-war-summary-and-lessons",
   },
   openGraph: {
     title: "The Art of War: Summary & Core Lessons | AG Classics",
-    description: "Written 2,500 years ago, Sun Tzu’s ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
-    url: "https://agclassics.in/blog/art-of-war-summary",
+    description: "Sun Tzu's ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
+    url: "https://agclassics.in/blog/sun-tzu-art-of-war-summary-and-lessons",
     type: "article",
     siteName: "AG Classics",
     images: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "The Art of War: Summary & Core Lessons | AG Classics",
-    description: "Written 2,500 years ago, Sun Tzu’s ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
+    description: "Sun Tzu's ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
     images: ["https://brandongaille.com/wp-content/uploads/2020/02/the-art-of-war-summary-ft.jpg"],
   },
 };
@@ -46,10 +46,10 @@ const blogSchema = {
   "@type": "BlogPosting",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://agclassics.in/blog/art-of-war-summary"
+    "@id": "https://agclassics.in/blog/sun-tzu-art-of-war-summary-and-lessons"
   },
   "headline": "The Art of War: Summary & Core Lessons",
-  "description": "Written 2,500 years ago, Sun Tzu’s ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
+  "description": "Sun Tzu's ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.",
   "image": "https://brandongaille.com/wp-content/uploads/2020/02/the-art-of-war-summary-ft.jpg",  
   "author": {
     "@type": "Organization",
