@@ -11,7 +11,7 @@ const SITE_NAME = "AG Classics";
    SEO METADATA
 ═══════════════════════════════════════════════════════════════════ */
 export const metadata: Metadata = {
-  title: `About Us | ${SITE_NAME} - Curated Digital Library`,
+  title: `About Us | Curated Digital Library - ${SITE_NAME}`,
   description:
     "Discover AG Classics, India's foremost curated digital library. We preserve and provide instant access to timeless literature, philosophy, and enduring masterpieces for the intentional reader.",
   keywords: [
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `About Us | ${SITE_NAME}`,
+    title: `About Us - ${SITE_NAME}`,
     description:
       "Preserving the legacy of human thought. Discover India's foremost curated digital library of timeless classics.",
     images: [`${SITE_URL}/images/logo/AGClassicLogosquare.png`], // Add a fallback OG image to your public folder

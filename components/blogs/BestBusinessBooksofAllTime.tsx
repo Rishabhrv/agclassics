@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────
-//  AG Classics — Blog: "10 Best Business Books of All Time"
+//  AG Classics  Blog: "10 Best Business Books of All Time"
 //  Drop into your Next.js / React project. Requires: Tailwind CSS
 // ─────────────────────────────────────────────────────────────────────
 
@@ -37,12 +37,12 @@ const BOOKS: Book[] = [
     accent: "#D4AF37",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0449214923-L.jpg",
     description:
-      "Drawn from two decades of research and personal interviews with over 500 self-made millionaires — including Andrew Carnegie, Thomas Edison, and Henry Ford — Napoleon Hill's masterwork distills the science of achievement into 13 interlocking principles. It is not, despite its title, a book about money. It is a treatise on the architecture of human possibility: the radical premise that thought, sustained and obsessive and backed by unwavering faith, becomes the magnetic force that draws its material equivalent into existence. Every foundational success framework written in the century since borrows from this book — often without acknowledgment.",
+      "Napoleon Hill spent twenty years researching and interviewing over 500 self-made millionaires like Andrew Carnegie, Thomas Edison, and Henry Ford to write this masterpiece. Despite the title, it is not actually a book about money. Instead, it explores human potential and the powerful idea that intense, focused thoughts backed by strong faith can turn your goals into reality. Almost every major success framework written over the last century has borrowed ideas from this book, even if they do not admit it.",
     coreIdea:
-      "Whatever the mind can conceive and believe, it can achieve. Success begins not with action, but with a state of mind — a burning desire backed by faith and a definite plan.",
+      "Whatever your mind can conceive and believe, it can achieve. True success starts with your mindset, requiring a strong desire, unshakeable faith, and a clear plan of action.",
     whyRead:
-      "Reading Think and Grow Rich is going to the original source of nearly every success philosophy that followed it. Not as a historical curiosity, but as living instruction.",
-    legacy: "Over 100 million copies sold worldwide. In continuous print for nearly 90 years.",
+      "This book is the original source of almost every modern success philosophy. You should read it not just as a piece of history, but as a practical guide for your own life.",
+    legacy: "It has sold over 100 million copies worldwide and has stayed in print continuously for almost 90 years.",
   },
   {
     rank: 2,
@@ -53,12 +53,12 @@ const BOOKS: Book[] = [
     accent: "#4CAF8A",
     coverUrl: "https://m.media-amazon.com/images/I/41OksZQYt+L._SY445_SX342_FMwebp_.jpg",
     description:
-      "Carnegie's deceptively simple title conceals one of the most profound inquiries into human nature ever committed to a business book. Written from thousands of case studies collected over years of teaching, the book argues — supported by every subsequent study in organisational psychology — that business success is 85% people skills and 15% technical knowledge. Through vivid anecdotes drawn from Lincoln, Rockefeller, and Roosevelt, Carnegie demonstrates that the art of making people feel genuinely important, understood, and valued is not manipulation: it is mastery of the one element no technology has ever automated.",
+      "The simple title hides one of the deepest looks into human nature you will ever find in a business book. Dale Carnegie used thousands of real-world case studies to show that business success is 85% people skills and only 15% technical knowledge. Using great stories about leaders like Lincoln and Roosevelt, he proves that making people feel important, understood, and valued is not about tricking them. It is about mastering the human connection that no technology can ever replace.",
     coreIdea:
-      "You can make more friends in two months by becoming genuinely interested in other people than in two years of trying to get other people interested in you.",
+      "You will make more friends in two months by being truly interested in others than you ever could in two years of trying to get them interested in you.",
     whyRead:
-      "Leadership, sales, negotiation, management, hiring — every professional domain is fundamentally about human relationships. This book lays the foundation on which all others build.",
-    legacy: "Over 30 million copies sold. A standard reading list staple at business schools for nearly 90 years.",
+      "Whether you are in leadership, sales, or management, your work is always about human relationships. This book gives you the essential foundation for dealing with people.",
+    legacy: "With over 30 million copies sold, it has been a must-read staple at business schools for almost 90 years.",
   },
   {
     rank: 3,
@@ -69,12 +69,12 @@ const BOOKS: Book[] = [
     accent: "#5B9BD5",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0804139024-L.jpg",
     description:
-      "Peter Thiel, co-founder of PayPal and the first outside investor in Facebook, argues that genuine progress — going from zero to one — means doing something truly new, not copying and optimising what already exists. His contrarian thesis is stated without apology: competition is for losers, monopoly is the goal, and the best businesses are founded on secrets the rest of the world has not yet noticed. Dense with Silicon Valley insider knowledge and genuine philosophical depth, this is one of the most intellectually honest books about building something that matters, written by someone who has repeatedly done exactly that.",
+      "Peter Thiel, who co-founded PayPal and was the first outside investor in Facebook, argues that true progress means creating something entirely new instead of just improving what already exists. He boldly claims that competition is actually a bad thing, monopolies should be your goal, and the best businesses are built on secrets the rest of the world has missed. Packed with insider stories from Silicon Valley and deep philosophical ideas, this book gives an incredibly honest look at how to build things that truly matter.",
     coreIdea:
-      "Every moment in business happens only once. The next Gates won't build an operating system. The next Page won't make a search engine. If you are copying these people, you are not learning from them.",
+      "Every big moment in business only happens once. The next Bill Gates will not build an operating system, and the next Larry Page will not make a search engine. If you just copy them, you are missing the point entirely.",
     whyRead:
-      "Thiel asks questions no other business book dares to ask, and his answers are discomforting in the most productive way possible for any serious builder.",
-    legacy: "Required reading in Stanford's entrepreneurship programme. Foundational text across venture capital ecosystems worldwide.",
+      "Thiel asks the tough questions that other business books avoid. His answers might make you uncomfortable, but they are exactly what any serious entrepreneur needs to hear.",
+    legacy: "It is required reading for Stanford entrepreneurs and serves as a foundational guide for the global venture capital world.",
   },
   {
     rank: 4,
@@ -85,12 +85,12 @@ const BOOKS: Book[] = [
     accent: "#9B59B6",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0066620996-L.jpg",
     description:
-      "Collins and his research team spent five years analysing 28 companies — 11 that made the sustained leap from good to great and 17 that did not — extracting the patterns that separate enduring greatness from comfortable mediocrity. Their findings demolished several cherished myths: charismatic leadership matters far less than most assume; corporate transformations are not dramatic turnarounds but the patient accumulation of momentum, like a flywheel gathering speed; and the right people in the right seats must precede any strategy whatsoever. The data is unambiguous. The conclusions are, for most leaders, genuinely unsettling.",
+      "Jim Collins and his team spent five years studying 28 companies to find out why some make the leap to greatness while others stay stuck in the middle. Their research destroyed some common business myths. They found that flashy leaders matter a lot less than we think, and real change happens slowly as you build momentum over time. They also proved that getting the right people on your team has to happen before you make any big strategic plans. The data is crystal clear, even if the answers might surprise some leaders.",
     coreIdea:
-      "Good is the enemy of great. Most companies never become great precisely because most settle for being good — and good is comfortable, achievable, and deeply, dangerously safe.",
+      "Being just good is the biggest block to becoming great. Most companies never achieve greatness because they settle for a comfortable, easy, and completely safe level of good.",
     whyRead:
-      "Empirically grounded and rigorously researched, this is business literature that actually proves its claims rather than merely asserting them — a genuine rarity in any genre.",
-    legacy: "Over 4 million copies sold. Named one of the most influential business books of the past two decades by TIME.",
+      "This book is backed by heavy research and hard data. It actually proves its claims instead of just sharing opinions, which is very rare in the business world.",
+    legacy: "It has sold over 4 million copies and was named one of the most influential business books of the past two decades by TIME magazine.",
   },
   {
     rank: 5,
@@ -101,12 +101,12 @@ const BOOKS: Book[] = [
     accent: "#E74C3C",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0307887898-L.jpg",
     description:
-      "Ries synthesised lean manufacturing principles from Toyota, agile software development, and his own hard-earned experience as a failed and then successful startup founder to create a methodology that has fundamentally reshaped how the world builds products. The core insight is simple and devastating: most startups don't know what their customers want, and the greatest waste is not failed launches but the slow accumulation of resources building something nobody needs. The fastest path to truth is a disciplined Build-Measure-Learn cycle using minimum viable products to test real hypotheses before committing capital at scale.",
+      "Eric Ries combined ideas from Toyota's manufacturing process, modern software development, and his own bumpy ride as a startup founder to create a system that changed how we build products today. His main point is simple but powerful: most new businesses have no idea what their customers actually want. The biggest waste of time and money is not a failed launch, but secretly building something that nobody cares about. The best approach is to launch a basic version of your idea quickly, see how people react, and learn from it before spending all your money.",
     coreIdea:
-      "The only way to win is to learn faster than anyone else. Validated learning — not output, not lines of code, not features shipped — is the true measure of startup progress.",
+      "The only way to win in business is to learn faster than your competition. Real progress is measured by how much you learn from your customers, not just by how many features you build.",
     whyRead:
-      "Whether you are launching a product, a department, or a new business line, the Lean Startup framework is the most practical and battle-tested innovation system available to any builder.",
-    legacy: "Established an entirely new business methodology now used by startups, Fortune 500 companies, and government agencies on every continent.",
+      "Whether you are starting a new company, launching a product, or building a new department, this book offers the most practical and proven system to help you innovate safely.",
+    legacy: "It created a brand new way of doing business that is now used everywhere, from small startups to massive Fortune 500 companies around the world.",
   },
   {
     rank: 6,
@@ -117,12 +117,12 @@ const BOOKS: Book[] = [
     accent: "#E67E22",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0743269519-L.jpg",
     description:
-      "Covey's framework is built on a distinction most productivity literature carefully avoids: the difference between the Character Ethic — rooted in fundamental principles of integrity, contribution, and service — and the Personality Ethic, rooted in techniques, social performance, and surface competence. The seven habits are not productivity tips; they are a comprehensive paradigm for moving from dependence to independence to genuine interdependence. The book is as much philosophy as it is practice, grounded in the uncomfortable conviction that sustainable effectiveness begins not with what you do, but with who you are.",
+      "Stephen Covey focuses on something most productivity books ignore. He highlights the difference between quick fixes or social tricks and building deep, lasting character traits like honesty and service. His seven habits are not just life hacks to help you save time. They form a complete guide on how to grow from relying on others to becoming self-sufficient, and finally to working beautifully in a team. The book blends philosophy with practical advice, showing that true success starts with who you are inside, not just what you do.",
     coreIdea:
-      "Begin with the end in mind. Most people spend their whole lives climbing the ladder of success, only to discover at the end that it was leaning against the wrong wall.",
+      "Always start with your final goal in mind. Far too many people spend their entire lives climbing the ladder of success, only to realize too late that it was leaning against the wrong wall.",
     whyRead:
-      "In a world saturated with productivity hacks and morning routines, Covey addresses what every other productivity book carefully avoids: character. On that ground, it remains peerless.",
-    legacy: "Over 40 million copies sold in 50 languages. Named the most influential business book of the 20th century by Forbes.",
+      "In a world obsessed with quick productivity hacks and morning routines, Covey talks about building solid character. That makes this book truly one of a kind.",
+    legacy: "It has sold over 40 million copies across 50 languages and was named the most influential business book of the 20th century by Forbes.",
   },
   {
     rank: 7,
@@ -133,12 +133,12 @@ const BOOKS: Book[] = [
     accent: "#7CBB4A",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0060555661-L.jpg",
     description:
-      "Warren Buffett calls this 'by far the best book on investing ever written' — and Buffett is not given to superlatives. Graham's framework of value investing — buying securities at significant discounts to their intrinsic worth, with a built-in margin of safety against error — was revolutionary in 1949 and remains the philosophical bedrock of successful long-term investing today. The book's essential distinction between investment and speculation is one of the most practically useful ideas in financial history, and the allegory of Mr. Market — the manic-depressive business partner who offers to buy or sell his share every day at a different price — is a mental model every professional should carry permanently.",
+      "Warren Buffett calls this the best investing book ever written, and he does not give out praise lightly. Benjamin Graham introduced the idea of value investing back in 1949, which means finding great stocks that are priced lower than what they are actually worth. This concept is still the foundation for making smart, long-term investments today. His clear explanation of the difference between true investing and simple gambling is a must-read. He also shares the famous story of Mr. Market, an emotional business partner whose wild mood swings teach us exactly how to handle the stock market.",
     coreIdea:
-      "The investor's chief problem — and even his worst enemy — is likely to be himself. The market is there to serve you, not to instruct you. Learning that distinction is everything.",
+      "The biggest problem an investor faces is usually their own emotions. The market is there to serve you, not to tell you what to do, and understanding that changes everything.",
     whyRead:
-      "Understanding how capital actually works is foundational knowledge for any professional. Graham doesn't just teach investing — he teaches you to think clearly about money and value.",
-    legacy: "Shaped the investment philosophy of Buffett, Munger, Seth Klarman, and virtually every successful value investor of the past 75 years.",
+      "Knowing how money truly works is essential for everyone. Graham goes beyond basic stock tips and teaches you how to think clearly and rationally about wealth.",
+    legacy: "It completely shaped the strategies of legends like Warren Buffett and Charlie Munger, along with almost every great value investor over the last 75 years.",
   },
   {
     rank: 8,
@@ -149,12 +149,12 @@ const BOOKS: Book[] = [
     accent: "#3498DB",
     coverUrl: "https://covers.openlibrary.org/b/isbn/1612680194-L.jpg",
     description:
-      "Told through the contrast between his financially struggling educated father ('Poor Dad') and the entrepreneurial father of his best friend ('Rich Dad'), Kiyosaki's book challenges the conventional script of school, stable job, and a 40-year career with brutal directness. The central insight — that the rich do not work for money, they make money work for them — reframed how a generation understood assets, liabilities, and the fundamental economics of personal finance. The book is deliberately provocative, designed not to comfort but to force a complete rupture in every assumption most people carry about work, security, and wealth.",
+      "Robert Kiyosaki compares two father figures in his life: his highly educated but financially struggling dad, and his best friend's dad who was a wealthy entrepreneur. By looking at their different mindsets, he challenges the traditional path of going to school to get a safe job for 40 years. His biggest lesson is that wealthy people do not work for money; instead, they make their money work for them. The book was written to shake up how we view personal finance, making us rethink everything we believe about jobs, security, and getting rich.",
     coreIdea:
-      "The poor and middle class work for money. The rich have money work for them. Your house is not an asset — it is a liability. Financial education is the one subject school will never teach.",
+      "Average folks trade their time for a paycheck, while the wealthy build assets that generate cash. Surprisingly, your house is a liability, not an asset, and financial literacy is the one subject schools ignore.",
     whyRead:
-      "As an intellectual provocation about financial literacy and the school system's failure to teach real economics, it has few equals in accessibility, clarity, and lasting impact.",
-    legacy: "Over 40 million copies sold in 109 countries. Among the best-selling personal finance books in publishing history.",
+      "It is incredibly easy to read and completely changes how you look at money. It highlights the massive gap in what the school system teaches us about real-world economics.",
+    legacy: "Selling over 40 million copies in 109 countries, it remains one of the best-selling personal finance books in history.",
   },
   {
     rank: 9,
@@ -165,12 +165,12 @@ const BOOKS: Book[] = [
     accent: "#C0392B",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0195014766-L.jpg",
     description:
-      "Written over 2,500 years ago for military commanders on the battlefields of ancient China, Sun Tzu's 13 chapters contain perhaps the most concentrated collection of strategic wisdom ever assembled. Business leaders, negotiators, and executives have found in it principles that translate directly and without forcing: know your terrain; win without fighting wherever possible; act only from a position of genuine strength; the highest form of victory is to render conflict unnecessary before it begins. Its brevity is its genius — in the original Chinese, each character is irreducible. There is no filler, no padding, no encouragement. Only principle.",
+      "Written over 2,500 years ago for military generals in ancient China, these 13 chapters hold some of the sharpest strategic advice ever recorded. Today, business leaders and negotiators use its lessons because they apply perfectly to the modern world. Sun Tzu teaches you to understand your environment, avoid unnecessary fights, and only make moves when you have a real advantage. He believes the ultimate victory is winning before a battle even starts. It is a short, brilliant read packed with pure strategy and zero fluff.",
     coreIdea:
-      "The supreme art of war is to subdue the enemy without fighting. The supreme art of business is to render competition irrelevant before it has time to begin.",
+      "True mastery means defeating your opponent without ever fighting. In business, this means becoming so unique or powerful that your competition becomes completely irrelevant.",
     whyRead:
-      "Competition in business is strategic warfare conducted with financial instruments. Sun Tzu provides the clearest and most durable framework for strategic thinking ever committed to writing.",
-    legacy: "Studied continuously for 2,500 years across military, political, and business contexts. Cited by leaders from Mao Zedong to Bill Belichick.",
+      "Business is often a lot like strategic warfare. This ancient book offers the clearest and most timeless framework for outsmarting your rivals.",
+    legacy: "It has been studied globally for 2,500 years in military, political, and business circles by countless historic and modern leaders.",
   },
   {
     rank: 10,
@@ -181,12 +181,12 @@ const BOOKS: Book[] = [
     accent: "#1ABC9C",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0060516402-L.jpg",
     description:
-      "Before Good to Great, Collins and Porras spent six years studying 18 truly exceptional companies — including 3M, Boeing, Disney, and Merck — that had endured across multiple decades, leaders, and product cycles, comparing them rigorously against less successful competitors. Their conclusion: visionary companies are built on core values and a core purpose that extend far beyond profit, combined with a structural genius for preserving what is essential while relentlessly stimulating progress. It is ultimately a study in institutional character — what it actually means to build not just a successful company, but a lasting one.",
+      "Before releasing Good to Great, Jim Collins and Jerry Porras spent six years looking at 18 incredible companies like Disney, Boeing, and 3M. They wanted to know how these giants survived changing times, multiple CEOs, and shifting markets compared to their competitors. They discovered that truly visionary companies are driven by strong core values that go far beyond just making a profit. They know exactly what traditions to protect while constantly pushing for fresh ideas. It is a fascinating look at how to build a business that will outlive its founders.",
     coreIdea:
-      "Preserve the core; stimulate progress. The visionary company is not the most profitable in any single year — it is the one that is still here, and still excellent, a century later.",
+      "Protect your core values but always push for progress. A truly great company might not be the most profitable one every single year, but it will still be thriving a century later.",
     whyRead:
-      "In an era of quarterly earnings and five-year plans, this book asks what it means to build something that outlasts you — and answers that question with six years of evidence.",
-    legacy: "Named one of the greatest business books of all time by BusinessWeek. Required reading at Stanford GSB and Harvard Business School.",
+      "In a business world obsessed with short-term profits, this book shows you how to build a legacy that will outlast you, backed by six years of solid evidence.",
+    legacy: "BusinessWeek named it one of the greatest business books of all time, and it remains required reading at top schools like Stanford and Harvard.",
   },
 ];
 
@@ -253,7 +253,7 @@ function FallbackCover({ book, small = false }: { book: Book; small?: boolean })
 }
 
 // ─── Books Collage ────────────────────────────────────────────────────
-// Visual 5×2 grid preview after the intro — each cover links to its entry.
+// Visual 5×2 grid preview after the intro  each cover links to its entry.
 
 function CollageItem({ book }: { book: Book }) {
   const [err, setErr] = useState(false);
@@ -473,7 +473,7 @@ export default function BestBusinessBooksofAllTime() {
       </div>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  HERO                                                  */}
+      {/* HERO                                                  */}
       {/* ══════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-5 md:px-8">
 
@@ -505,8 +505,7 @@ export default function BestBusinessBooksofAllTime() {
 
           {/* Subtitle */}
           <p className="text-[1.05rem] text-[#eeeeee] leading-relaxed mb-8 max-w-2xl" style={{ fontWeight: 300 }}>
-            A curated guide to the books that built empires, rewired industries, and changed the thinking
-            of every leader worth knowing — assembled from the AG&nbsp;Classics collection.
+            A curated guide to the books that built empires, reshaped industries, and changed how great leaders think all selected from the AG Classics collection.
           </p>
 
           {/* Meta */}
@@ -532,7 +531,7 @@ export default function BestBusinessBooksofAllTime() {
         </header>
 
         {/* ══════════════════════════════════════════════════════ */}
-        {/*  INTRO                                                 */}
+        {/* INTRO                                               */}
         {/* ══════════════════════════════════════════════════════ */}
         <section className="mt-12 mb-12">
           <blockquote className="border-l-2 border-[#C9A227]/50 pl-7 mb-10">
@@ -543,33 +542,27 @@ export default function BestBusinessBooksofAllTime() {
               &ldquo;Not all readers are leaders, but all leaders are readers.&rdquo;
             </p>
             <cite className="block mt-3 text-[10px] tracking-[0.3em] text-[#d8d8d8] not-italic uppercase">
-              — Harry S. Truman
+               Harry S. Truman
             </cite>
           </blockquote>
 
           <p className="text-[#e8e8e8] leading-[1.95] mb-5 text-[0.925rem]">
-            The most expensive education in the world costs nothing compared to the right book read at the
-            right moment. The ten books assembled here represent centuries of compressed wisdom — from the
-            battlefields of ancient China to the boardrooms of Silicon Valley — selected not for their
-            popularity alone, but for the depth, durability, and irreplaceability of their ideas.
+            Getting a great education does not have to cost a fortune, especially when you find the perfect book at exactly the right time. The ten books we have put together here hold centuries of wisdom. They cover everything from ancient battlefields in China to modern boardrooms in Silicon Valley. We chose them not just because they are popular, but because their ideas are deep, lasting, and truly life changing.
           </p>
           <p className="text-[#e8e8e8] leading-[1.95] text-[0.925rem]">
-            Each book on this list has done something rare: it has changed the way its readers think, not
-            merely what they know. They are arranged in the sequence we believe most readers will extract
-            maximum value from encountering them — beginning with the architecture of the mind, and ending
-            with the architecture of institutions built to outlast their founders.
+            Every book on this list does something very special. They do not just give you new facts; they completely change the way you look at the world. We arranged them in an order that makes the most sense for your journey. You will start by exploring the power of your own mindset and finish by learning how to build organizations that will last for generations.
           </p>
         </section>
 
       </div>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  BOOKS COLLAGE — visual grid preview                  */}
+      {/* BOOKS COLLAGE  visual grid preview                  */}
       {/* ══════════════════════════════════════════════════════ */}
       <BooksCollage />
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  BOOK ENTRIES                                          */}
+      {/* BOOK ENTRIES                                          */}
       {/* ══════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-5 md:px-8">
         {BOOKS.map((book) => (
@@ -578,7 +571,7 @@ export default function BestBusinessBooksofAllTime() {
       </div>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  CONCLUSION                                            */}
+      {/* CONCLUSION                                            */}
       {/* ══════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-5 md:px-8 mt-16 mb-24">
 
@@ -601,15 +594,10 @@ export default function BestBusinessBooksofAllTime() {
           </h2>
           <div className="w-10 h-0.5 bg-[#C9A227]/50 mt-4 mb-7" />
           <p className="text-[#7a7a7a] leading-[1.9] mb-4 text-[0.925rem]">
-            These ten books do not merely teach business — they teach how to think, how to lead, how to build,
-            and how to endure. The greatest return on investment any professional can make is not in the stock
-            market or in real estate: it is in the pages of books written by people who spent their entire
-            lives mastering what they had to teach.
+            These ten books do more than just teach you about business. They teach you how to think better, lead well, and build things that truly last. The smartest investment you can make for your career is not in the stock market or real estate. It is diving into the pages written by people who spent their whole lives mastering their craft.
           </p>
           <p className="text-[#7a7a7a] leading-[1.9] text-[0.925rem] mb-9">
-            All ten books are available in the AG&nbsp;Classics collection. Browse our curated catalogue of
-            business, philosophy, and timeless literature — physical editions selected for their quality,
-            beauty, and enduring value.
+            You can find all ten of these amazing books right here in the AG Classics collection. Take some time to browse our carefully chosen catalogue of business, philosophy, and classic literature. We focus on offering beautiful, high quality physical editions that you will value for a lifetime.
           </p>
           <a
             href="/category/all"
@@ -619,7 +607,6 @@ export default function BestBusinessBooksofAllTime() {
             <span className="text-base leading-none">→</span>
           </a>
         </div>
-
 
         <div className="mt-8">
           <a href="/blog" className="text-[11px] tracking-[0.25em] uppercase text-[#dcdcdc] hover:text-[#C9A227] transition-colors">

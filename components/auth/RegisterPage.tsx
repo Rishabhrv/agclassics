@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -413,8 +414,13 @@ export default function RegisterPage() {
             {/* Divider */}
             <div className="flex items-center gap-[14px] my-[26px]">
               <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,168,76,0.25))" }} />
-              <div className="w-[5px] h-[5px] rotate-45 bg-[#8a6f2e] shrink-0" />
+              <div className="text-[12px] text-[#6b6b70] uppercase tracking-[2px]" style={{ fontFamily: "'Jost', sans-serif" }}>Or</div>
               <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, rgba(201,168,76,0.25))" }} />
+            </div>
+
+            {/* Render the Google Auth Button */}
+            <div className="mb-6">
+              <SocialAuthButtons />
             </div>
 
             <p className="text-center text-[12px] text-white"

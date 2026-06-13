@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────
-//  AG Classics — Blog: "The Art of War: Summary & Core Lessons"
+//  AG Classics  Blog: "The Art of War: Summary & Core Lessons"
 //  Drop into your Next.js / React project. Requires: Tailwind CSS
 // ─────────────────────────────────────────────────────────────────────
 
@@ -33,12 +33,12 @@ const LESSONS: Lesson[] = [
     category: "Ultimate Strategy",
     accent: "#D4AF37",
     description:
-      "Sun Tzu believed that actual combat is a failure of strategy. War destroys resources, drains wealth, and guarantees casualties even for the victor. The ultimate general maneuvers their opponent into a position where surrender or retreat is the only logical choice, securing victory while keeping both their own resources and the conquered territory intact. To fight and conquer in all your battles is not supreme excellence; supreme excellence consists in breaking the enemy's resistance without fighting.",
+      "Sun Tzu believed that actually fighting means your strategy has already failed. War destroys resources, drains your wealth, and guarantees pain even if you win. The smartest leaders maneuver their opponents into a spot where giving up or walking away is the only logical choice. This secures a win while keeping your own resources safe. Winning every battle is not the goal. The real goal is breaking the competition's resistance without ever throwing a punch.",
     coreIdea:
       "The supreme art of war is to subdue the enemy without fighting.",
     whyRead:
-      "A price war is a battle of attrition where everyone loses margins. Actual confrontation is expensive and unpredictable.",
-    legacy: "Blue Ocean Strategy: creating uncontested market space or building an unbreachable moat before a costly market battle begins.",
+      "A price war is a slow battle where everyone just loses money. Actually fighting your competition head on is expensive and highly unpredictable.",
+    legacy: "This is the core of Blue Ocean Strategy. It means creating a brand new market space or building a massive advantage before a costly battle even starts.",
   },
   {
     rank: 2,
@@ -48,12 +48,12 @@ const LESSONS: Lesson[] = [
     category: "Intelligence & Auditing",
     accent: "#C0392B",
     description:
-      "This is perhaps the most famous axiom of the text. Sun Tzu outlines that victory is a calculation of information. If you understand your own weaknesses as clearly as your strengths, and possess precise intelligence on your opponent's vulnerabilities, the outcome of the conflict is mathematically predetermined. Ignorance of either yourself or your enemy guarantees catastrophic failure.",
+      "This might be the most famous lesson in the entire book. Sun Tzu explains that winning is all about having the right information. If you understand your own weaknesses just as well as your strengths, and you know exactly where your opponent is vulnerable, your victory is practically guaranteed. Ignoring either your own flaws or your enemy's moves will almost always lead to disaster.",
     coreIdea:
       "If you know the enemy and know yourself, you need not fear the result of a hundred battles.",
     whyRead:
-      "Leaders often fail because of hubris (not knowing themselves) or market ignorance (not knowing the enemy). Information is the primary weapon.",
-    legacy: "Requires ruthlessly auditing your own company's capabilities while heavily investing in competitive intelligence to expose rival vulnerabilities.",
+      "Leaders usually fail because of ego or because they simply do not understand their market. Information is your most powerful weapon.",
+    legacy: "This requires taking a brutally honest look at your own company while investing heavily in research to find out exactly where your rivals are weak.",
   },
   {
     rank: 3,
@@ -63,12 +63,12 @@ const LESSONS: Lesson[] = [
     category: "Calculation & Planning",
     accent: "#5B9BD5",
     description:
-      "Battles are won in the war room, not on the battlefield. Sun Tzu argues that a wise commander calculates every variable—terrain, weather, logistics, and morale—long before swords are drawn. The commander stands in the temple and makes calculations. If the calculations point to defeat, the commander does not engage. Action without calculation is merely gambling with resources.",
+      "Battles are actually won in the planning room, not out on the field. Sun Tzu argues that a smart leader looks at every single detail before making a move. If the math points to a loss, a smart leader simply steps back and refuses to fight. Taking action without planning is just gambling with your hard earned resources.",
     coreIdea:
       "Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win.",
     whyRead:
-      "Hope is not a strategy. If you rely on 'hustle' after a product launch to save it, you have already lost the strategic high ground.",
-    legacy: "Achieving product-market fit, securing capital, and building distribution channels must happen long before you announce to the public.",
+      "Hope is not a business strategy. If you are relying on pure hustle to save a product after it launches, you have already lost the upper hand.",
+    legacy: "You have to figure out what your customers want, secure your funding, and build your audience long before you announce anything to the public.",
   },
   {
     rank: 4,
@@ -78,12 +78,12 @@ const LESSONS: Lesson[] = [
     category: "Adaptability",
     accent: "#4CAF8A",
     description:
-      "Rigidity is death. Sun Tzu uses the metaphor of water to explain that military tactics must constantly shift. Just as water retains no constant shape, there are no constant conditions in warfare. A commander must not cling to a pre-written plan when the reality of the battlefield changes. The ability to adapt instantly to the enemy's movements is the essence of tactical genius.",
+      "Being stubborn will destroy you. Sun Tzu uses the idea of water to explain that your plans must constantly flow and shift. Just like water takes the shape of its container, you have to adjust to the situation in front of you. A great leader never sticks to a broken plan when reality changes. The ability to adapt instantly is the true mark of genius.",
     coreIdea:
       "Water shapes its course according to the nature of the ground; the soldier works out his victory in relation to the foe whom he is facing.",
     whyRead:
-      "Five-year business plans are often rendered obsolete in five months. Clinging to legacy systems when the environment shifts is a fatal error.",
-    legacy: "Modern agile methodology: enterprises must remain fluid, willing to pivot products or pricing the moment consumer behavior shifts.",
+      "Strict five year business plans often become useless in just five months. Sticking to old ways of doing things when the world changes is a deadly mistake.",
+    legacy: "This is the heart of modern agile business. Companies have to stay flexible and be willing to pivot their products the moment customer behavior changes.",
   },
   {
     rank: 5,
@@ -93,12 +93,12 @@ const LESSONS: Lesson[] = [
     category: "Information Control",
     accent: "#9B59B6",
     description:
-      "To Sun Tzu, total transparency is a vulnerability. Controlling the flow of information forces the enemy to make decisions based on illusions. By projecting weakness when strong, and strength when weak, a commander leads the enemy into fatal miscalculations and traps. If your opponent does not know where you will attack, they must defend everywhere—and by defending everywhere, they are strong nowhere.",
+      "To Sun Tzu, showing all your cards is a huge weakness. Controlling what people know forces your competition to make decisions based on illusions. By looking weak when you are actually strong, you can lead your rivals right into a trap. If your opponent has no idea what you are going to do next, they have to try to protect everything. And when they try to protect everything, they end up being strong nowhere.",
     coreIdea:
       "All warfare is based on deception. Hence, when we are able to attack, we must seem unable; when using our forces, we must appear inactive.",
     whyRead:
-      "Telegraphing your strategic moves allows competitors time to block them. Managing perception is as important as managing operations.",
-    legacy: "Apple's strict culture of secrecy before a launch, or a startup operating in 'stealth mode' to prevent incumbent retaliation.",
+      "Announcing your big moves too early gives your competitors time to block them. Managing how people see you is just as important as running your daily operations.",
+    legacy: "Think of how Apple keeps everything a massive secret before a big launch, or how startups work in stealth mode so bigger companies cannot steal their ideas.",
   },
   {
     rank: 6,
@@ -108,12 +108,12 @@ const LESSONS: Lesson[] = [
     category: "Execution & Momentum",
     accent: "#E67E22",
     description:
-      "Even a smaller, less equipped army can defeat a massive force if it strikes with overwhelming speed at the exact right moment. Prolonged campaigns exhaust troops and drain the treasury. Sun Tzu emphasizes that once the decision to attack is made, execution must be swift and devastating. Hesitation sacrifices momentum, and in conflict, momentum is the arbiter of victory.",
+      "Even a small, scrappy team can beat a massive company if they move with overwhelming speed at the exact right time. Dragging things out just exhausts your people and drains your bank account. Sun Tzu teaches that once you decide to make a move, you have to execute it incredibly fast. Waiting around kills your momentum, and in business, momentum is everything.",
     coreIdea:
       "Let your rapidity be that of the wind... In raiding and plundering be like fire, in immovability like a mountain.",
     whyRead:
-      "Perfectionism delays execution. When a market window opens, swift action overcomes structural disadvantages and disrupts larger competitors.",
-    legacy: "The 'first-mover advantage.' Rapid execution is the startup's greatest weapon against slow-moving corporate incumbents.",
+      "Trying to be perfect just slows you down. When an opportunity opens up, moving fast helps you overcome your weaknesses and disrupt much bigger competitors.",
+    legacy: "This is all about the first mover advantage. Moving quickly is the greatest weapon a small startup has against giant, slow moving corporations.",
   },
 ];
 
@@ -298,7 +298,7 @@ export default function TheArtofWarSummaryandCoreLessons() {
         <nav className="flex items-center gap-2 text-[11px] text-[#333] pt-10 tracking-wider">
           <a href="/" className="hover:text-[#C9A227] text-[#C9A227] transition-colors">Home</a>
           <span className="text-white">›</span>
-          <a href="/blog" className="hover:text-[#C9A227] text-[#C9A227] transition-colors">Articles</a>
+          <a href="/blog" className="hover:text-[#C9A227] text-[#C9A227] transition-colors">Blog</a>
           <span className="text-white">›</span>
           <span className="text-white">The Art of War Summary</span>
         </nav>
@@ -322,7 +322,7 @@ export default function TheArtofWarSummaryandCoreLessons() {
 
           {/* Subtitle */}
           <p className="text-[1.05rem] text-[#eeeeee] leading-relaxed mb-8 max-w-2xl" style={{ fontWeight: 300 }}>
-            Written 2,500 years ago, Sun Tzu’s ancient military treatise remains the ultimate playbook for modern business strategy, competitive advantage, and executive leadership.
+            Written 2,500 years ago, Sun Tzu's ancient military guide is still the ultimate playbook for modern business strategy, staying ahead of the competition, and strong leadership.
           </p>
 
           {/* Meta */}
@@ -348,7 +348,7 @@ export default function TheArtofWarSummaryandCoreLessons() {
         </header>
 
         {/* ══════════════════════════════════════════════════════ */}
-        {/*  INTRO                                                 */}
+        {/*  INTRO                                               */}
         {/* ══════════════════════════════════════════════════════ */}
         <section className="mt-12 mb-12">
           {/* Added an H2 here so the structure goes seamlessly from the H1 into the body content */}
@@ -364,22 +364,22 @@ export default function TheArtofWarSummaryandCoreLessons() {
               &ldquo;Strategy without tactics is the slowest route to victory. Tactics without strategy is the noise before defeat.&rdquo;
             </p>
             <cite className="block mt-3 text-[10px] tracking-[0.3em] text-[#d8d8d8] not-italic uppercase">
-              — Sun Tzu
+               Sun Tzu
             </cite>
           </blockquote>
 
           <p className="text-[#e8e8e8] leading-[1.95] mb-5 text-[0.925rem]">
-            It is a profound testament to human nature that a manual written for chariot commanders and infantry generals in the 5th century BC is now required reading in Silicon Valley boardrooms and Wall Street firms. But business is, fundamentally, the allocation of scarce resources in a highly competitive environment—which is the exact definition of war.
+            It is pretty amazing that a manual written for chariot commanders and infantry generals in the 5th century BC is now required reading in Silicon Valley boardrooms and Wall Street firms. But when you think about it, business is really just about managing limited resources in a highly competitive space, and that is exactly how war works.
           </p>
           <p className="text-[#e8e8e8] leading-[1.95] text-[0.925rem]">
-            <em>The Art of War</em> strips conflict down to its mathematical and psychological essentials. It teaches that victory is not achieved through brute force or relentless hard work, but through positioning, information asymmetry, and the subtle manipulation of your opponent's expectations. Here are the 6 core lessons from Sun Tzu's masterpiece, translated for the modern builder.
+            <em>The Art of War</em> breaks conflict down to its pure psychology and math. It teaches us that you do not win just by using brute force or working yourself to the bone. Instead, you win through smart positioning, having better information, and subtly managing what your opponent expects. Here are the 6 core lessons from Sun Tzu's masterpiece, translated for modern creators and leaders.
           </p>
         </section>
 
       </div>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  SINGLE FEATURED IMAGE                                 */}
+      {/*  SINGLE FEATURED IMAGE                               */}
       {/* ══════════════════════════════════════════════════════ */}
       <FeaturedImage />
 
@@ -415,10 +415,10 @@ export default function TheArtofWarSummaryandCoreLessons() {
           </h2>
           <div className="w-10 h-0.5 bg-[#C9A227]/50 mt-4 mb-7" />
           <p className="text-[#7a7a7a] leading-[1.9] mb-4 text-[0.925rem]">
-            A summary can introduce the philosophy, but mastery requires studying the text yourself. The brevity of Sun Tzu's writing means every sentence warrants reflection. It is a book designed not to be read once, but to be consulted repeatedly throughout a career.
+            A quick summary is a great way to learn the basics, but true mastery means reading the text for yourself. Sun Tzu keeps things short, which means every single sentence makes you stop and think. This is not a book you read just once. It is a guide you will want to keep on your desk for your entire career.
           </p>
           <p className="text-[#7a7a7a] leading-[1.9] text-[0.925rem] mb-9">
-            Add a premium physical edition or the digital eBook of <em>The Art of War</em> to your personal library through the AG Classics collection.
+            You can add a beautiful physical edition or the digital eBook of <em>The Art of War</em> to your personal library right here in the AG Classics collection.
           </p>
           <a
             href="/product/the-art-of-war"

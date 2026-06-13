@@ -34,7 +34,7 @@ const POSTS: BlogPost[] = [
     thumbnailUrl:
       "https://brandongaille.com/wp-content/uploads/2020/02/the-art-of-war-summary-ft.jpg",
     excerpt:
-      "Six timeless principles from Sun Tzu's 2,500-year-old masterpiece — translated for the modern executive, entrepreneur, and builder.",
+      "Six timeless principles from Sun Tzu's 2,500-year-old masterpiece  translated for the modern executive, entrepreneur, and builder.",
     featured: true,
   },
   {
@@ -52,7 +52,7 @@ const POSTS: BlogPost[] = [
       "https://covers.openlibrary.org/b/isbn/0066620996-L.jpg",
     ],
     excerpt:
-      "From Napoleon Hill's philosophy of achievement to Peter Thiel's contrarian theory of monopoly — the ten books every serious leader must read.",
+      "From Napoleon Hill's philosophy of achievement to Peter Thiel's contrarian theory of monopoly  the ten books every serious leader must read.",
     featured: false,
   },
   {
@@ -70,9 +70,69 @@ const POSTS: BlogPost[] = [
       "https://covers.openlibrary.org/b/isbn/0735211299-L.jpg",
     ],
     excerpt:
-      "From Marcus Aurelius's ancient stoicism to James Clear's behavioral science — ten books that will reshape how you think, focus, and endure.",
+      "From Marcus Aurelius's ancient stoicism to James Clear's behavioral science  ten books that will reshape how you think, focus, and endure.",
     featured: false,
   },
+  {
+    id: 4,
+    href: "/blog/10-classic-books-everyone-should-read-once",
+    title: "10 Classic Books Everyone Should Read",
+    category: "Reading List",
+    date: "June 2026",
+    readTime: "14 min read",
+    accent: "#D4AF37",
+    thumbnailType: "books",
+    bookCovers: [
+      "https://covers.openlibrary.org/b/isbn/0060935464-L.jpg", // Mockingbird
+      "https://covers.openlibrary.org/b/isbn/0451524934-L.jpg", // 1984
+      "https://covers.openlibrary.org/b/isbn/0141439513-L.jpg", // Pride and Prejudice
+    ],
+    excerpt:
+      "A curated guide to the masterworks of literature that have shaped human empathy, challenged societal norms, and endured through centuries.",
+    featured: false,
+  },
+  {
+    id: 5,
+    href: "/blog/why-public-domain-books-are-still-relevant",
+    title: "Why Public Domain Books Are Still Relevant Today",
+    category: "Essays & Analysis",
+    date: "June 2026",
+    readTime: "8 min read",
+    accent: "#C9A227",
+    thumbnailType: "image",
+    thumbnailUrl: "/images/blogs/Why Public Domain Books.jpg",
+    excerpt:
+      "An inquiry into the intellectual commons: how restriction-free historical masterworks act as the ultimate catalyst for contemporary creativity, uninhibited education, and independent publishing.",
+    featured: false,
+  },
+  {
+    id: 6,
+    href: "/blog/the-history-of-public-domain-literature",
+    title: "The History of Public Domain Literature",
+    category: "History & Culture",
+    date: "June 2026",
+    readTime: "9 min read",
+    accent: "#E74C3C",
+    thumbnailType: "image",
+    thumbnailUrl: "https://internationalpublishers.org/wp-content/uploads/2025/05/Chodowiecki_Basedow_Tafel_21_c_Z-1-e1747039207115-1024x576.jpg",
+    excerpt:
+      "From the Statute of Anne to the digital commons: explore how humanity fought to keep its stories free, and the ongoing war over who owns the greatest masterworks of the past.",
+    featured: false,
+  },
+  {
+    id: 7,
+    href: "/blog/how-books-enter-the-public-domain",
+    title: "How Books Enter the Public Domain",
+    category: "Publishing & Law",
+    date: "June 2026",
+    readTime: "8 min read",
+    accent: "#7CBB4A",
+    thumbnailType: "image",
+    thumbnailUrl: "/images/blogs/HowBooksEnterPublicDomain.jpg",
+    excerpt:
+      "Demystifying the complex legal labyrinth of copyright expiration. Learn the mechanics of how, when, and why a literary masterwork finally transitions from corporate property to the shared human inheritance.",
+    featured: false,
+  }
 ];
 
 // ─── Reading Progress ─────────────────────────────────────────────────
@@ -148,7 +208,7 @@ function BooksThumbnail({ covers, accent, title }: { covers: string[]; accent: s
                 ) : (
                   <img
                     src={url}
-                    alt={`Book cover ${i + 1} featured in: ${title}`} // Resolves Image SEO warning
+                    alt={`Book cover ${i + 1} featured in: ${title}`} 
                     style={{ aspectRatio: "2/3", width: "100%", display: "block", objectFit: "cover" }}
                     onError={() => setErrors((p) => ({ ...p, [i]: true }))}
                   />
@@ -217,7 +277,6 @@ function FeaturedCard({ post }: { post: BlogPost }) {
               </span>
             </div>
 
-            {/* Resolves long/duplicate anchor text by isolating the link and stretching it */}
             <h2
               className="text-2xl sm:text-3xl lg:text-[1.85rem] font-bold text-[#f5f0e8] leading-tight mb-4"
               style={{ fontFamily: "'Playfair Display', serif" }}
@@ -247,7 +306,7 @@ function FeaturedCard({ post }: { post: BlogPost }) {
             <span
               className="inline-flex items-center gap-2 text-[9px] sm:text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-200"
               style={{ color: post.accent }}
-              aria-hidden="true" // Hides visual duplicate CTA text from screen readers
+              aria-hidden="true" 
             >
               Read Article 
               <span className="text-sm transition-transform duration-200 group-hover:translate-x-1 inline-block">
@@ -292,7 +351,6 @@ function GridCard({ post }: { post: BlogPost }) {
           </span>
         </div>
 
-        {/* Anchor link correctly isolated */}
         <h3
           className="text-[1.1rem] sm:text-xl font-bold text-[#f5f0e8] leading-snug mb-3 flex-1"
           style={{ fontFamily: "'Playfair Display', serif" }}
@@ -396,12 +454,11 @@ export default function MainBlogPage() {
             Home
           </a>
           <span className="text-[#333]">›</span>
-          <span className="text-[#888]">Journal</span>
+          <span className="text-[#888]">Blog</span>
         </nav>
 
         {/* ── Editorial Header ── */}
         <header className="pt-8 sm:pt-10">
-          {/* Resolves H1 length & ensures exact match with the Title tags words */}
           <h1
             className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-black text-[#f5f0e8] leading-[1.05] mb-4 sm:mb-5"
             style={{ fontFamily: "'Playfair Display', serif" }}
@@ -414,13 +471,13 @@ export default function MainBlogPage() {
             className="text-[0.95rem] sm:text-[1.05rem] text-[#bbbbbb] leading-relaxed mb-6 sm:mb-8 max-w-xl font-light"
           >
             Explore our curated blogs, essays, and reading lists offering timeless business & self-development insights from the
-            AG&nbsp;Classics collection — assembled for the intentional reader.
+            AG&nbsp;Classics collection  assembled for the intentional reader.
           </p>
 
           <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-[10px] sm:text-[11px] text-[#ccc] tracking-wide">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C9A227]" />
-              <span>{POSTS.length} Articles</span>
+              <span>{POSTS.length} Blogs</span>
             </div>
             <span className="text-[#333] hidden xs:inline">·</span>
             <div className="flex items-center gap-2">
@@ -499,7 +556,7 @@ export default function MainBlogPage() {
                 <div className="flex items-center gap-3 mt-8 sm:mt-10 mb-6 sm:mb-8">
                   <div className="flex-1 h-px bg-[#161616]" />
                   <p className="text-[8px] sm:text-[9px] tracking-[0.42em] uppercase text-[#C9A227] px-1 whitespace-nowrap">
-                    {activeCategory === "All" ? "More Articles" : activeCategory}
+                    {activeCategory === "All" ? "More Blog" : activeCategory}
                   </p>
                   <div className="flex-1 h-px bg-[#161616]" />
                 </div>
@@ -527,7 +584,7 @@ export default function MainBlogPage() {
           <div className="w-10 h-0.5 bg-[#C9A227]/50 mt-4 mb-5 sm:mb-6 mx-auto sm:mx-0" />
           <p className="text-[#cccccc] leading-[1.8] mb-6 sm:mb-7 text-[0.875rem] sm:text-[0.925rem] max-w-xl mx-auto sm:mx-0">
             Every book discussed in these pages is available through the
-            AG&nbsp;Classics digital library — beautifully formatted editions
+            AG&nbsp;Classics digital library  beautifully formatted editions
             for every device, with lifetime access from the moment you purchase.
           </p>
           <a

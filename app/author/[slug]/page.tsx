@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     metadataBase: new URL(SITE_URL),
 
-    title: `${author.name} | AG Classics`,
+    title: `${author.name} - AG Classics`,
     description,
      keywords,
 
@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
 
     openGraph: {
-      title: `${author.name} | AG Classics`,
+      title: `${author.name} - AG Classics`,
       description,
       url: `${SITE_URL}/authors/${author.slug}`,
       type: "profile",
@@ -78,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     twitter: {
       card: "summary_large_image",
-      title: `${author.name} | AG Classics`,
+      title: `${author.name} - AG Classics`,
       description,
       images: images.map((img) => img.url),
     },
