@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────
-//  AG Classics — Blog: "10 Best Self-Development Books for 2026"
+//  AG Classics  Blog: "10 Best Self-Development Books for 2026"
 //  Drop into your Next.js / React project. Requires: Tailwind CSS
 // ─────────────────────────────────────────────────────────────────────
 
@@ -37,12 +37,12 @@ const BOOKS: Book[] = [
     accent: "#C0392B",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0812968255-L.jpg",
     description:
-      "Written not for publication but as the private journal of a Roman Emperor governing the known world, Meditations is perhaps the only document of its kind: the intimate thoughts of the most powerful man on earth advising himself on how to be a better human being. Amidst warfare, plague, and political betrayal, Aurelius grounds himself in the Stoic principles of emotional regulation, civic duty, and the acceptance of mortality. It is the ultimate manual for remaining sovereign over one's own mind when everything external is in chaos.",
+      "Marcus Aurelius did not write this to be published. It was actually the private journal of a Roman Emperor who ruled the known world. Meditations gives us a rare peek into the mind of the most powerful man on earth as he tries to be a better person. While dealing with war, sickness, and political backstabbing, Aurelius stayed grounded using Stoic principles like emotional control and accepting mortality. It is the perfect guide for keeping your mind calm when everything around you feels chaotic.",
     coreIdea:
-      "You have power over your mind — not outside events. Realize this, and you will find strength.",
+      "You control your own mind, not the events happening around you. Once you realize this, you will find true strength.",
     whyRead:
-      "It strips away the noise of modern anxiety, offering an anchor of profound, unshakable perspective from a man who faced pressures we can barely imagine.",
-    legacy: "The foundational text of Stoicism, referenced by leaders, thinkers, and warriors for over two millennia.",
+      "It cuts through all our modern anxiety and gives you a deep, unshakable perspective from a man who handled pressures we can barely imagine.",
+    legacy: "This is the absolute foundation of Stoic philosophy, and it has inspired leaders, thinkers, and warriors for over two thousand years.",
   },
   {
     rank: 2,
@@ -53,12 +53,12 @@ const BOOKS: Book[] = [
     accent: "#3498DB",
     coverUrl: "https://covers.openlibrary.org/b/isbn/080701429X-L.jpg",
     description:
-      "Psychiatrist Viktor Frankl's memoir of life in Nazi death camps is a staggering testament to the indestructible nature of the human spirit. Frankl observed that the prisoners who survived were not necessarily the physically strongest, but those who retained a sense of meaning—a task to complete, a loved one to see again. From this unimaginable darkness, he developed logotherapy, arguing that our primary drive in life is not pleasure, but the pursuit of meaning.",
+      "Psychiatrist Viktor Frankl survived the horrific conditions of Nazi death camps, and his memoir is a powerful reminder of how unbreakable the human spirit can be. He noticed that the survivors were not always the strongest physically, but rather those who held onto a sense of purpose like finishing a life goal or hoping to see a loved one again. Out of that dark experience, he realized that our biggest drive in life is not finding pleasure, but finding meaning.",
     coreIdea:
-      "Everything can be taken from a man but one thing: the last of the human freedoms—to choose one's attitude in any given set of circumstances.",
+      "You can lose absolutely everything except one thing: your freedom to choose how you react to any given situation.",
     whyRead:
-      "It recontextualizes our daily struggles, proving that suffering ceases to be suffering at the moment it finds a meaning.",
-    legacy: "Selected by the Library of Congress as one of the ten most influential books in America.",
+      "It completely changes how you view your daily struggles and shows that suffering actually stops being suffering the moment it finds a meaning.",
+    legacy: "The Library of Congress named it one of the ten most influential books in America for a very good reason.",
   },
   {
     rank: 3,
@@ -69,12 +69,12 @@ const BOOKS: Book[] = [
     accent: "#E67E22",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0735211299-L.jpg",
     description:
-      "A masterclass in the compounding nature of small decisions. James Clear synthesizes decades of neuroscience and cognitive psychology into a highly practical framework for behavioral change. He dismantles the myth that massive success requires massive action, proving instead that a 1% daily improvement yields mathematically transformative results over time. It shifts the focus from goal-setting to system-building, changing how we view daily routines.",
+      "James Clear delivers an amazing guide on how small decisions add up over time. He breaks down years of brain science and psychology into simple, easy steps to help you change your behavior. He completely destroys the idea that you need to make massive changes to see massive success. Instead, he proves that getting just 1% better every day leads to incredible results. It takes the pressure off hitting big goals and teaches you how to build better daily routines instead.",
     coreIdea:
-      "You do not rise to the level of your goals. You fall to the level of your systems.",
+      "You do not rise to the level of your goals. Instead, you fall to the level of your daily systems.",
     whyRead:
-      "It provides a purely mechanical, emotion-free methodology to break bad habits and adopt good ones, completely bypassing the need for fleeting 'motivation'.",
-    legacy: "Over 15 million copies sold globally; the definitive modern text on habit formation.",
+      "It gives you a clear, stress free way to break bad habits and build good ones without having to rely on motivation that fades away.",
+    legacy: "With over 15 million copies sold around the world, this is the modern handbook on building great habits.",
   },
   {
     rank: 4,
@@ -85,12 +85,12 @@ const BOOKS: Book[] = [
     accent: "#5B9BD5",
     coverUrl: "https://covers.openlibrary.org/b/isbn/1455586692-L.jpg",
     description:
-      "In an economy built on distraction, the ability to focus without interruption is becoming increasingly rare and exponentially more valuable. Cal Newport defines 'deep work' as professional activities performed in a state of distraction-free concentration that push your cognitive capabilities to their limit. He argues that network tools and shallow work are fundamentally diminishing our capacity for profound output, and offers a strict training regimen to rebuild our attention spans.",
+      "In a world filled with constant notifications and distractions, the ability to focus deeply is incredibly rare and super valuable. Cal Newport talks about deep work as the ability to focus completely on a hard task without any distractions, pushing your brain to its limits. He points out that social media and shallow tasks are actually hurting our ability to do great work, and he offers a strict training plan to help you get your attention span back.",
     coreIdea:
-      "To produce at your peak level you need to work for extended periods with full concentration on a single task free from distraction.",
+      "If you want to do your best work, you have to spend long periods focusing entirely on one task without any distractions getting in the way.",
     whyRead:
-      "It is an urgent survival guide for the modern knowledge worker, offering a blueprint to out-produce and out-think a distracted competition.",
-    legacy: "Sparked a global conversation about digital minimalism and the true cost of constant connectivity.",
+      "It is a must read survival guide for anyone working today. It gives you the exact tools you need to outsmart and outperform a highly distracted world.",
+    legacy: "This book started a huge global conversation about stepping back from our screens and the real cost of always being online.",
   },
   {
     rank: 5,
@@ -101,12 +101,12 @@ const BOOKS: Book[] = [
     accent: "#9B59B6",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0374533555-L.jpg",
     description:
-      "Nobel laureate Daniel Kahneman takes us on a groundbreaking tour of the mind, explaining the two systems that drive the way we think. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical. By exposing the extraordinary capabilities—and the terrifying faults and biases—of fast thinking, Kahneman reveals where we can and cannot trust our intuitions, fundamentally altering how we make decisions in business, finance, and life.",
+      "Nobel prize winner Daniel Kahneman takes you on an amazing journey through your own brain. He explains that we have two different systems for thinking. System 1 is fast, emotional, and relies on gut feelings. System 2 is much slower, highly logical, and takes more effort. By showing us how brilliant but also how flawed our fast thinking can be, Kahneman teaches us exactly when to trust our gut and when to slow down. It will completely change how you make decisions in business and in life.",
     coreIdea:
-      "We are prone to overestimate how much we understand about the world and to underestimate the role of chance in events.",
+      "We tend to be a bit too confident in how much we actually understand about the world, and we usually forget how much luck plays a role in what happens to us.",
     whyRead:
-      "Understanding your own cognitive biases is the first and most vital step toward true rationality and effective decision-making.",
-    legacy: "Transformed the fields of behavioral economics and psychology, becoming a mandatory text for leaders across all industries.",
+      "Figuring out your own mental blind spots is the very first step to making better, smarter choices every single day.",
+    legacy: "It totally transformed how we think about psychology and economics, making it a must read for leaders everywhere.",
   },
   {
     rank: 6,
@@ -117,12 +117,12 @@ const BOOKS: Book[] = [
     accent: "#D4AF37",
     coverUrl: "https://covers.openlibrary.org/b/isbn/014312417X-L.jpg",
     description:
-      "Greene demolishes the myth of innate talent, proving through historical case studies from Leonardo da Vinci to Charles Darwin that mastery is the result of a specific, replicable process. He maps out the journey from the grueling apprenticeship phase, through the acquisition of social intelligence, to the ultimate achievement of creative mastery. It is a dense, historical, and deeply philosophical look at what it actually takes to become world-class at your craft.",
+      "Robert Greene proves that natural talent is actually a myth. By looking closely at historical figures like Leonardo da Vinci and Charles Darwin, he shows that becoming a master at something follows a very specific process anyone can learn. He walks you through the tough early days of learning, figuring out how to work well with others, and finally reaching the top of your field. It is a deep, fascinating look at what it really takes to become world class at whatever you do.",
     coreIdea:
-      "The future belongs to those who learn more skills and combine them in creative ways.",
+      "The future belongs to people who are willing to learn different skills and then mix them together in highly creative ways.",
     whyRead:
-      "It cures the modern impatience for instant success, providing a historical roadmap for long-term, unassailable excellence.",
-    legacy: "Considered the ultimate blueprint for ambitious individuals unwilling to settle for mediocrity in their life's work.",
+      "If you are tired of looking for quick fixes and overnight success, this gives you a real, historical roadmap to achieving lasting greatness.",
+    legacy: "It is widely known as the ultimate playbook for ambitious people who refuse to settle for being average at what they do.",
   },
   {
     rank: 7,
@@ -133,12 +133,12 @@ const BOOKS: Book[] = [
     accent: "#7CBB4A",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0804137382-L.jpg",
     description:
-      "The way of the Essentialist isn't about getting more done in less time. It's about getting only the right things done. McKeown challenges the modern assumption that we can 'have it all', forcing the reader to recognize the power of extreme selectivity. By applying a more rigorous criteria to what is truly essential, we regain control of our own choices so we can channel our time, energy, and effort into our highest point of contribution.",
+      "Being an Essentialist is not about squeezing more tasks into your busy day. It is actually about figuring out how to do only the things that truly matter. Greg McKeown challenges the exhausting idea that we can have it all. Instead, he shows you how to be extremely picky about where you spend your time. By learning to say no and focusing only on what is essential, you get your freedom back and can put your energy where it makes the biggest difference.",
     coreIdea:
-      "If you don't prioritize your life, someone else will. The disciplined pursuit of less is the key to achieving more.",
+      "If you do not decide what your priorities are, someone else will decide them for you. Chasing less is actually the secret to achieving more.",
     whyRead:
-      "It is an antidote to the burnout, overwhelm, and lack of progress that plagues modern professionals who say 'yes' to too much.",
-    legacy: "Popularized the 'less but better' philosophy, shifting the cultural paradigm away from mindless hustle.",
+      "It is the perfect cure for feeling burned out, overwhelmed, and stuck because you are always saying yes to way too many things.",
+    legacy: "This book made the phrase less but better famous, helping people everywhere step off the endless treadmill of busywork.",
   },
   {
     rank: 8,
@@ -149,12 +149,12 @@ const BOOKS: Book[] = [
     accent: "#1ABC9C",
     coverUrl: "https://covers.openlibrary.org/b/isbn/0345472322-L.jpg",
     description:
-      "After decades of research, Stanford psychologist Carol Dweck discovered a simple but groundbreaking idea: the power of mindset. She outlines the profound difference between a 'fixed mindset' (believing abilities are static) and a 'growth mindset' (believing abilities can be developed). This single conceptual shift changes how we approach learning, how we handle failure, and ultimately, what we are capable of achieving.",
+      "After studying psychology for decades at Stanford, Carol Dweck found something incredibly simple but totally life changing: the power of your mindset. She explains the huge difference between a fixed mindset, where you think your talents are set in stone, and a growth mindset, where you believe you can always get better. This one little shift completely changes how you learn, how you bounce back from failure, and what you can eventually achieve.",
     coreIdea:
-      "In a growth mindset, challenges are exciting rather than threatening. So rather than thinking, oh, I'm going to reveal my weaknesses, you say, wow, here's a chance to grow.",
+      "When you have a growth mindset, challenges look exciting instead of scary. Instead of worrying about looking foolish, you see an opportunity to learn something new.",
     whyRead:
-      "It fundamentally alters how you speak to yourself during moments of failure, transforming setbacks into raw data for improvement.",
-    legacy: "Reshaped educational and corporate training models globally, proving that neuroplasticity is driven by belief.",
+      "It completely changes the way you talk to yourself when things go wrong, turning your failures into incredibly useful lessons.",
+    legacy: "It has changed how schools and massive companies train people all over the world, proving that believing you can grow actually makes it happen.",
   },
   {
     rank: 9,
@@ -165,12 +165,12 @@ const BOOKS: Book[] = [
     accent: "#E74C3C",
     coverUrl: "https://covers.openlibrary.org/b/isbn/1591846358-L.jpg",
     description:
-      "Drawing heavily on the ancient philosophy of Stoicism, Ryan Holiday provides a framework for turning adversity into advantage. Through historical examples—from John D. Rockefeller to Amelia Earhart to Steve Jobs—Holiday illustrates how the world's most successful people haven't just avoided obstacles; they have actively utilized them as the fuel for their success. It is a tactical manual for emotional alchemy.",
+      "Ryan Holiday uses ancient Stoic philosophy to teach you how to turn your biggest problems into massive advantages. Looking at history's greats like Steve Jobs, Amelia Earhart, and John D. Rockefeller, Holiday points out that highly successful people do not just dodge obstacles. They actually use those very obstacles as the fuel to get ahead. Think of it as a practical guide for turning your bad luck into a superpower.",
     coreIdea:
-      "The impediment to action advances action. What stands in the way becomes the way.",
+      "Whatever is standing in your way is actually helping you move forward. The obstacle itself becomes the very path you need to take.",
     whyRead:
-      "It teaches you how to flip the script on misfortune, rendering you psychologically immune to the paralysis of bad circumstances.",
-    legacy: "Sparked a massive modern revival of Stoicism among entrepreneurs, professional athletes, and politicians.",
+      "It teaches you how to completely flip the script when bad things happen so you never feel stuck or paralyzed by tough situations again.",
+    legacy: "This is the book that made Stoicism cool again for modern entrepreneurs, athletes, and leaders everywhere.",
   },
   {
     rank: 10,
@@ -181,12 +181,12 @@ const BOOKS: Book[] = [
     accent: "#8E44AD",
     coverUrl: "https://covers.openlibrary.org/b/isbn/1577314808-L.jpg",
     description:
-      "To make the journey into the Now we will need to leave our analytical mind and its false created self, the ego, behind. Tolle argues that almost all human suffering is rooted in our obsession with the past and our anxiety regarding the future. By anchoring consciousness entirely in the present moment, we liberate ourselves from the self-inflicted torment of the mind. It is a profound spiritual text wrapped in accessible language.",
+      "To truly live in the present moment, we have to let go of our overthinking minds and our egos. Eckhart Tolle believes that almost all of our sadness and stress comes from worrying about the past or stressing over the future. By focusing completely on what is happening right now, we can stop torturing ourselves with our own thoughts. It is a deep, spiritual book, but it is written in a way that is incredibly easy to understand.",
     coreIdea:
-      "Realize deeply that the present moment is all you have. Make the NOW the primary focus of your life.",
+      "You have to deeply understand that the present moment is the only thing you ever truly have. Make right now the main focus of your life.",
     whyRead:
-      "While other books optimize the mind for output, Tolle teaches you how to turn the mind off, offering a critical defense against psychological burnout.",
-    legacy: "Translated into 33 languages, it remains one of the most widely read spiritual texts of the modern era.",
+      "While other books try to teach you how to get more done, Tolle teaches you how to turn your mind off, which is the best way to prevent total burnout.",
+    legacy: "It has been translated into 33 languages and is still one of the most loved and widely read spiritual books in the world today.",
   },
 ];
 
@@ -253,7 +253,7 @@ function FallbackCover({ book, small = false }: { book: Book; small?: boolean })
 }
 
 // ─── Books Collage ────────────────────────────────────────────────────
-// Visual 5×2 grid preview after the intro — each cover links to its entry.
+// Visual 5×2 grid preview after the intro  each cover links to its entry.
 
 function CollageItem({ book }: { book: Book }) {
   const [err, setErr] = useState(false);
@@ -473,7 +473,7 @@ export default function BestSelfDevelopmentBooksfor2026() {
       </div>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  HERO                                                  */}
+      {/* HERO                                                  */}
       {/* ══════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-5 md:px-8">
 
@@ -505,7 +505,7 @@ export default function BestSelfDevelopmentBooksfor2026() {
 
           {/* Subtitle */}
           <p className="text-[1.05rem] text-[#eeeeee] leading-relaxed mb-8 max-w-2xl" style={{ fontWeight: 300 }}>
-            A curated guide to the books that forge resilience, sharpen focus, and fundamentally rewire the human mind — assembled from the AG&nbsp;Classics collection.
+            A curated guide to the books that forge resilience, sharpen focus, and fundamentally rewire the human mind assembled from the AG Classics collection.
           </p>
 
           {/* Meta */}
@@ -531,7 +531,7 @@ export default function BestSelfDevelopmentBooksfor2026() {
         </header>
 
         {/* ══════════════════════════════════════════════════════ */}
-        {/*  INTRO                                                 */}
+        {/* INTRO                                               */}
         {/* ══════════════════════════════════════════════════════ */}
         <section className="mt-12 mb-12">
           <blockquote className="border-l-2 border-[#C9A227]/50 pl-7 mb-10">
@@ -542,27 +542,27 @@ export default function BestSelfDevelopmentBooksfor2026() {
               &ldquo;The mind is not a vessel to be filled, but a fire to be kindled.&rdquo;
             </p>
             <cite className="block mt-3 text-[10px] tracking-[0.3em] text-[#d8d8d8] not-italic uppercase">
-              — Plutarch
+               Plutarch
             </cite>
           </blockquote>
 
           <p className="text-[#e8e8e8] leading-[1.95] mb-5 text-[0.925rem]">
-            True self-development is not about superficial life hacks or fleeting bursts of motivation. It is about the fundamental restructuring of character, focus, and perspective. The ten books assembled here represent a masterclass in human potential — drawing from ancient stoic philosophy, modern cognitive science, and behavioral psychology.
+            True self-improvement goes way beyond quick life hacks or short bursts of motivation. It is really about changing how you view the world, improving your focus, and building strong character. We have put together ten incredible books that will help you reach your true potential, blending ancient stoic wisdom with modern psychology.
           </p>
           <p className="text-[#e8e8e8] leading-[1.95] text-[0.925rem]">
-            We have carefully curated this list not just for popularity, but for depth and durability. These texts are arranged in a specific sequence: beginning with the mastery of internal perspective, moving through the mechanics of focus and habit, and concluding with the ultimate pursuit of meaning and mastery.
+            We handpicked this list because these books offer deep, lasting value, not just because they are currently popular. We also arranged them in a specific order. You will start by mastering your mindset, then move on to building better habits, and finally finish by discovering true purpose and mastery in your life.
           </p>
         </section>
 
       </div>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  BOOKS COLLAGE — visual grid preview                  */}
+      {/* BOOKS COLLAGE  visual grid preview                  */}
       {/* ══════════════════════════════════════════════════════ */}
       <BooksCollage />
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  BOOK ENTRIES                                          */}
+      {/* BOOK ENTRIES                                          */}
       {/* ══════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-5 md:px-8">
         {BOOKS.map((book) => (
@@ -571,7 +571,7 @@ export default function BestSelfDevelopmentBooksfor2026() {
       </div>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/*  CONCLUSION                                            */}
+      {/* CONCLUSION                                            */}
       {/* ══════════════════════════════════════════════════════ */}
       <div className="max-w-4xl mx-auto px-5 md:px-8 mt-16 mb-24">
 
@@ -594,10 +594,10 @@ export default function BestSelfDevelopmentBooksfor2026() {
           </h2>
           <div className="w-10 h-0.5 bg-[#C9A227]/50 mt-4 mb-7" />
           <p className="text-[#7a7a7a] leading-[1.9] mb-4 text-[0.925rem]">
-            These ten books do not merely offer advice — they offer a rewiring of your cognitive framework. The greatest return on investment any individual can make is not in external systems, but in the deliberate cultivation of their own mind, focus, and resilience.
+            These ten books do a lot more than just give you good advice. They actually help rewire how you think about the world. The best investment you will ever make is not in fancy tools or systems, but in growing your own mind, improving your focus, and building up your resilience.
           </p>
           <p className="text-[#7a7a7a] leading-[1.9] text-[0.925rem] mb-9">
-            All ten books are available in the AG&nbsp;Classics collection. Browse our curated catalogue of self-development, philosophy, and timeless literature — physical editions selected for their quality, beauty, and enduring value.
+            You can find all ten of these life changing books right here in the AG Classics collection. Take a look at our carefully chosen catalogue of self-improvement, philosophy, and classic literature. We focus on offering beautiful, high quality physical books that you will treasure forever.
           </p>
           <a
             href="/books"

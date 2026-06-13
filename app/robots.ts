@@ -14,7 +14,8 @@ export default function robots(): MetadataRoute.Robots {
           "/account/profile",
           "/account/orders",
           "/account/subscriptions",
-          "/account/payments"
+          "/account/payments",
+          "/subscriptions/payment",
         ],
       },
     ],

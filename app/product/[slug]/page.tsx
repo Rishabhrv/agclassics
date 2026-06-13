@@ -58,7 +58,7 @@ export async function generateMetadata({
     const authorLine = product.authors?.length
       ? ` by ${product.authors.map((a: any) => a.name).join(", ")}`
       : "";
-    metaTitle = `${product.title}${authorLine} | AG Classics`;
+    metaTitle = `${product.title}${authorLine} - AG Classics`;
   }
 
   if (!metaDescription) {

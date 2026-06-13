@@ -9,6 +9,10 @@ export async function GET() {
     { path: "/blog/10-best-self-development-books-for-2026",                     priority: "1.0", changefreq: "daily" },
     { path: "/blog/sun-tzu-art-of-war-summary-and-lessons",                      priority: "1.0", changefreq: "daily" },
     { path: "/blog/10-best-business-books",                                      priority: "1.0", changefreq: "daily" },
+    { path: "/blog/why-public-domain-books-are-still-relevant",                  priority: "1.0", changefreq: "daily" },
+    { path: "/blog/the-history-of-public-domain-literature",                     priority: "1.0", changefreq: "daily" },
+    { path: "/blog/10-classic-books-everyone-should-read-once",                  priority: "1.0", changefreq: "daily" },
+    { path: "/blog/how-books-enter-the-public-domain",                           priority: "1.0", changefreq: "daily" },
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

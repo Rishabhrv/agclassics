@@ -38,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     // ⬇ Primary Keywords: "ebook subscription service", "classic literature"
-    title: "Classic Literature eBook Subscription Service | AG Classics",
+    title: "Classic Literature eBook Subscription  | AG Classics",
     
     // ⬇ Secondary Keywords: "reading membership", "ebook access", "classic literature books", "digital library india"
     description: `Join our reading membership for unlimited ebook access to classic literature books. Explore the best digital library in India starting at ₹${startingPrice}/month.`,
@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       url: `${SITE_URL}/subscriptions`,
       siteName: SITE_NAME,
-      title: "Classic Literature eBook Subscription Service | AG Classics",
+      title: "Classic Literature eBook Subscription  | AG Classics",
       description: `Join our reading membership for unlimited ebook access to classic literature books. Explore the best digital library in India starting at ₹${startingPrice}/month.`,
       images: [
         {
@@ -110,7 +110,7 @@ export default async function Page() {
     "@type":    "WebPage",
     "@id":      `${pageUrl}#webpage`,
     url:        pageUrl,
-    name:       "Classic Literature eBook Subscription Service | AG Classics",
+    name:       "Classic Literature eBook Subscription  | AG Classics",
     description:
       "Discover one of the top e libraries in India. Get your reading membership to read e books online with our fast and affordable ebook reader platform.",   inLanguage: "en-IN",
     isPartOf: {

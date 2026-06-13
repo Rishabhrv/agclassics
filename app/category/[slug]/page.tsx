@@ -84,11 +84,11 @@ export async function generateMetadata({
   const name = slug === "all" ? "All Books" : (cat?.name ?? toTitleCase(slug));
   const count = cat?.product_count ?? 0;
 
-  const title = `${name} | Buy Classic Books Online | AG Classics`;
+  const title = `${name} | Buy Classic Books Online - AG Classics`;
 
   const description =
     cat?.description ??
-    `Explore our curated collection of ${count > 0 ? `${count} ` : ""}classic ${name} books at AG Classics. ` +
+    `Explore our curated collection of ${count > 0 ? `${count} ` : ""} ${name} books at AG Classics. ` +
     `Available in eBook formats. lifetime access.`;
 
   const ogImage = cat?.image
@@ -110,14 +110,14 @@ export async function generateMetadata({
       type:        "website",
       url:         `${SITE_URL}/category/${slug }`,
       siteName:    SITE_NAME,
-      title:       `${name} Books | AG Classics`,
+      title:       `${name} Books - AG Classics`,
       description,
       images: [
         {
           url:    ogImage,
           width:  1200,
           height: 630,
-          alt:    `${name} books collection | AG Classics`,
+          alt:    `${name} books collection - AG Classics`,
         },
       ],
       locale: "en_IN",
@@ -127,7 +127,7 @@ export async function generateMetadata({
     twitter: {
       card:        "summary_large_image",
       site:        "@agclassics",           // ← update your handle
-      title:       `${name} Books | AG Classics`,
+      title:       `${name} Books - AG Classics`,
       description,
       images:      [ogImage],
     },
@@ -175,7 +175,7 @@ const name    = slug === "all" ? "All Books" : (cat?.name ?? toTitleCase(slug));
     "@type":    "CollectionPage",
     "@id":      `${pageUrl}#webpage`,
     url:        pageUrl,
-    name:       `${name} Books | AG Classics`,
+    name:       `${name} Books - AG Classics`,
     description:
       cat?.description ??
       `Curated classic ${name} books with eBook formats. Instant Access, lifetime access.`,
@@ -225,7 +225,7 @@ const name    = slug === "all" ? "All Books" : (cat?.name ?? toTitleCase(slug));
   const schemaItemList = {
     "@context": "https://schema.org",
     "@type":    "ItemList",
-    name:       `${name} Books Collection | AG Classics`,
+    name:       `${name} Books Collection - AG Classics`,
     url:        pageUrl,
     numberOfItems: products.length,
     itemListElement: products.map((p, idx) => {
