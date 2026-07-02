@@ -167,8 +167,9 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
         product_type:    book.product_type,
       });
       window.dispatchEvent(new Event("cart-change"));
+      
+      // Keep it on "Added" permanently
       setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 1800);
       return;
     }
 
@@ -181,21 +182,29 @@ const BookCard = ({ book, visibleCount, forceFormat }: BookCardProps) => {
         body: JSON.stringify({ product_id: book.id, format, quantity: 1 }),
       });
       const data = await res.json();
+      
       if (!res.ok) {
         if (res.status === 409) {
           window.dispatchEvent(new Event("cart-change"));
+          
+          // Keep it on "Added" permanently
           setAddedToCart(true);
-          setTimeout(() => setAddedToCart(false), 1800);
           return;
         }
         console.warn("Add to cart failed:", data?.message);
         return;
       }
+      
       window.dispatchEvent(new Event("cart-change"));
+      
+      // Keep it on "Added" permanently
       setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 1800);
-    } catch (err) { console.error("Add to cart error:", err); }
-    finally { setCartLoading(false); }
+    } catch (err) { 
+        console.error("Add to cart error:", err); 
+    }
+    finally { 
+        setCartLoading(false); 
+    }
   };
 
   const isEbookOnly      = book.product_type === "ebook";
