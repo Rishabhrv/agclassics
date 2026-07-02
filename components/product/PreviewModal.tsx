@@ -135,6 +135,10 @@ export default function PreviewModal({
 
   const isAtFirstPageRef = useRef(true);
   const lastValidCfiRef = useRef<string | null>(null);
+  
+  // New references to handle Chapter 1 starting point calculation
+  const startPageRef = useRef<number | null>(null);
+  const isJumpCompleteRef = useRef(false);
 
   const [progress, setProgress] = useState(0);
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -225,21 +229,55 @@ export default function PreviewModal({
             setCurrentPage(cur);
             setTotalPages(tot);
 
-            // PAYWALL LOGIC: Block reading after page 10
-            if (cur >= PAGE_LIMIT) {
-              setPaywallReached(true);
-              if (lastValidCfiRef.current) {
-                view.goTo(lastValidCfiRef.current);
-              }
-            } else {
+            if (!isJumpCompleteRef.current) {
+              // Lock in the start page while jumping to Chapter 1
+              startPageRef.current = cur;
               lastValidCfiRef.current = e.detail.cfi;
+            } else {
+              // PAYWALL LOGIC: Block reading 10 pages PAST the dynamically calculated start page
+              if (startPageRef.current !== null && cur >= startPageRef.current + PAGE_LIMIT) {
+                setPaywallReached(true);
+                if (lastValidCfiRef.current) {
+                  view.goTo(lastValidCfiRef.current);
+                }
+              } else {
+                lastValidCfiRef.current = e.detail.cfi;
+              }
             }
           }
         }
       });
       
       await view.open(url);
-      setToc(view.book?.toc || []); 
+      const bookToc = view.book?.toc || [];
+      setToc(bookToc); 
+
+      // Background navigation to jump directly to Chapter 1
+      if (bookToc.length > 0) {
+        let startHref = null;
+        
+        // Step 1: Look explicitly for labels like "Chapter 1", "Chapter I", or "01"
+        const ch1 = bookToc.find((item: any) => 
+          /chapter\s*(1|one|i\b)|^\s*(1|01)\.?\s/i.test(item.label)
+        );
+
+        if (ch1) {
+          startHref = ch1.href;
+        } else {
+          // Step 2: Fallback bypass - look for the first item that IS NOT front matter
+          const contentStart = bookToc.find((item: any) => 
+            !/cover|title|copyright|dedication|acknowledgement|contents|preface|foreword|about/i.test(item.label)
+          );
+          // Step 3: Absolute fallback (if the TOC is minimal, try the second item after the cover)
+          startHref = contentStart?.href || bookToc[1]?.href || bookToc[0]?.href;
+        }
+
+        if (startHref) {
+          await view.goTo(startHref);
+        }
+      }
+
+      isJumpCompleteRef.current = true; // Signals that our starting page configuration is locked
       setLoading(false); 
       setBookReady(true);
     };

@@ -455,18 +455,7 @@ const featuredSlug = books[featuredIdx]?.slug ?? "autobiography-of-a-yogi";
           </span>
         </div>
 
-        {/* Floating format pill */}
-        <div
-          className="absolute -bottom-4 -left-4 px-3 py-1.5 text-[9px] tracking-[2px] uppercase"
-          style={{
-            background: "#1c1c1f",
-            border: "1px solid rgba(201,168,76,0.3)",
-            color: "#c9a84c",
-            fontFamily: "'Jost', sans-serif",
-          }}
-        >
-          Buy Now
-        </div>
+      
       </div>
     </div>
   </div>
